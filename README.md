@@ -1,0 +1,148 @@
+# sample-size
+Application of sample size calculation
+
+
+<div style="text-align: justify">
+
+<p>Welcome to the CHU of Poitier Sample Size Github repositorie! This page is devoted to the calculation of the number of patient required for a clinical trial in order to ensure his validity, accuracy, reliability, and integrity. Also to assure that the intended trials will have a desired power for correctly detecting a clinically meaningful difference between studied groups. This repositorie list a certain number of different sample size calculation methods and their associated R scripts. Each section are written and discussed by the community of methodologists and biostatisticians of the CHU of Poitiers.
+</p>
+
+# 1. INTRODUCTION
+
+<p>In clinical researche, especially during the design of a clinical trial, the investigators must to know the number of patient he will includes. Appropriate statistical test for the hypotheses of interest is essential to provide an accurate and reliable sample size.
+</p>
+
+**Superiority**
+
+Use to show that the experimental treatment is more effective than standard therapy.
+
+The concept is to testing the following hypotheses :
+
+h<sub>0</sub> : μ<sub>T</sub> - μ<sub>S</sub> ≤ δ
+
+h<sub>1</sub> : μ<sub>T</sub> - μ<sub>S</sub> > δ
+
+Where µ<sub>S</sub> and µ<sub>T</sub> are the mean response of the outcome variable for the standard therapy the experimental treatment. And δ the superiority margin.
+
+The purpose is to reject the null hypothesis to conclude that the difference between the experimental treatment and the standard therapy is greater than a clinically meaningful difference.
+
+**Non-inferiority**
+
+Use to show that the experimental treatment is as effective as standard therapy.
+
+The concept is to testing the following hypotheses :
+
+h<sub>0</sub> : μ<sub>S</sub> - μ<sub>T</sub> ≥ δ
+
+h<sub>1</sub> : μ<sub>S</sub> - μ<sub>T</sub> < δ
+
+Where µ<sub>S</sub> and µ<sub>T</sub> are the mean response of the outcome variable for the standard therapy the experimental treatment. And δ the non-inferiority margin.
+
+The purpose is to reject the null hypothesis to conclude that the difference between the standard therapy and the experimental treatment is not clinically significant.(WARNING : the results of the study can not be interpreted to show a superiority of the experimental treatment !)
+
+# 2. COMPARING MEANS
+
+<p>For evaluation of the effect within a given treatment, the null hypothesis of interest is to test whether there is a significant difference in mean change from baseline to endpoint.
+</p>
+
+## SUPERIORITY
+
+**Parameters :**
+
+* treat : mean expected in the experimental group
+* control : mean expected in the control group
+* sigma : standard deviation (commun for both group)
+* n : number of subjects to include (experimental + control), define as NA
+* power : power of the trial
+* r : randomization ratio, number of patients of the experimental group divided by the number of patients of the control group
+* design : estimated design effect
+* sided.test : One-side test (=1), two-side test (=2) 
+*	conf.level : Confidence level (1-α)
+
+*Code with an exemple: *
+
+*Sample size for a randomised controlled superiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. The average quality of life was 66 points with treatment B compared to 72 points with treatment A. In order to highlight this absolute difference of 6 points, with a standard deviantion of 23, with a two-sided alpha risk of 5% and a power of 80%, the sample size is related to the result of the script bellow :*
+
+```{r}
+library(epiR)
+
+epi.sscompc(N = NA, treat = 66, control = 72, 
+            sigma = 23, n = NA, power = 0.8, 
+            r = 1, design = 1, sided.test = 2, conf.level = 0.95)
+```
+
+## NON-INFERIORITY
+
+**Parameters :**
+
+* treat : mean expected in the experimental group
+* control : mean expected in the control group
+* sigma : standard deviation (commun for both group)
+* delta : equivalence limit, which represents the clinically significant difference (>0)
+* n : number of subjects to include (experimental + control), define as NA
+* power : power of the trial
+* alpha : type I error
+* r : randomization ratio, number of patients of the experimental group divided by the number of patients of the control group
+
+*Sample size for a randomised controlled non-inferiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. The average quality of life was 66 points with treatment B.Assuming an absolute non-inferiority margin of 7 points, with a standard deviantion of 23, with a one-sided alpha risk of 5% and a power of 80%, the sample size is related to the result of the script bellow :*
+
+```{r}
+library(epiR)
+
+epi.ssninfc(treat = 66, control = 66, sigma = 23, 
+            delta = 7, n = NA, power = 0.8, alpha = 0.05, r = 1)
+```
+
+# 3. COMPARING PROPORTIONS
+
+<p>For evaluation of treatment effect based on discrete clinical endpoint, the proportions of events that have occurred between treatment groups are compared.
+</p>
+
+## SUPERIORITY
+
+**Parameters :**
+
+*	irexp1 : Proportion expected within the experimental group
+*	irexp0 : Proportion expected within the control group
+* n : number of subjects to include (experimental + control), define as NA
+*	power : Power of the trial
+* r : randomization ratio, number of patients of the experimental group divided by the number of patients of the control group
+* design : estimated design effect
+*	sided.test : One-side test (=1), two-side test (=2) 
+*	conf.level : Confidence level (1-α)
+
+*Code with an exemple: *
+
+*Sample size for a randomised controlled superiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. The proportion of patients with an episode of hypertension was 35% with the B treatment compared to 28% with treatment A. In order to highlight this absolute difference of 7%, with a two-sided alpha risk of 5% and a power of 80%, the sample size is related to the result of the script bellow :*
+
+
+```{r}
+library(epiR)
+
+epi.sscohortc(N = NA, irexp1 = 0.15, irexp0 = 0.075, pexp = NA, n = NA, 
+              power = 0.80, r = 1, design = 1, sided.test = 2, 
+              finite.correction = FALSE, nfractional = FALSE, conf.level = 0.95)
+
+```
+
+## NON-INFERIORITY
+
+**Parameters :**
+
+* treat : proportion expected in the experimental group
+* control : proportion expected in the control group
+* delta : equivalence limit, which represents the clinically significant difference (>0)
+* n : number of subjects to include (experimental + control), define as NA
+* r : randomization ratio, number of patients of the experimental group divided by the number of patients of the control group
+* power : power of the trial
+* alpha : type I error
+
+*Code with an exemple :*
+
+*Sample size for a randomised controlled non-inferiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. The proportion of patients with an episode of hypertension was 35% with the B treatment. Assuming an absolute non-inferiority margin of 5%, with a one-sided alpha risk of 5% and a power of 80%, the sample size is related to the result of the script bellow :*
+
+```{r}
+epi.ssninfb(treat = 0.35, control = 0.35, delta = 7, 
+            n = NA, r = 1, power = 0.8, alpha = 0.05)
+```
+
