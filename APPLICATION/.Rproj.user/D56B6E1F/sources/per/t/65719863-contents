@@ -4,13 +4,17 @@ library(shiny)
 library(shinydashboard)
 library(epiR)
 library(shinythemes)
-
+#J:/4-Méthodologiste/Antoine/logo-chu-poitiers_numerique.png
 
 # Define UI for application that draws a histogram
-ui <- dashboardPage(
+ui <- tags$body(
+  tags$img(src = "https://i.stack.imgur.com/IqerJ.png", width = '100%'),
+  dashboardPage(
     skin = "black",
     # Application title
-    dashboardHeader(title = "Poitiers Health Data"),
+    dashboardHeader(title = tags$img(src = "https://www.chu-poitiers.fr/wp-content/uploads/2022/02/Logo-Developpe-CHU-Poitiers_Couleurs.png",
+                                     style = 'height: 30px; width: 30px;'
+                                     )),
     dashboardSidebar(
         sidebarMenu(
             menuItem("Sample Size Calculator", tabName = "SSC", icon = icon("users",class ="fa-solid fa-users"))
@@ -31,12 +35,14 @@ ui <- dashboardPage(
                                     patient required for a clinical trial in order to ensure his 
                                     validity, accuracy, reliability, and integrity. Also to assure 
                                     that the intended trials will have a desired power for correctly 
-                                    detecting a clinically meaningful difference between studied groups.")),
+                                    detecting a clinically meaningful difference between studied groups."),
+                                    p("To get started, fill the instructions. Then click on the Result button. 
+                                      The number of patient needed in each group will be given.")),
                             
                             ##########################################
                             ############## PRESENTATION ##############
                             ##########################################
-                            tabPanel("CALCULATOR", box(title = "blabla",
+                            tabPanel("CALCULATOR", box(title = "Instructions",
                                                        p("Define a power i.e. a percentage of times the null hypothesis will be correctly rejected :"),
                                                        numericInput(inputId = "puissance",
                                                                     label = "Power (%)",
@@ -72,16 +78,17 @@ ui <- dashboardPage(
                                                        width = 5),
                                      box(title = "Number of individuals required per group : ",
                                          actionButton("go", "Result"),
-                                         verbatimTextOutput("text"), width = 5))
-                            
+                                         verbatimTextOutput("text"), width = 5),
+                                     box(title = "Table",
+                                         dataTableOutput("table_pred"))
+                                     )
+                            )
                         )
                     )
             )
         )
     )
-)
-
-
+  )
 
 
 
