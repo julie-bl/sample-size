@@ -1,5 +1,4 @@
-# sample-size
-#Application of sample size calculation
+# SAMPLE-SIZE
 
 
 <div style="text-align: justify">
@@ -7,21 +6,17 @@
 <p>This page is devoted to the calculation of the number of patient required for a clinical trial.This repositorie list a certain number of different sample size calculation methods and their associated R scripts. Each section are written and discussed by the community of methodologists and biostatisticians of the CHU of Poitiers.
 </p>
 
-# 1. REMINDERS
+## REMINDERS
 
-**Superiority**
+**Superiority :** Use to show that the experimental treatment is more effective than standard therapy.
 
-Use to show that the experimental treatment is more effective than standard therapy.
-
-**Non-inferiority**
-
-Use to show that the experimental treatment is as effective as standard therapy.
+**Non-inferiority :** Use to show that the experimental treatment is as effective as standard therapy.
 
 
-# 2. COMPARING MEANS
+## COMPARING MEANS
 
 <details>
-	<summary>## SUPERIORITY</summary>
+	<summary>SUPERIORITY</summary>
 	
 	*Code with an exemple: *
 	
@@ -51,7 +46,7 @@ Use to show that the experimental treatment is as effective as standard therapy.
 
 
 <details>
-	<summary>## NON-INFERIORITY</summary>
+	<summary>NON-INFERIORITY</summary>
 	
 	*Sample size for a randomised controlled non-inferiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. The average quality of life was 66 points with treatment B.Assuming an absolute non-inferiority margin of 7 points, with a standard deviantion of 23, with a one-sided alpha risk of 5% and a power of 80%, the sample size is related to the result of the script bellow :*
 	
@@ -75,13 +70,12 @@ Use to show that the experimental treatment is as effective as standard therapy.
 
 </details>	
 
-# 3. COMPARING PROPORTIONS
+## COMPARING PROPORTIONS
 
-## SUPERIORITY
 
 
 <details>
-	<summary>## SUPERIORITY</summary>
+	<summary>SUPERIORITY</summary>
 	
 	*Code with an exemple: *
 	
@@ -112,7 +106,7 @@ Use to show that the experimental treatment is as effective as standard therapy.
 
 
 <details>
-	<summary>## NON-INFERIORITY</summary>
+	<summary>NON-INFERIORITY</summary>
 		
 	*Code with an exemple :*
 	
