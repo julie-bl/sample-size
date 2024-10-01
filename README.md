@@ -1,13 +1,4 @@
----
-title: "SampleSize"
-output:
-  html_document:
-    toc: yes
-  word_document:
-    toc: yes
-  pdf_document:
-    toc: yes
----
+# SampleSize
 
 
 <div style="text-align: justify">
@@ -15,16 +6,16 @@ output:
 This page is devoted to the calculation of the number of patient required for a clinical trial.This repositorie list a certain number of different sample size calculation methods and their associated R scripts. Each section are written and discussed by the community of methodologists and biostatisticians of the CHU of Poitiers.
 
 
-<h3> REMINDERS </h3>
+## REMINDERS
 
 **Superiority :** Use to show that the experimental treatment is more effective than standard therapy.
 
 **Non-inferiority :** Use to show that the experimental treatment is as effective as standard therapy. <font color="red">WARNING : the results of the study can not be interpreted to show a superiority of the experimental treatment ! </font>
 
-<h3> COMPARING MEANS </h3>
+## COMPARING MEANS
 
-<p>For evaluation of the effect within a given treatment, the null hypothesis of interest is to test whether there is a significant difference in mean change from baseline to endpoint.
-</p>
+For evaluation of the effect within a given treatment, the null hypothesis of interest is to test whether there is a significant difference in mean change from baseline to endpoint.
+
 
 <details>
 	<summary>SUPERIORITY</summary>
