@@ -22,10 +22,10 @@ For evaluation of the effect within a given treatment, the null hypothesis of in
 	
 	*Code with an exemple: *
 	
-	<p> *Sample size for a randomised controlled superiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. The average quality of life was 66 points with treatment B compared to 72 points with treatment A. In order to highlight this absolute difference of 6 points, with a standard deviantion of 23, with a two-sided alpha risk of 5% and a power of 80%, the sample size is related to the result of the script bellow :*
-	</p>
+	*Sample size for a randomised controlled superiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. The average quality of life was 66 points with treatment B compared to 72 points with treatment A. In order to highlight this absolute difference of 6 points, with a standard deviantion of 23, with a two-sided alpha risk of 5% and a power of 80%, the sample size is related to the result of the script bellow :*
 	
-```{r}
+	
+```r
 library(epiR)
 		
 epi.sscompc(N = NA, treat = 66, control = 72, 
