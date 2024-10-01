@@ -33,17 +33,18 @@ epi.sscompc(N = NA, treat = 66, control = 72,
 			r = 1, design = 1, sided.test = 2, conf.level = 0.95)
 ```
 	
-	**Parameters :**
-	
-	* treat : mean expected in the experimental group
-	* control : mean expected in the control group
-	* sigma : standard deviation (commun for both group)
-	* n : number of subjects to include (experimental + control), define as NA
-	* power : power of the trial
-	* r : randomization ratio, number of patients of the experimental group divided by the number of patients of the control group
-	* design : estimated design effect
-	* sided.test : One-side test (=1), two-side test (=2) 
-	*	conf.level : Confidence level (1-α)
+Parameters :
+
+* treat : mean expected in the experimental group
+* control : mean expected in the control group
+* sigma : standard deviation (commun for both group)
+* n : number of subjects to include (experimental + control), define as NA
+* power : power of the trial
+* r : randomization ratio, number of patients of the experimental group divided by the number of patients of the control group
+* design : estimated design effect
+* sided.test : One-side test (=1), two-side test (=2) 
+*	conf.level : Confidence level (1-α)
+
 </summary>	
 </details>
 
