@@ -3,8 +3,8 @@
 
 <div style="text-align: justify">
 
-<p>This page is devoted to the calculation of the number of patient required for a clinical trial.This repositorie list a certain number of different sample size calculation methods and their associated R scripts. Each section are written and discussed by the community of methodologists and biostatisticians of the CHU of Poitiers.
-</p>
+This page is devoted to the calculation of the number of patient required for a clinical trial.This repositorie list a certain number of different sample size calculation methods and their associated R scripts. Each section are written and discussed by the community of methodologists and biostatisticians of the CHU of Poitiers.
+
 
 ## REMINDERS
 
