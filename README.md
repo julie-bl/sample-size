@@ -1,4 +1,13 @@
-# SAMPLE-SIZE
+---
+title: "SampleSize"
+output:
+  html_document:
+    toc: yes
+  word_document:
+    toc: yes
+  pdf_document:
+    toc: yes
+---
 
 
 <div style="text-align: justify">
@@ -6,14 +15,16 @@
 This page is devoted to the calculation of the number of patient required for a clinical trial.This repositorie list a certain number of different sample size calculation methods and their associated R scripts. Each section are written and discussed by the community of methodologists and biostatisticians of the CHU of Poitiers.
 
 
-## REMINDERS
+<h3> REMINDERS </h3>
 
 **Superiority :** Use to show that the experimental treatment is more effective than standard therapy.
 
-**Non-inferiority :** Use to show that the experimental treatment is as effective as standard therapy.
+**Non-inferiority :** Use to show that the experimental treatment is as effective as standard therapy. <font color="red">WARNING : the results of the study can not be interpreted to show a superiority of the experimental treatment ! </font>
 
+<h3> COMPARING MEANS </h3>
 
-## COMPARING MEANS
+<p>For evaluation of the effect within a given treatment, the null hypothesis of interest is to test whether there is a significant difference in mean change from baseline to endpoint.
+</p>
 
 <details>
 	<summary>SUPERIORITY</summary>
@@ -23,13 +34,13 @@ This page is devoted to the calculation of the number of patient required for a 
 	<p> *Sample size for a randomised controlled superiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. The average quality of life was 66 points with treatment B compared to 72 points with treatment A. In order to highlight this absolute difference of 6 points, with a standard deviantion of 23, with a two-sided alpha risk of 5% and a power of 80%, the sample size is related to the result of the script bellow :*
 	</p>
 	
-		```{r}
-		library(epiR)
+```{r}
+library(epiR)
 		
-		epi.sscompc(N = NA, treat = 66, control = 72, 
-					sigma = 23, n = NA, power = 0.8, 
-					r = 1, design = 1, sided.test = 2, conf.level = 0.95)
-		```
+epi.sscompc(N = NA, treat = 66, control = 72, 
+			sigma = 23, n = NA, power = 0.8, 
+			r = 1, design = 1, sided.test = 2, conf.level = 0.95)
+```
 	
 	**Parameters :**
 	
@@ -45,18 +56,17 @@ This page is devoted to the calculation of the number of patient required for a 
 	
 </details>
 
-
 <details>
 	<summary>NON-INFERIORITY</summary>
 	
 	<p> *Sample size for a randomised controlled non-inferiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. The average quality of life was 66 points with treatment B.Assuming an absolute non-inferiority margin of 7 points, with a standard deviantion of 23, with a one-sided alpha risk of 5% and a power of 80%, the sample size is related to the result of the script bellow :*
 	</p>
-	```{r}
-	library(epiR)
+```{r}
+library(epiR)
 	
-	epi.ssninfc(treat = 66, control = 66, sigma = 23, 
-				delta = 7, n = NA, power = 0.8, alpha = 0.05, r = 1)
-	```
+epi.ssninfc(treat = 66, control = 66, sigma = 23, 
+			delta = 7, n = NA, power = 0.8, alpha = 0.05, r = 1)
+```
 	
 	**Parameters :**
 	
@@ -71,7 +81,7 @@ This page is devoted to the calculation of the number of patient required for a 
 
 </details>	
 
-## COMPARING PROPORTIONS
+<h3> COMPARING PROPORTIONS </h3>
 
 
 
@@ -83,14 +93,14 @@ This page is devoted to the calculation of the number of patient required for a 
 	<p> *Sample size for a randomised controlled superiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. The proportion of patients with an episode of hypertension was 35% with the B treatment compared to 28% with treatment A. In order to highlight this absolute difference of 7%, with a two-sided alpha risk of 5% and a power of 80%, the sample size is related to the result of the script bellow :*
 	</p>
 	
-	```{r}
-	library(epiR)
-	
-	epi.sscohortc(N = NA, irexp1 = 0.35, irexp0 = 0.28, pexp = NA, n = NA, 
-				power = 0.80, r = 1, design = 1, sided.test = 2, 
-				finite.correction = FALSE, nfractional = FALSE, conf.level = 0.95)
-	
-	```
+```{r}
+library(epiR)
+
+epi.sscohortc(N = NA, irexp1 = 0.35, irexp0 = 0.28, pexp = NA, n = NA, 
+			power = 0.80, r = 1, design = 1, sided.test = 2, 
+			finite.correction = FALSE, nfractional = FALSE, conf.level = 0.95)
+
+```
 	
 	**Parameters :**
 	
@@ -114,10 +124,10 @@ This page is devoted to the calculation of the number of patient required for a 
 	<p> *Sample size for a randomised controlled non-inferiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. The proportion of patients with an episode of hypertension was 35% with the B treatment. Assuming an absolute non-inferiority margin of 5%, with a one-sided alpha risk of 5% and a power of 80%, the sample size is related to the result of the script bellow :*
 	</p>
 	
-	```{r}
-	epi.ssninfb(treat = 0.35, control = 0.35, delta = 7, 
-				n = NA, r = 1, power = 0.8, alpha = 0.05)
-	```
+```{r}
+epi.ssninfb(treat = 0.35, control = 0.35, delta = 7, 
+			n = NA, r = 1, power = 0.8, alpha = 0.05)
+```
 	
 	**Parameters :**
 	
@@ -130,3 +140,4 @@ This page is devoted to the calculation of the number of patient required for a 
 	* alpha : type I error
 
 </details>
+
