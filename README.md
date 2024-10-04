@@ -14,14 +14,14 @@ This page is devoted to the calculation of the number of patient required for a 
 
 ## COMPARING MEANS
 
-For evaluation of the effect within a given treatment, the null hypothesis of interest is to test whether there is a significant difference in mean change from baseline to endpoint.
+Evaluation of the effect within a given treatment, the null hypothesis of interest is to test whether there is a significant difference in mean change from baseline to endpoint.
 
 
 <details>
 <summary>SUPERIORITY</summary>
 <br>
 
-*Sample size for a randomised controlled superiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. The average quality of life was 66 points with treatment B compared to 72 points with treatment A. In order to highlight this absolute difference of 6 points, with a standard deviantion of 23, with a two-sided alpha risk of 5% and a power of 80%, the sample size is related to the result of the script bellow :*
+*Sample size for a randomised controlled superiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. The average quality of life was 66 points with treatment B compared to 72 points with treatment A. In order to highlight this absolute difference of 6 points, with a standard deviation of 23, with a two-sided alpha risk of 5% and a power of 80%, the sample size is related to the result of the script bellow :*
 
 	
 ```r
@@ -51,7 +51,7 @@ epi.sscompc(N = NA, treat = 66, control = 72,
 <summary>NON-INFERIORITY</summary>
 <br>
 
-*Sample size for a randomised controlled non-inferiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. The average quality of life was 66 points with treatment B. Assuming an absolute non-inferiority margin of 7 points, with a standard deviantion of 23, with a one-sided alpha risk of 5% and a power of 80%, the sample size is related to the result of the script bellow :*
+*Sample size for a randomised controlled non-inferiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. The average quality of life was 66 points with treatment B. Assuming an absolute non-inferiority margin of 7 points, with a standard deviation of 23, with a one-sided alpha risk of 5% and a power of 80%, the sample size is related to the result of the script bellow :*
 	
 ```r
 library(epiR)
@@ -75,6 +75,7 @@ epi.ssninfc(treat = 66, control = 66, sigma = 23,
 
 ## COMPARING PROPORTIONS
 
+Evaluation of treatment effect based on discrete clinical endpoint, the proportions of events that have occurred between treatment groups are compared.
 
 <details>
 <summary>SUPERIORITY</summary>
@@ -116,7 +117,7 @@ epi.sscohortc(N = NA, irexp1 = 0.35, irexp0 = 0.28, pexp = NA, n = NA,
 	
 	
 ```r
-epi.ssninfb(treat = 0.35, control = 0.35, delta = 0.07, 
+epi.ssninfb(treat = 0.35, control = 0.35, delta = 0.05, 
 			n = NA, r = 1, power = 0.8, alpha = 0.05)
 ```
 	
