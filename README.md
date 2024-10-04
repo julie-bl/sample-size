@@ -51,7 +51,7 @@ epi.sscompc(N = NA, treat = 66, control = 72,
 <summary>NON-INFERIORITY</summary>
 <br>
 
-*Sample size for a randomised controlled non-inferiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. The average quality of life was 66 points with treatment B.Assuming an absolute non-inferiority margin of 7 points, with a standard deviantion of 23, with a one-sided alpha risk of 5% and a power of 80%, the sample size is related to the result of the script bellow :*
+*Sample size for a randomised controlled non-inferiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. The average quality of life was 66 points with treatment B. Assuming an absolute non-inferiority margin of 7 points, with a standard deviantion of 23, with a one-sided alpha risk of 5% and a power of 80%, the sample size is related to the result of the script bellow :*
 	
 ```r
 library(epiR)
@@ -116,7 +116,7 @@ epi.sscohortc(N = NA, irexp1 = 0.35, irexp0 = 0.28, pexp = NA, n = NA,
 	
 	
 ```r
-epi.ssninfb(treat = 0.35, control = 0.35, delta = 7, 
+epi.ssninfb(treat = 0.35, control = 0.35, delta = 0.07, 
 			n = NA, r = 1, power = 0.8, alpha = 0.05)
 ```
 	
