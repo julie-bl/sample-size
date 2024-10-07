@@ -47,6 +47,9 @@ epi.sscompc(N = NA, treat = 66, control = 72,
 * sided.test : one-side test (=1), two-side test (=2) 
 * conf.level : confidence level (1-α)
 
+</summary>
+</details>	
+
 h4(NON-INFERIORITY)
 
 <details>
@@ -72,6 +75,7 @@ epi.ssninfc(treat = 66, control = 66, sigma = 23,
 * power : power of the trial
 * alpha : type I error
 * r : randomization ratio, number of patients of the experimental group divided by the number of patients of the control group
+
 </summary>
 </details>	
 
