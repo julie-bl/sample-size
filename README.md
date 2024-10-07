@@ -155,9 +155,9 @@ summary(designPlan)
 </summary>	
 </details>
 
-### NON-INFERIORITY
+&nbsp;&nbsp### NON-INFERIORITY
 
-<details>
+&nbsp;&nbsp;&nbsp;&nbsp;<details>
 <summary>Normal design</summary>
 <br>	
 
