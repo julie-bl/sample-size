@@ -17,7 +17,7 @@ library(shinyjs)
 
 ui <- fluidPage(
   useShinyjs(),
-  shinythemes::themeSelector(),
+  theme = shinytheme("flatly"),
   fluidRow(style = "height:100px",
            column(width = 3,
                   style = "height:100%",
@@ -30,21 +30,11 @@ ui <- fluidPage(
   fluidRow(
   navbarPage(title = icon("users",class ="fa-solid fa-users"),
              id = "hypMenu",
-             tabPanel(title = "READ ME",
-                      id = "RM",
-                      includeHTML("ReadMe.html")),
-             tabPanel(title = "CALCULATOR",
-                      id = "C",
-             tabsetPanel(
-
 # PAGE COMPARING PROPORTIONS --------------------------------------------------------------------------------------------
              tabPanel(title = "COMPARING PROPORTIONS",
                       id = "CP",
                       fluidRow(column(width = 12,
-                                      h3("COMPARING PROPORTIONS :"),
-                                      p("Evaluation of treatment effect based on discrete 
-                                      clinical endpoint, the proportions of events that have 
-                                      occurred between treatment groups are compared."))),
+                                      h3("COMPARING PROPORTIONS :"))),
                       br(),
                       sidebarLayout(
                         sidebarPanel(
@@ -65,14 +55,14 @@ ui <- fluidPage(
                                        step = 0.5),
                           conditionalPanel(
                             condition = "input.hypProp == 'superiority' || input.hypProp == 'non-inferiority'",
-                            h5("Define in % the proportion expected in the control group :"),
+                            h5("Proportion expected in the control group :"),
                             numericInput(inputId = "obsProp",
                                          label = "Control (%)",
                                          value = NULL,
                                          step = 0.005)),
                           conditionalPanel(
                             condition = "input.hypProp == 'superiority'",
-                            h5("Define in % the proportion expected in the experimental group :"),
+                            h5("Proportion expected in the experimental group :"),
                             numericInput(inputId = "prevProp",
                                          label = "Experimental (%)",
                                          value = NULL,
@@ -82,7 +72,7 @@ ui <- fluidPage(
                                         choices = c("two-sided", "one-sided"))),
                           conditionalPanel(
                             condition = "input.hypProp == 'non-inferiority'",
-                            h5("Define the absolute margin :"),
+                            h5("Absolute margin :"),
                             numericInput(inputId = "deltaProp",
                                          label = "Delta",
                                          value = NULL,
@@ -101,10 +91,7 @@ ui <- fluidPage(
              tabPanel(title = "COMPARING MEANS",
                       id = "CM",
                       fluidRow(column(width = 12,
-                                      h3("COMPARING MEANS"),
-                                      p("Evaluation of the effect within a given treatment, the 
-                                      null hypothesis of interest is to test whether there is a 
-                                      significant difference in mean change from baseline to endpoint."))),
+                                      h3("COMPARING MEANS"))),
                       br(),
                       sidebarLayout(
                         sidebarPanel(
@@ -114,25 +101,21 @@ ui <- fluidPage(
                           #when an item is selected, the next appear
                           numericInput(inputId = "powerMean",
                                        label = "Power (%)",
-                                       value = NULL,
-                                       max = 100,
-                                       min = 0),
+                                       value = NULL),
                           numericInput(inputId = "alphaMean",
                                        label = "Alpha (%)",
                                        value = NULL,
-                                       max = 20,
-                                       min = 0,
                                        step = 0.5),
                           conditionalPanel(
                             condition = "input.hypMean == 'superiority' || input.hypMean == 'non-inferiority'",
-                            h5("Define the mean expected in the control group :"),
+                            h5("Mean expected in the control group :"),
                             numericInput(inputId = "obsMean",
                                          label = "Control",
                                          value = NULL,
                                          step = 0.005)),
                           conditionalPanel(
                             condition = "input.hypMean == 'superiority'",
-                            h5("Define the mean expected in the experimental group :"),
+                            h5("Mean expected in the experimental group :"),
                             numericInput(inputId = "prevMean",
                                          label = "Experimental",
                                          value = NULL,
@@ -146,7 +129,7 @@ ui <- fluidPage(
                                        step = 0.005),
                           conditionalPanel(
                             condition = "input.hypMean == 'non-inferiority'",
-                            h5("Define the absolute margin :"),
+                            h5("Absolute margin :"),
                             numericInput(inputId = "deltaMean",
                                          label = "Delta",
                                          value = NULL,
@@ -154,15 +137,43 @@ ui <- fluidPage(
                           ), # sidebar panel
                         mainPanel(
                           actionButton("Mean", "Results"),
-                                  br(),
-                                  htmlOutput("mean"))
+                          br(),
+                          htmlOutput("mean"))
                         ) # sidebarLayout
-                      ) # Comparing means
-          ) # Page 
-)# fluidRow
-  ) # Page
+                      ), # Comparing means
+
+
+# PAGE BINARY EVENT PREDICTION ------------------------------------------------------------------------------------------
+            tabPanel(title = "BINARY EVENT PREDICTION",
+                     id = "BEP",
+                     fluidRow(column(width = 12,
+                                     h3("BINARY EVENT PREDICTION"))),
+                     br(),
+                     sidebarLayout(
+                       sidebarPanel(
+                         numericInput(inputId = "predictorsToTest",
+                                      label = "Number of potential predictors",
+                                      value = NULL,
+                                      step = 1),
+                         numericInput(inputId = "shrinkageExpected",
+                                      label = "Expected Shrinkage",
+                                      value = NULL,
+                                      step = 0.1),
+                         numericInput(inputId = "R2",
+                                      label = "anticipated R2 : expected predictive capacities",
+                                      value = NULL,
+                                      step = 0.01)
+                         ),
+                       mainPanel(
+                         actionButton("Pred", "Results"),
+                         br(),
+                         htmlOutput("prediction"))
+                       )
+                     )
 )
 )
+)
+
 
 
 
@@ -182,6 +193,7 @@ server <- function(input, output) {
 
   
   # sample size result of the computation -------------------------
+  # MEAN
   resMean <- eventReactive(input$Mean,{
     if(reactive(input$hypMean)()=='superiority')
       epi.sscompc(N = NA, treat = input$prevMean, control = input$obsMean, 
@@ -193,7 +205,7 @@ server <- function(input, output) {
       })
     
       
-  
+  # PROPORTION
   resProp <- eventReactive(input$Prop,{
     if(reactive(input$hypProp)()=='superiority')
       epi.sscohortc(N = NA, irexp1 = input$prevProp/100, irexp0 = input$obsProp/100, pexp = NA, n = NA, 
@@ -204,6 +216,10 @@ server <- function(input, output) {
                   n = NA, r = 1, power = input$powerProp/100, alpha = input$alphaProp/100)$n.treat
     })
   
+  # PREDICTIVE
+  resPred <- eventReactive(input$Pred,{
+    ceiling(input$predictorsToTest/((input$shrinkageExpected-1)*log(1-input$R2/input$shrinkageExpected)))
+  })
   
   # reactive example sentence -------------------------
   a <- eventReactive(input$Mean,{
@@ -211,15 +227,17 @@ server <- function(input, output) {
     paste0("This sample size is for a randomised controlled superiority trial in two parallel groups 
            experimental treatment versus control treatment with balanced randomisation (ratio 1 :1) for a binary 
            endpoint. The mean of the criteria is ",input$prevMean," with experimental treatment compared to
-           ",input$obsMean," with control treatment. In order to highlight this absolute erence of 
+           ",input$obsMean," with control treatment. In order to highlight this absolute difference of 
            ",abs(input$prevMean-input$obsMean),", with a standard deviation of ",input$sigmaMean,", with a "
-           ,input$sidetestMean," alpha risk of ",input$alphaMean,"% and a power of ",input$powerMean,"%.")
+           ,input$sidetestMean," alpha risk of ",input$alphaMean,"% and a power of ",input$powerMean,"%,
+           the needed sample size is ",resMean(), " patients in each group.")
     else
       paste0("This sample size for a randomised controlled non-inferiority trial in two parallel groups experimental 
              treatment versus control treatment with balanced randomisation (ratio 1 :1) for a binary endpoint. 
              The mean of the criteria is ",input$obsMean," with treatment A. Assuming an absolute non-inferiority margin 
              of ",input$deltaMean,", with a standard deviation of ",input$sigmaMean,", with a one-sided alpha risk of "
-             ,input$alphaMean,"% and a power of ",input$powerMean,"%.")
+             ,input$alphaMean,"% and a power of ",input$powerMean,"%, the needed sample size is ",resMean(), "
+              patients in each group.")
       
       })
   
@@ -230,20 +248,26 @@ server <- function(input, output) {
            proportion of patient with the criteria is ",input$prevProp,"% with experimental treatment compared to 
            ",input$obsProp,"% with control treatment. In order to highlight this absolute difference of 
            ",abs(input$prevProp-input$obsProp),"%, with a ",input$sidedtestProp," alpha risk of ",input$alphaProp,"% and 
-           a power of ",input$powerProp,"%.")
+           a power of ",input$powerProp,"%, the needed sample size is ",resMean(), " patients in each group.")
     else
-      paste0("This sample size for a randomised controlled non-inferiority trial in two parallel groups experimental 
+      paste0("This sample size is for a randomised controlled non-inferiority trial in two parallel groups experimental 
              treatment versus control treatment with balanced randomisation (ratio 1 :1) for a binary endpoint. 
              The proportion of patients with the criteria is ",input$prevProp,"% with the control treatment. Assuming an 
              absolute non-inferiority margin of ",input$deltaProp,"%, with a one-sided alpha risk of 5% and a power 
-             of ",input$powerProp,"%.")
+             of ",input$powerProp,"%, the needed sample size is ",resMean(), " patients in each group.")
       })
+  
+  c <- eventReactive(input$Pred,{
+    paste0("This sample size is for developing a logistic regression model based on up to ",input$input$predictorsToTest," candidate 
+           predictors, with an anticipated R2 of at least ",input$R2,", and to target an expected 
+           shrinkage of ",input$shrinkageExpected,"(equation 11 in Riley et al. Statistics in Medicine. 2019;38:1276–1296).")
+    })
   
   
   # display the result -------------------------
-  output$mean <- renderText(paste("The needed sample size is <b>",resMean(), "</b> patients in each group. ", a()))
-  output$proportion <- renderText(paste0("The needed sample size is <b>",resProp(), "</b> patients in each group. ", b()))
-  
+  output$mean <- renderText(paste("<p>The needed sample size is <b>",resMean(), "</b> patients in each group. </p>", a()))
+  output$proportion <- renderText(paste0("<p>The needed sample size is <b>",resProp(), "</b> patients in each group. </p>", b()))
+  output$prediction <- renderText(paste0("<p>The needed sample size is <b>",resPred(), "</b> patients. </p>", c()))
 }
 
 # Run the application
