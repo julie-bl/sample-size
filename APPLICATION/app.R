@@ -21,18 +21,16 @@ ui <- fluidPage(
   fluidRow(style = "height:100px",
            column(width = 3,
                   style = "height:100%",
-                  tags$img(src = "logo-Horizontal-CHU-poitiers_Couleurs.png",
-                    style = 'height: 100%')),
+                  tags$a(href='https://chu-poitiers.fr',
+                         tags$img(src='LogoCHU.png', height = "100%" , align="left"))),
            column(width = 9,
                   style="height: 100%",
                   includeHTML("appName.html"))
            ),
   fluidRow(
   navbarPage(title = icon("users",class ="fa-solid fa-users"),
-             id = "hypMenu",
 # PAGE COMPARING PROPORTIONS --------------------------------------------------------------------------------------------
              tabPanel(title = "COMPARING PROPORTIONS",
-                      id = "CP",
                       fluidRow(column(width = 12,
                                       h3("COMPARING PROPORTIONS :"))),
                       br(),
@@ -89,7 +87,6 @@ ui <- fluidPage(
 # PAGE COMPARING MEANS --------------------------------------------------------------------------------------------------
 
              tabPanel(title = "COMPARING MEANS",
-                      id = "CM",
                       fluidRow(column(width = 12,
                                       h3("COMPARING MEANS"))),
                       br(),
@@ -145,7 +142,6 @@ ui <- fluidPage(
 
 # PAGE BINARY EVENT PREDICTION ------------------------------------------------------------------------------------------
             tabPanel(title = "BINARY EVENT PREDICTION",
-                     id = "BEP",
                      fluidRow(column(width = 12,
                                      h3("BINARY EVENT PREDICTION"))),
                      br(),
@@ -184,7 +180,7 @@ ui <- fluidPage(
 
 server <- function(input, output) {
   
-  # convert to numeric value -------------------------
+  # convert to numeric value --------------------------------------
   # "one-sided" <- 1
   # "tow-sided" <- 2
   stMean <- reactive( if (reactive(input$sidetestMean)()=="one-sided") 1 else 2 )

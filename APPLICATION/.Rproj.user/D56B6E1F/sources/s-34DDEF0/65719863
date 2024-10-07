@@ -2,18 +2,18 @@
     "collab_server" : "",
     "contents" : "",
     "created" : 1713519859357.000,
-    "dirty" : true,
+    "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
     "hash" : "0",
     "id" : "65719863",
-    "lastKnownWriteTime" : 1728293030,
-    "last_content_update" : 1728293281344,
+    "lastKnownWriteTime" : 1728305848,
+    "last_content_update" : 1728305848085,
     "path" : "J:/4-Méthodologiste/Antoine/GITHUB/sample-size/APPLICATION/app.R",
     "project_path" : "app.R",
     "properties" : {
-        "cursorPosition" : "162,94",
-        "scrollLine" : "134"
+        "cursorPosition" : "28,13",
+        "scrollLine" : "8"
     },
     "read_only" : false,
     "read_only_alternatives" : [
