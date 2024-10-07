@@ -19,7 +19,7 @@ R users can also perform the predictions inside R by following the instructions 
 
 Evaluation of the effect within a given treatment, the null hypothesis of interest is to test whether there is a significant difference in mean change from baseline to endpoint.
 
-SUPERIORITY
+### SUPERIORITY
 <details>
 <summary>Normal design</summary>
 <br>
@@ -50,7 +50,7 @@ epi.sscompc(N = NA, treat = 66, control = 72,
 </summary>
 </details>	
 
-h4(NON-INFERIORITY)
+### NON-INFERIORITY
 
 <details>
 <summary>Normal design</summary>
@@ -83,7 +83,7 @@ epi.ssninfc(treat = 66, control = 66, sigma = 23,
 
 Evaluation of treatment effect based on discrete clinical endpoint, the proportions of events that have occurred between treatment groups are compared.
 
-SUPERIORITY
+### SUPERIORITY
 
 <details>
 <summary>Normal design</summary>
@@ -155,7 +155,7 @@ summary(designPlan)
 </summary>	
 </details>
 
-NON-INFERIORITY
+### NON-INFERIORITY
 
 <details>
 <summary>Normal design</summary>
