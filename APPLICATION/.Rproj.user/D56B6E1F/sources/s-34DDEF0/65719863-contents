@@ -32,7 +32,7 @@ ui <- fluidPage(
 # PAGE COMPARING PROPORTIONS --------------------------------------------------------------------------------------------
              tabPanel(title = "COMPARING PROPORTIONS",
                       fluidRow(column(width = 12,
-                                      h3("COMPARING PROPORTIONS :"))),
+                                      h3("COMPARING PROPORTIONS"))),
                       br(),
                       sidebarLayout(
                         sidebarPanel(
@@ -165,7 +165,8 @@ ui <- fluidPage(
                          br(),
                          htmlOutput("prediction"))
                        )
-                     )
+                     ) # BINARY EVENT PREDICTION
+
 )
 )
 )

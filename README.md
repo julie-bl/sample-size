@@ -19,9 +19,9 @@ R users can also perform the predictions inside R by following the instructions 
 
 Evaluation of the effect within a given treatment, the null hypothesis of interest is to test whether there is a significant difference in mean change from baseline to endpoint.
 
-
+SUPERIORITY
 <details>
-<summary>SUPERIORITY</summary>
+<summary>Normal design</summary>
 <br>
 
 *Sample size for a randomised controlled superiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. The average quality of life was 66 points with treatment B compared to 72 points with treatment A. In order to highlight this absolute difference of 6 points, with a standard deviation of 23, with a two-sided alpha risk of 5% and a power of 80%, the sample size is related to the result of the script bellow :*
@@ -44,14 +44,13 @@ epi.sscompc(N = NA, treat = 66, control = 72,
 * power : power of the trial
 * r : randomization ratio, number of patients of the experimental group divided by the number of patients of the control group
 * design : estimated design effect
-* sided.test : One-side test (=1), two-side test (=2) 
-*	conf.level : Confidence level (1-α)
+* sided.test : one-side test (=1), two-side test (=2) 
+* conf.level : confidence level (1-α)
 
-</summary>	
-</details>
+h4(NON-INFERIORITY)
 
 <details>
-<summary>NON-INFERIORITY</summary>
+<summary>Normal design</summary>
 <br>
 
 *Sample size for a randomised controlled non-inferiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. The average quality of life was 66 points with treatment B. Assuming an absolute non-inferiority margin of 7 points, with a standard deviation of 23, with a one-sided alpha risk of 5% and a power of 80%, the sample size is related to the result of the script bellow :*
@@ -80,8 +79,10 @@ epi.ssninfc(treat = 66, control = 66, sigma = 23,
 
 Evaluation of treatment effect based on discrete clinical endpoint, the proportions of events that have occurred between treatment groups are compared.
 
+SUPERIORITY
+
 <details>
-<summary>SUPERIORITY</summary>
+<summary>Normal design</summary>
 <br>
 
 	
@@ -110,9 +111,50 @@ epi.sscohortc(N = NA, irexp1 = 0.35, irexp0 = 0.28, pexp = NA, n = NA,
 </summary>
 </details>
 
+</summary>	
+</details>
 
 <details>
-<summary>NON-INFERIORITY</summary>
+<summary>Sequential design</summary>
+<br>
+
+*The prevalence of infections at 30 days is assumed to be 15% in the population and a relative reduction of at least 25% in the experimental population (prevalence of 11.25%). By planning 2 intermediate efficacy analyses and using the O'Brien-Fleming method to take into account the repetition of the tests (inflation of the risk of the first kind), the final analysis should be carried out on 2,588 patients (1,294 patients per group) in order to respect an overall risk of the first kind equal to 5% (two-sided) and a power of 80%. The first and second intermediate analyses would be performed on 864 and 1726 patients respectively, i.e. 33 and 66% of the maximum number of patients, the sample size is related to the result of the script bellow :*
+
+```r
+library("rpact")
+		
+design <- getDesignGroupSequential(typeOfDesign = "OF", 
+                informationRates = c(1/3, 2/3, 1), alpha = alpha, beta = 1-power, sided = 2)
+
+designPlan <- getSampleSizeRates(design, riskRatio = FALSE, thetaH0 = 0,
+                   normalApproximation = TRUE, pi1 = p1, pi2 = p2, groups = 2,
+                   allocationRatioPlanned = 1)
+
+summary(designPlan)
+```
+
+**Parameters :**
+
+* typeOfDesign : type of design
+* informationRates : information rates
+* alpha : significance level alpha
+* beta : type II error rate
+* sided : one-side test (=1), two-side test (=2)
+* riskRatio : one-side test (=TRUE), two-side test (=FALSE)
+* thetaH0 : non-inferiority bound when ≠ 0
+* normalApproximation : one treatment group is calculated exactly using the binomial distribution (=FALSE), else (=FALSE)
+* pi1 : assumed probability in the experimental treatment group
+* pi2 : assumed probability in the control treatment group
+* groups: the number of treatment groups
+* allocationRatioPlanned : planned allocation ratio (n1/n2)
+
+</summary>	
+</details>
+
+NON-INFERIORITY
+
+<details>
+<summary>Normal design</summary>
 <br>	
 
 	
