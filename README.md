@@ -5,7 +5,7 @@
 
 This page is devoted to the calculation of the number of patient required for a clinical trial.This repositorie list a certain number of different sample size calculation methods and their associated R scripts. Each section are written and discussed by the community of methodologists and biostatisticians of the CHU of Poitiers.
 
-Click [here](https://poitiers-health-data.shinyapps.io/SampleSize/) to access the online calculator.\
+Click [here](https://poitiers-health-data.shinyapps.io/SampleSize/){target="_blank"} to access the online calculator.\
 R users can also perform the predictions inside R by following the instructions below.
 
 
