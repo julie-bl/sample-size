@@ -5,6 +5,9 @@
 
 This page is devoted to the calculation of the number of patient required for a clinical trial.This repositorie list a certain number of different sample size calculation methods and their associated R scripts. Each section are written and discussed by the community of methodologists and biostatisticians of the CHU of Poitiers.
 
+Click [here](https://poitiers-health-data.shinyapps.io/SampleSize/) to access the online calculator.\
+R users can also perform the predictions inside R by following the instructions below.
+
 
 ## REMINDERS
 
@@ -141,7 +144,7 @@ Creation of a predictive tool that return the probability of a future event base
 <summary>Example</summary>
 <br>	
 
-*Sample size for developing a logistic regression model based on up to  candidate 34 predictors, with an anticipated R2 of at least 0.25, and to target an expected shrinkage of 0.9(equation 11 in Riley et al. Statistics in Medicine. 2019;38:1276–1296).") :*
+*Sample size for developing a logistic regression model based on up to  candidate 34 predictors, with an anticipated R2 of at least 0.25, and to target an expected shrinkage of 0.9(equation 11 in Riley et al. Statistics in Medicine. 2019;38:1276–1296)."), the sample size is related to the result of the script bellow:*
 
 ```r
 ceiling(34/((0.9-1)*log(1-0.25/0.9)))
