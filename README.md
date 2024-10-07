@@ -135,6 +135,12 @@ epi.ssninfb(treat = 0.35, control = 0.35, delta = 0.05,
 
 ## BINARY EVENT PREDICTION
 
+Creation of a predictive tool that return the probability of a future event based on factors in order to inform clinical diagnosis and prognosis in healthcare.
+
+<details>
+<summary>Example</summary>
+<br>	
+
 *Sample size for developing a logistic regression model based on up to  candidate 34 predictors, with an anticipated R2 of at least 0.25, and to target an expected shrinkage of 0.9(equation 11 in Riley et al. Statistics in Medicine. 2019;38:1276–1296).") :*
 
 ```r
@@ -143,7 +149,8 @@ ceiling(34/((0.9-1)*log(1-0.25/0.9)))
 
 **Parameters :**
 
-*34 : number of potential predictors
-*0.9  : expected shrinkage
-*0.25 : expected predictive capacities
+* 34 : number of potential predictors
+* 0.9  : expected shrinkage
+* 0.25 : expected predictive capacities
 
+</details>
