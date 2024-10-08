@@ -55,7 +55,12 @@ epi.sscompc(N = NA, treat = 66, control = 72,
 <summary>Sequential design</summary>
 <br>
 
-*The prevalence of infections at 30 days is assumed to be 15% in the population and a relative reduction of at least 25% in the experimental population (prevalence of 11.25%). By planning 2 intermediate efficacy analyses and using the O'Brien-Fleming method to take into account the repetition of the tests (inflation of the risk of the first kind), the final analysis should be carried out on 2,588 patients (1,294 patients per group) in order to respect an overall risk of the first kind equal to 5% (two-sided) and a power of 80%. The first and second intermediate analyses would be performed on 864 and 1726 patients respectively, i.e. 33 and 66% of the maximum number of patients, the sample size is related to the result of the script bellow :*
+*Sample size for a randomised controlled superiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. 
+The average quality of life was 66 points with treatment B compared to 72 points with treatment A. In order to highlight this absolute difference of 6 points, with a standard deviation of 23, 
+and by planning 2 intermediate efficacy analyses and using the O'Brien-Fleming method to take into account the repetition of the tests (inflation of the risk of the first kind), the final analysis should be 
+carried out on 2,588 patients (1,294 patients per group) in order to respect an overall risk of the first kind equal to 5% (two-sided) and a power of 80%. 
+The first and second intermediate analyses would be performed on 864 and 1726 patients respectively, i.e. 33 and 66% of the 
+maximum number of patients, the sample size is related to the result of the script bellow :*
 
 ```r
 library("rpact")
@@ -63,8 +68,8 @@ library("rpact")
 design <- getDesignGroupSequential(typeOfDesign = "OF", 
                 informationRates = c(1/3, 2/3, 1), alpha = alpha, beta = 1-power, sided = 2)
 
-designPlan <- getSampleSizeRates(design, riskRatio = FALSE, thetaH0 = 0,
-                   normalApproximation = TRUE, pi1 = p1, pi2 = p2, groups = 2,
+designPlan <- getSampleSizeMeans(design, riskRatio = FALSE, thetaH0 = 0,
+                   normalApproximation = TRUE, pi1 = p1, pi2 = p2, groups = 2, stDev = 23,
                    allocationRatioPlanned = 1)
 
 summary(designPlan)
