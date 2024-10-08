@@ -75,3 +75,36 @@ designPlan <- getSampleSizeMeans(design, meanRatio = FALSE, thetaH0 = 0,
                                  allocationRatioPlanned = 1)
 
 summary(designPlan) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+design <- getDesignGroupSequential(typeOfDesign = "OF", 
+                                   informationRates = c(1/3, 2/3, 1), alpha = alpha, beta = 1-power, sided = 2)
+
+designPlan <- getSampleSizeRates(design, riskRatio = FALSE, thetaH0 = 0,
+                                 normalApproximation = TRUE, pi1 = 66, pi2 = 72, groups = 2,
+                                 allocationRatioPlanned = 1, stDev = 23)
+
+summary(designPlan) 

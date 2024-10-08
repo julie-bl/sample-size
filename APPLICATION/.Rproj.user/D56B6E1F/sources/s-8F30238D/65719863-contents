@@ -74,7 +74,7 @@ ui <- fluidPage(
                             numericInput(inputId = "deltaProp",
                                          label = "Delta",
                                          value = NULL,
-                                         step = 0,005))
+                                         step = 0.005))
                           ),
                         mainPanel(
                           actionButton(inputId = "Prop", label =  "Results"),
@@ -245,13 +245,13 @@ server <- function(input, output) {
            proportion of patient with the criteria is ",input$prevProp,"% with experimental treatment compared to 
            ",input$obsProp,"% with control treatment. In order to highlight this absolute difference of 
            ",abs(input$prevProp-input$obsProp),"%, with a ",input$sidedtestProp," alpha risk of ",input$alphaProp,"% and 
-           a power of ",input$powerProp,"%, the needed sample size is ",resMean(), " patients in each group.")
+           a power of ",input$powerProp,"%, the needed sample size is ",resProp(), " patients in each group.")
     else
       paste0("This sample size is for a randomised controlled non-inferiority trial in two parallel groups experimental 
              treatment versus control treatment with balanced randomisation (ratio 1 :1) for a binary endpoint. 
              The proportion of patients with the criteria is ",input$prevProp,"% with the control treatment. Assuming an 
              absolute non-inferiority margin of ",input$deltaProp,"%, with a one-sided alpha risk of 5% and a power 
-             of ",input$powerProp,"%, the needed sample size is ",resMean(), " patients in each group.")
+             of ",input$powerProp,"%, the needed sample size is ",resProp(), " patients in each group.")
       })
   
   c <- eventReactive(input$Pred,{

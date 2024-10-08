@@ -20,6 +20,7 @@ R users can also perform the predictions inside R by following the instructions 
 Evaluation of the effect within a given treatment, the null hypothesis of interest is to test whether there is a significant difference in mean change from baseline to endpoint.
 
 ### &nbsp;&nbsp;&nbsp;&nbsp;SUPERIORITY
+
 <details>
 <summary>Normal design</summary>
 <br>
@@ -49,6 +50,43 @@ epi.sscompc(N = NA, treat = 66, control = 72,
 
 </summary>
 </details>	
+
+<details>
+<summary>Sequential design</summary>
+<br>
+
+*The prevalence of infections at 30 days is assumed to be 15% in the population and a relative reduction of at least 25% in the experimental population (prevalence of 11.25%). By planning 2 intermediate efficacy analyses and using the O'Brien-Fleming method to take into account the repetition of the tests (inflation of the risk of the first kind), the final analysis should be carried out on 2,588 patients (1,294 patients per group) in order to respect an overall risk of the first kind equal to 5% (two-sided) and a power of 80%. The first and second intermediate analyses would be performed on 864 and 1726 patients respectively, i.e. 33 and 66% of the maximum number of patients, the sample size is related to the result of the script bellow :*
+
+```r
+library("rpact")
+		
+design <- getDesignGroupSequential(typeOfDesign = "OF", 
+                informationRates = c(1/3, 2/3, 1), alpha = alpha, beta = 1-power, sided = 2)
+
+designPlan <- getSampleSizeRates(design, riskRatio = FALSE, thetaH0 = 0,
+                   normalApproximation = TRUE, pi1 = p1, pi2 = p2, groups = 2,
+                   allocationRatioPlanned = 1)
+
+summary(designPlan)
+```
+
+**Parameters :**
+
+* typeOfDesign : type of design
+* informationRates : information rates
+* alpha : significance level alpha
+* beta : type II error rate
+* sided : one-side test (=1), two-side test (=2)
+* riskRatio : one-side test (=TRUE), two-side test (=FALSE)
+* thetaH0 : non-inferiority bound when ≠ 0
+* normalApproximation : one treatment group is calculated exactly using the binomial distribution (=FALSE), else (=FALSE)
+* pi1 : assumed probability in the experimental treatment group
+* pi2 : assumed probability in the control treatment group
+* groups: the number of treatment groups
+* allocationRatioPlanned : planned allocation ratio (n1/n2)
+
+</summary>	
+</details>
 
 ### &nbsp;&nbsp;&nbsp;&nbsp;NON-INFERIORITY
 
@@ -128,10 +166,10 @@ epi.sscohortc(N = NA, irexp1 = 0.35, irexp0 = 0.28, pexp = NA, n = NA,
 library("rpact")
 		
 design <- getDesignGroupSequential(typeOfDesign = "OF", 
-                informationRates = c(1/3, 2/3, 1), alpha = alpha, beta = 1-power, sided = 2)
+                informationRates = c(1/3, 2/3, 1), alpha = 0.05, beta = 1-0.8, sided = 2)
 
 designPlan <- getSampleSizeRates(design, riskRatio = FALSE, thetaH0 = 0,
-                   normalApproximation = TRUE, pi1 = p1, pi2 = p2, groups = 2,
+                   normalApproximation = TRUE, pi1 = 0.15*0.75, pi2 = 0.15, groups = 2,
                    allocationRatioPlanned = 1)
 
 summary(designPlan)
@@ -158,7 +196,7 @@ summary(designPlan)
 ### &nbsp;&nbsp;&nbsp;&nbsp;NON-INFERIORITY
 
 <details>
-&nbsp;&nbsp;&nbsp;&nbsp;<summary>Normal design</summary>
+<summary>Normal design</summary>
 <br>	
 
 	
