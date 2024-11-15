@@ -59,7 +59,7 @@ epi.sscompc(N = NA, treat = 66, control = 72,
 The average quality of life was 66 points with treatment B compared to 72 points with treatment A. In order to highlight this absolute difference of 6 points, with a standard deviation of 23, 
 and by planning 2 intermediate efficacy analyses and using the O'Brien-Fleming method to take into account the repetition of the tests (inflation of the risk of the first kind), the final analysis should be 
 carried out on 2,588 patients (1,294 patients per group) in order to respect an overall risk of the first kind equal to 5% (two-sided) and a power of 80%. 
-The first and second intermediate analyses would be performed on 864 and 1726 patients respectively, i.e. 33 and 66% of the 
+The first and second intermediate analyses would be performed on 863 and 1726 patients respectively, i.e. 33 and 66% of the 
 maximum number of patients, the sample size is related to the result of the script bellow :*
 
 ```r
@@ -99,7 +99,9 @@ summary(designPlan)
 <summary>Normal design</summary>
 <br>
 
-*Sample size for a randomised controlled non-inferiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. The average quality of life was 66 points with treatment B. Assuming an absolute non-inferiority margin of 7 points, with a standard deviation of 23, with a one-sided alpha risk of 5% and a power of 80%, the sample size is related to the result of the script bellow :*
+*Sample size for a randomised controlled non-inferiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. 
+The average quality of life was 66 points with treatment B. Assuming an absolute non-inferiority margin of 7 points, with a standard deviation of 23, with a one-sided alpha risk of 5% and a power of 80%, 
+the sample size is related to the result of the script bellow :*
 	
 ```r
 library(epiR)
@@ -120,7 +122,8 @@ epi.ssninfc(treat = 66, control = 66, sigma = 23,
 * r : randomization ratio, number of patients of the experimental group divided by the number of patients of the control group
 
 </summary>
-</details>	
+</details>
+
 
 ## COMPARING PROPORTIONS
 
@@ -205,7 +208,9 @@ summary(designPlan)
 <br>	
 
 	
-*Sample size for a randomised controlled non-inferiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. The proportion of patients with an episode of hypertension was 35% with the B treatment. Assuming an absolute non-inferiority margin of 5%, with a one-sided alpha risk of 5% and a power of 80%, the sample size is related to the result of the script bellow :*
+*Sample size for a randomised controlled non-inferiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. 
+The proportion of patients with an episode of hypertension was 35% with the B treatment. Assuming an absolute non-inferiority margin of 5%, with a one-sided alpha risk of 5% and a power of 80%, 
+the sample size is related to the result of the script bellow :*
 	
 	
 ```r
