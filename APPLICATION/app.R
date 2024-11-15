@@ -218,7 +218,7 @@ server <- function(input, output) {
   a <- eventReactive(input$Mean,{
     if(reactive(input$hypMean)()=='superiority')
     paste0("This sample size is for a randomised controlled superiority trial in two parallel groups 
-           experimental treatment versus control treatment with balanced randomisation (ratio 1 :1) for a binary 
+           experimental treatment versus control treatment with balanced randomisation (ratio 1 :1) for a continuous 
            endpoint. The mean of the criteria is ",input$prevMean," with experimental treatment compared to
            ",input$obsMean," with control treatment. In order to highlight this absolute difference of 
            ",abs(input$prevMean-input$obsMean),", with a standard deviation of ",input$sigmaMean,", with a "
@@ -226,7 +226,7 @@ server <- function(input, output) {
            the needed sample size is ",resMean(), " patients in each group.")
     else
       paste0("This sample size for a randomised controlled non-inferiority trial in two parallel groups experimental 
-             treatment versus control treatment with balanced randomisation (ratio 1 :1) for a binary endpoint. 
+             treatment versus control treatment with balanced randomisation (ratio 1 :1) for a continuous endpoint. 
              The mean of the criteria is ",input$obsMean," with treatment A. Assuming an absolute non-inferiority margin 
              of ",input$deltaMean,", with a standard deviation of ",input$sigmaMean,", with a one-sided alpha risk of "
              ,input$alphaMean,"% and a power of ",input$powerMean,"%, the needed sample size is ",resMean(), "
