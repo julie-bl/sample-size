@@ -1,4 +1,4 @@
-# SampleSiz
+# SampleSize
 
 
 <div style="text-align: justify">
