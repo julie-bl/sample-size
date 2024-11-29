@@ -3,15 +3,13 @@
 
 <div style="text-align: justify">
 
-This page is devoted to the calculation of the number of patients required for several studies such as an randomized clinical trial (RCT) for causal inference or a cohort for constructing or validating a predictive tool. R codes are proposed. We can click [here](https://poitiers-health-data.shinyapps.io/SampleSize/) to access to the related user-friendly calculatos.
+This page is devoted to the calculation of the number of patients required for several studies such as an randomized clinical trial (RCT) for causal inference or a cohort for constructing or validating a predictive tool. R codes are proposed. We can click [here](https://poitiers-health-data.shinyapps.io/SampleSize/) to access to the related user-friendly calculators. Some reminders:
 
-## REMINDERS
+* **Superiority RCT:** Use to demonstrate that the experimental treatment is more effective than standard therapy.
 
-**Superiority RCT:** Use to demonstrate that the experimental treatment is more effective than standard therapy.
+* **Non-inferiority RCT:** Use to demonstrate that the experimental treatment is as effective as standard therapy.
 
-**Non-inferiority RCT:** Use to demonstrate that the experimental treatment is as effective as standard therapy.
-
-**Sequential RCT:** Intermediate analyses are planned for early stopping the study, for instance for efficacy or futility.
+* **Sequential RCT:** Intermediate analyses are planned for early stopping the study, for instance for efficacy or futility.
 
 ## COMPARING TWO MEANS
 
