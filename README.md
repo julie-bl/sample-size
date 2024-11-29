@@ -1,107 +1,295 @@
-The ‘survivalmodels’ package
-================
+# Estimation of the recquired sample size in RCT
 
-## What is the ‘survivalmodels’ package?
 
-The `survivalmodels` package implements neural networks from the Python
-packages [pycox](https://github.com/havakv/pycox). Importantly, this a
-lighter but CRAN-compatible version of the ‘survivalmodels’ package
-proposed by Raphael Sonabend based on the version 0.1.19. The complete
-and updated version is available at this
-[link](https://github.com/RaphaelS1/survivalmodels).
+<div style="text-align: justify">
 
-## Basic Usage
+This page is devoted to the calculation of the number of patients required for a randomized clinical trial (RCT) by using R. Click [here](https://poitiers-health-data.shinyapps.io/SampleSize/) to access the online calculator with no code.
 
-``` r
-# load dependencies
-library(survival)
+## REMINDERS
 
-train <- simsurvdata(200)
+**Superiority :** Use to show that the experimental treatment is more effective than standard therapy.
 
-# Fit the survival neural network
-fit <- deepsurv(Surv(time, status) ~ ., data = train, frac = 0.3, activation = "relu",
-    num_nodes = c(4L, 8L, 4L, 2L), dropout = 0.1, early_stopping = TRUE, epochs = 100L,
-    batch_size = 32L)
+**Non-inferiority :** Use to show that the experimental treatment is as effective as standard therapy.
 
-# Return survivals for two independent individuals
-test <- simsurvdata(1)
-predict(fit, newdata = test)
-#>   3.33999991416931 3.34299993515015 3.38000011444092 3.38899993896484
-#> 0           0.9929           0.9858           0.9786           0.9715
-#>   3.43600010871887 3.45600008964539 3.47300004959106 3.48600006103516
-#> 0           0.9644           0.9573           0.9502           0.9431
-#>   3.49499988555908 3.49900007247925 3.50300002098083 3.50799989700317
-#> 0           0.9359           0.9218           0.9146           0.9075
-#>   3.52600002288818 3.53500008583069 3.53699994087219 3.54699993133545
-#> 0           0.9004           0.8933           0.8862           0.8791
-#>   3.58899998664856 4.65999984741211 4.68200016021729 4.79400014877319
-#> 0           0.8719           0.8648           0.8577           0.8506
-#>   4.84000015258789 4.89699983596802 4.93200016021729 4.93699979782104
-#> 0           0.8435           0.8363           0.8292           0.8221
-#>   4.94500017166138 4.95900011062622 4.96199989318848 4.98600006103516
-#> 0            0.815           0.8079           0.8008           0.7936
-#>   4.98899984359741 4.99499988555908 4.99700021743774 5.00400018692017
-#> 0           0.7865           0.7794           0.7723           0.7652
-#>   5.00799989700317 5.01000022888184 5.02299976348877 5.02600002288818
-#> 0           0.7581           0.7439           0.7368           0.7296
-#>   5.02799987792969 5.07200002670288 5.18400001525879 5.30700016021729
-#> 0           0.7225           0.7154           0.7083           0.7012
-#>   5.34200000762939 5.35099983215332 5.35500001907349 5.3600001335144
-#> 0           0.6941           0.6869           0.6798          0.6727
-#>   5.36100006103516 5.38600015640259 5.39599990844727 5.40999984741211
-#> 0           0.6656           0.6585           0.6513           0.6442
-#>   5.41300010681152 5.42700004577637 5.42899990081787 5.43400001525879
-#> 0           0.6371             0.63           0.6229           0.6158
-#>   5.43699979782104 5.44700002670288 5.46700000762939 5.46799993515015
-#> 0           0.6086           0.6015           0.5944           0.5733
-#>   5.47100019454956 5.47499990463257 5.47700023651123 5.48699998855591
-#> 0           0.5662           0.5591           0.5519           0.5378
-#>   5.49300003051758 5.49399995803833 5.49499988555908 5.4980001449585
-#> 0           0.5307           0.5235           0.5164          0.5093
-#>   5.51300001144409 5.53599977493286 5.53800010681152 5.54099988937378
-#> 0           0.5022            0.495           0.4809           0.4738
-#>   5.54699993133545 5.55000019073486 5.55900001525879 5.56099987030029
-#> 0           0.4667           0.4595           0.4524           0.4453
-#>   5.56199979782104 5.56400012969971 5.56699991226196 5.57800006866455
-#> 0           0.4382            0.431           0.4239           0.4168
-#>   5.58500003814697 5.58799982070923 5.59600019454956 5.59700012207031
-#> 0           0.4097           0.4025           0.3954           0.3883
-#>   6.66099977493286 6.67500019073486 6.69000005722046 6.69099998474121
-#> 0           0.3812            0.367           0.3599           0.3528
-#>   6.74100017547607 6.77400016784668 6.77600002288818 6.78299999237061
-#> 0           0.3457           0.3385           0.3314           0.3243
-#>   6.80200004577637 6.80800008773804 6.80999994277954 6.81899976730347
-#> 0           0.3172             0.31           0.3029           0.2958
-#>   6.86899995803833 6.8769998550415
-#> 0           0.2886          0.2886
+## COMPARING TWO MEANS
+
+### &nbsp;&nbsp;&nbsp;&nbsp;SUPERIORITY
+
+<details>
+<summary>Normal design</summary>
+<br>
+
+*Consider an RCT with two parallel groups with a 1:1 randomization ratio. The expected mean is 66 units in patients in the experimental arm versus 72 units in the control arme. In order to demonstrate such a difference of 6 units, with a standard deviation of 23, a 5% two-sided type-I error rate and a power of 80%, the minimum sample size per arm equals 231 (i.e., a total of 462 patients).*
+
+	
+```r
+library(epiR)
+		
+epi.sscompc(treat = 66, control = 72, 
+			sigma = 23, n = NA, power = 0.8, 
+			r = 1, sided.test = 2, conf.level = 1-0.05)
+
+#> $n.total
+#> [1] 462
+
+#> $n.treat
+#> [1] 231
+
+#> $n.control
+#> [1] 231
+
+#> $power
+#> [1] 0.8
+
+#> $delta
+#> [1] 6
 ```
 
-## Python Models
+**Parameters :**
 
-The `survivalmodels` package implements models from Python using
-[reticulate](https://cran.r-project.org/package=reticulate). In order to
-use these models, the required Python packages must be installed
-following with
-[reticulate::py_install](https://rstudio.github.io/reticulate/reference/py_install.html).
-`survivalmodels` includes a helper function to install the required
-`pycox` function (with pytorch if also required). Before running any
-models in this package, if you have not already installed `pycox` please
-run.
+* treat: mean expected in the experimental arm
+* control: mean expected in the control arm
+* sigma: expected standard deviation in the two arms
+* power : recquired power (1 minus type-II error rate)
+* r : randomization ratio (experimental:control)
+* sided.test : one-side test (1), two-side test (2) 
+* conf.level : confidence level (1-type-I error rate)
 
-``` r
-install_pycox(pip = TRUE, install_torch = FALSE)
+</summary>
+</details>	
+
+<details>
+<summary>Sequential design</summary>
+<br>
+
+*Sample size for a randomised controlled superiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. 
+The average quality of life was 66 points with treatment B compared to 72 points with treatment A. In order to highlight this absolute difference of 6 points, with a standard deviation of 23, 
+and by planning 2 intermediate efficacy analyses and using the O'Brien-Fleming method to take into account the repetition of the tests (inflation of the risk of the first kind), the final analysis should be 
+carried out on 2,588 patients (1,294 patients per group) in order to respect an overall risk of the first kind equal to 5% (two-sided) and a power of 80%. 
+The first and second intermediate analyses would be performed on 863 and 1726 patients respectively, i.e. 33 and 66% of the 
+maximum number of patients, the sample size is related to the result of the script bellow :*
+
+```r
+library("rpact")
+		
+design <- getDesignGroupSequential(typeOfDesign = "OF", 
+                informationRates = c(1/3, 2/3, 1), alpha = alpha, beta = 1-power, sided = 2)
+
+designPlan <- getSampleSizeMeans(design, riskRatio = FALSE, thetaH0 = 0,
+                   normalApproximation = TRUE, pi1 = p1, pi2 = p2, groups = 2, stDev = 23,
+                   allocationRatioPlanned = 1)
+
+summary(designPlan)
 ```
 
-## Installation
+**Parameters :**
 
-Install the latest release from CRAN:
+* typeOfDesign : type of design
+* informationRates : information rates
+* alpha : type I error rate
+* beta : type II error rate
+* sided : one-side test (=1), two-side test (=2)
+* riskRatio : one-side test (=TRUE), two-side test (=FALSE)
+* thetaH0 : non-inferiority bound when ≠ 0
+* normalApproximation : one treatment group is calculated exactly using the binomial distribution (=FALSE), else (=FALSE)
+* pi1 : assumed probability in the experimental treatment group
+* pi2 : assumed probability in the control treatment group
+* groups: the number of treatment groups
+* allocationRatioPlanned : planned allocation ratio (n1/n2)
 
-``` r
-install.packages("survivalmodels")
+</summary>	
+</details>
+
+### &nbsp;&nbsp;&nbsp;&nbsp;NON-INFERIORITY
+
+<details>
+<summary>Normal design</summary>
+<br>
+
+*Sample size for a randomised controlled non-inferiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. 
+The average quality of life was 66 points with treatment B. Assuming an absolute non-inferiority margin of 7 points, with a standard deviation of 23, with a one-sided alpha risk of 5% and a power of 80%, 
+the sample size is related to the result of the script bellow :*
+	
+```r
+library(epiR)
+	
+epi.ssninfc(treat = 66, control = 66, sigma = 23, 
+			delta = 7, n = NA, power = 0.8, alpha = 0.05, r = 1)
+```
+	
+**Parameters :**
+
+* treat : mean expected in the experimental group
+* control : mean expected in the control group
+* sigma : standard deviation (commun for both group)
+* delta : equivalence limit, which represents the clinically significant difference (>0)
+* n : number of subjects to include (experimental + control), define as NA
+* power : power of the trial
+* alpha : type I error rate
+* r : randomization ratio, number of patients of the experimental group divided by the number of patients of the control group
+
+</summary>
+</details>
+
+
+## COMPARING PROPORTIONS
+
+Evaluation of treatment effect based on discrete clinical endpoint, the proportions of events that have occurred between treatment groups are compared.
+
+### &nbsp;&nbsp;&nbsp;&nbsp;SUPERIORITY
+
+<details>
+<summary>Normal design</summary>
+<br>
+
+	
+*Sample size for a randomised controlled superiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. The proportion of patients with an episode of hypertension was 35% with the B treatment compared to 28% with treatment A. In order to highlight this absolute difference of 7%, with a two-sided alpha risk of 5% and a power of 80%, the sample size is related to the result of the script bellow :*
+	
+	
+```r
+library(epiR)
+
+epi.sscohortc(N = NA, irexp1 = 0.35, irexp0 = 0.28, pexp = NA, n = NA, 
+			power = 0.80, r = 1, design = 1, sided.test = 2, 
+			finite.correction = FALSE, nfractional = FALSE, conf.level = 0.95)
+
+```
+	
+**Parameters :**
+
+*	irexp1 : Proportion expected within the experimental group
+*	irexp0 : Proportion expected within the control group
+* n : number of subjects to include (experimental + control), define as NA
+*	power : Power of the trial
+* r : randomization ratio, number of patients of the experimental group divided by the number of patients of the control group
+* design : estimated design effect
+*	sided.test : One-side test (=1), two-side test (=2) 
+*	conf.level : Confidence level (1-α)
+</summary>
+</details>
+
+</summary>	
+</details>
+
+<details>
+<summary>Sequential design</summary>
+<br>
+
+*The prevalence of infections at 30 days is assumed to be 15% in the population and a relative reduction of at least 25% in the experimental population (prevalence of 11.25%). By planning 2 intermediate efficacy analyses and using the O'Brien-Fleming method to take into account the repetition of the tests (inflation of the risk of the first kind), the final analysis should be carried out on 2,588 patients (1,294 patients per group) in order to respect an overall risk of the first kind equal to 5% (two-sided) and a power of 80%. The first and second intermediate analyses would be performed on 864 and 1726 patients respectively, i.e. 33 and 66% of the maximum number of patients, the sample size is related to the result of the script bellow :*
+
+```r
+library("rpact")
+		
+design <- getDesignGroupSequential(typeOfDesign = "OF", 
+                informationRates = c(1/3, 2/3, 1), alpha = 0.05, beta = 1-0.8, sided = 2)
+
+designPlan <- getSampleSizeRates(design, riskRatio = FALSE, thetaH0 = 0,
+                   normalApproximation = TRUE, pi1 = 0.15*0.75, pi2 = 0.15, groups = 2,
+                   allocationRatioPlanned = 1)
+
+summary(designPlan)
 ```
 
-Install the development version from GitHub:
+**Parameters :**
 
-``` r
-remotes::install_github("RaphaelS1/survivalmodels")
+* typeOfDesign : type of design
+* informationRates : information rates
+* alpha : type I error rate
+* beta : type II error rate
+* sided : one-side test (=1), two-side test (=2)
+* riskRatio : one-side test (=TRUE), two-side test (=FALSE)
+* thetaH0 : non-inferiority bound when ≠ 0
+* normalApproximation : one treatment group is calculated exactly using the binomial distribution (=FALSE), else (=FALSE)
+* pi1 : assumed probability in the experimental treatment group
+* pi2 : assumed probability in the control treatment group
+* groups: the number of treatment groups
+* allocationRatioPlanned : planned allocation ratio (n1/n2)
+
+</summary>	
+</details>
+
+### &nbsp;&nbsp;&nbsp;&nbsp;NON-INFERIORITY
+
+<details>
+<summary>Normal design</summary>
+<br>	
+
+	
+*Sample size for a randomised controlled non-inferiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. 
+The proportion of patients with an episode of hypertension was 35% with the B treatment. Assuming an absolute non-inferiority margin of 5%, with a one-sided alpha risk of 5% and a power of 80%, 
+the sample size is related to the result of the script bellow :*
+	
+	
+```r
+epi.ssninfb(treat = 0.35, control = 0.35, delta = 0.05, 
+			n = NA, r = 1, power = 0.8, alpha = 0.05)
 ```
+	
+**Parameters :**
+
+* treat : proportion expected in the experimental group
+* control : proportion expected in the control group
+* delta : equivalence limit, which represents the clinically significant difference (>0)
+* n : number of subjects to include (experimental + control), define as NA
+* r : randomization ratio, number of patients of the experimental group divided by the number of patients of the control group
+* power : power of the trial
+* alpha : type I error rate
+
+</details>
+
+## BINARY EVENT PREDICTION
+
+### &nbsp;&nbsp;&nbsp;&nbsp;CONSTRUCTION
+
+Creation of a predictive tool that return the probability of a future event based on factors in order to inform clinical diagnosis and prognosis in healthcare.
+
+<details>
+<summary>Example</summary>
+<br>	
+
+*Sample size for developing a logistic regression model based on up to  candidate 34 predictors, with an anticipated R2 of at least 0.25, and to target an expected shrinkage of 0.9(equation 11 in Riley et al. Statistics in Medicine. 2019;38:1276–1296)."), the sample size is related to the result of the script bellow:*
+
+```r
+ceiling(34/((0.9-1)*log(1-0.25/0.9)))
+```
+
+**Parameters :**
+
+* 34 : number of potential predictors
+* 0.9  : expected shrinkage
+* 0.25 : expected predictive capacities
+
+</details>
+
+### &nbsp;&nbsp;&nbsp;&nbsp;EXTERNAL VALIDATION
+
+External validation for a predictive tool that return the probability of a future event based on factors in order to inform clinical diagnosis and prognosis in healthcare.
+
+<details>
+<summary>Example</summary>
+<br>	
+
+*Sample size for external validation of a logistic regression model based with an expected outcome event proportions of 50%, with a alpha risk at 5% and with a target confidence interval width of 20% (Riley et al.  Statistics in Medicine. 2021;19:4230-4251).*
+
+```r
+se <- function(width, alpha) # The standard error associated with the 1-alpha confidence interval
+{
+  fun <- function(x) { exp( qnorm(1-alpha/2, mean=0, sd=1) * x ) - exp(-1* qnorm(1-alpha/2, mean=0, sd=1) * x ) - width } 
+  return(uniroot(fun, lower = 0.001, upper = 100)$root)
+} 
+
+size.calib <- function(p0, width, alpha) # the minimum sample size to achieve this precision
+{   
+  (1-p0) / ((p0 * se(width=width, alpha=alpha)**2 ))
+}
+
+size.calib(p0=0.5, width=0.2, alpha=0.05)
+```
+
+**Parameters :**
+
+* p0 : expected event outcome proportion
+* width  : size of the target confidence interval
+* alpha : type I error rate
+
+</details>
