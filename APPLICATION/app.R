@@ -7,6 +7,18 @@ library(shinythemes)
 library(shinyjs)
 
 
+se <- function(width, alpha) # The standard error associated with the 1-alpha confidence interval
+{
+  fun <- function(x) { exp( qnorm(1-alpha/2, mean=0, sd=1) * x ) - exp(-1* qnorm(1-alpha/2, mean=0, sd=1) * x ) - width } 
+  return(uniroot(fun, lower = 0.001, upper = 100)$root)
+} 
+
+size.calib <- function(p0, width, alpha) # the minimum sample size to achieve this precision
+{   
+  (1-p0) / ((p0 * se(width=width, alpha=alpha)**2 ))
+}
+
+
 #########################################################################################################################
 ###################################################   UI  ###############################################################
 #########################################################################################################################
@@ -24,7 +36,7 @@ ui <- fluidPage(
                   includeHTML("appName.html"))
            ),
   fluidRow(
-  navbarPage(title = icon("users",class ="fa-solid fa-users"),
+    navbarPage(title = icon("users",class ="fa-solid fa-users"),
 # PAGE COMPARING PROPORTIONS --------------------------------------------------------------------------------------------
              tabPanel(title = "COMPARING PROPORTIONS",
                       fluidRow(column(width = 12,
@@ -143,18 +155,40 @@ ui <- fluidPage(
                      br(),
                      sidebarLayout(
                        sidebarPanel(
-                         numericInput(inputId = "predictorsToTest",
-                                      label = "Number of potential predictors",
-                                      value = NULL,
-                                      step = 1),
-                         numericInput(inputId = "shrinkageExpected",
-                                      label = "Expected Shrinkage",
-                                      value = NULL,
-                                      step = 0.1),
-                         numericInput(inputId = "R2",
-                                      label = "anticipated R2 : expected predictive capacities",
-                                      value = NULL,
-                                      step = 0.01)
+                         selectInput(inputId = "typePred",
+                                     label = "",
+                                     choices = c(" ","construction", "external validation")), 
+                         conditionalPanel(
+                           condition = "input.typePred == 'construction'",
+                           numericInput(inputId = "predictorsToTest",
+                                        label = "Number of potential predictors",
+                                        value = NULL,
+                                        step = 1),
+                           numericInput(inputId = "shrinkageExpected",
+                                        label = "Expected Shrinkage",
+                                        value = NULL,
+                                        step = 0.1),
+                           numericInput(inputId = "R2",
+                                        label = "anticipated R2 : expected predictive capacities",
+                                        value = NULL,
+                                        step = 0.01)
+                         ),
+                         conditionalPanel(
+                           condition = "input.typePred == 'external validation'",
+                           numericInput(inputId = "P0",
+                                        label = "Expected proportion of events in the validation study (%)",
+                                        value = NULL,
+                                        step = 1),
+                           numericInput(inputId = "alphaExtVal",
+                                        label = "Type I error rate, alpha (%)",
+                                        value = NULL,
+                                        step = 0.5),
+                           #The total length of the confidence of O/E
+                           numericInput(inputId = "widthExtVal",
+                                        label = "Confidence interval width",
+                                        value = NULL,
+                                        step = 0.1)
+                           )
                          ),
                        mainPanel(
                          actionButton("Pred", "Results"),
@@ -162,9 +196,8 @@ ui <- fluidPage(
                          htmlOutput("prediction"))
                        )
                      ) # BINARY EVENT PREDICTION
-
-)
-)
+    )
+  )
 )
 
 
@@ -211,7 +244,10 @@ server <- function(input, output) {
   
   # PREDICTIVE
   resPred <- eventReactive(input$Pred,{
-    ceiling(input$predictorsToTest/((input$shrinkageExpected-1)*log(1-input$R2/input$shrinkageExpected)))
+    if(reactive(input$typePred)()=='construction')
+      ceiling(input$predictorsToTest/((input$shrinkageExpected-1)*log(1-input$R2/input$shrinkageExpected)))
+    else
+      ceiling(size.calib(p0=input$P0/100, width = input$widthExtVal/100, alpha = input$alphaExtVal/100))
   })
   
   # reactive example sentence -------------------------
@@ -251,9 +287,14 @@ server <- function(input, output) {
       })
   
   c <- eventReactive(input$Pred,{
-    paste0("This sample size is for developing a logistic regression model based on up to ",input$input$predictorsToTest," candidate 
+    if(reactive(input$typePred)()=='construction')
+    paste0("This sample size is for developing a logistic regression model based on up to ",input$predictorsToTest," candidate 
            predictors, with an anticipated R2 of at least ",input$R2,", and to target an expected 
-           shrinkage of ",input$shrinkageExpected,"(equation 11 in Riley et al. Statistics in Medicine. 2019;38:1276–1296).")
+           shrinkage of ",input$shrinkageExpected," (equation 11 in Riley et al. Statistics in Medicine. 2019;38:1276–1296).")
+    else
+      paste0("This sample size is for external validation of a logistic regression model based with an expected outcome 
+             event proportions of ",input$P0,"%, with a alpha risk at ",input$alphaExtVal,"% and with a target confidence 
+             interval width of ",input$widthExtVal,"%.")
     })
   
   

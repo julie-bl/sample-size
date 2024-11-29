@@ -59,7 +59,7 @@ epi.sscompc(N = NA, treat = 66, control = 72,
 The average quality of life was 66 points with treatment B compared to 72 points with treatment A. In order to highlight this absolute difference of 6 points, with a standard deviation of 23, 
 and by planning 2 intermediate efficacy analyses and using the O'Brien-Fleming method to take into account the repetition of the tests (inflation of the risk of the first kind), the final analysis should be 
 carried out on 2,588 patients (1,294 patients per group) in order to respect an overall risk of the first kind equal to 5% (two-sided) and a power of 80%. 
-The first and second intermediate analyses would be performed on 864 and 1726 patients respectively, i.e. 33 and 66% of the 
+The first and second intermediate analyses would be performed on 863 and 1726 patients respectively, i.e. 33 and 66% of the 
 maximum number of patients, the sample size is related to the result of the script bellow :*
 
 ```r
@@ -79,7 +79,7 @@ summary(designPlan)
 
 * typeOfDesign : type of design
 * informationRates : information rates
-* alpha : significance level alpha
+* alpha : type I error rate
 * beta : type II error rate
 * sided : one-side test (=1), two-side test (=2)
 * riskRatio : one-side test (=TRUE), two-side test (=FALSE)
@@ -99,7 +99,9 @@ summary(designPlan)
 <summary>Normal design</summary>
 <br>
 
-*Sample size for a randomised controlled non-inferiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. The average quality of life was 66 points with treatment B. Assuming an absolute non-inferiority margin of 7 points, with a standard deviation of 23, with a one-sided alpha risk of 5% and a power of 80%, the sample size is related to the result of the script bellow :*
+*Sample size for a randomised controlled non-inferiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. 
+The average quality of life was 66 points with treatment B. Assuming an absolute non-inferiority margin of 7 points, with a standard deviation of 23, with a one-sided alpha risk of 5% and a power of 80%, 
+the sample size is related to the result of the script bellow :*
 	
 ```r
 library(epiR)
@@ -116,11 +118,12 @@ epi.ssninfc(treat = 66, control = 66, sigma = 23,
 * delta : equivalence limit, which represents the clinically significant difference (>0)
 * n : number of subjects to include (experimental + control), define as NA
 * power : power of the trial
-* alpha : type I error
+* alpha : type I error rate
 * r : randomization ratio, number of patients of the experimental group divided by the number of patients of the control group
 
 </summary>
-</details>	
+</details>
+
 
 ## COMPARING PROPORTIONS
 
@@ -184,7 +187,7 @@ summary(designPlan)
 
 * typeOfDesign : type of design
 * informationRates : information rates
-* alpha : significance level alpha
+* alpha : type I error rate
 * beta : type II error rate
 * sided : one-side test (=1), two-side test (=2)
 * riskRatio : one-side test (=TRUE), two-side test (=FALSE)
@@ -205,7 +208,9 @@ summary(designPlan)
 <br>	
 
 	
-*Sample size for a randomised controlled non-inferiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. The proportion of patients with an episode of hypertension was 35% with the B treatment. Assuming an absolute non-inferiority margin of 5%, with a one-sided alpha risk of 5% and a power of 80%, the sample size is related to the result of the script bellow :*
+*Sample size for a randomised controlled non-inferiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. 
+The proportion of patients with an episode of hypertension was 35% with the B treatment. Assuming an absolute non-inferiority margin of 5%, with a one-sided alpha risk of 5% and a power of 80%, 
+the sample size is related to the result of the script bellow :*
 	
 	
 ```r
@@ -221,11 +226,13 @@ epi.ssninfb(treat = 0.35, control = 0.35, delta = 0.05,
 * n : number of subjects to include (experimental + control), define as NA
 * r : randomization ratio, number of patients of the experimental group divided by the number of patients of the control group
 * power : power of the trial
-* alpha : type I error
+* alpha : type I error rate
 
 </details>
 
 ## BINARY EVENT PREDICTION
+
+### &nbsp;&nbsp;&nbsp;&nbsp;CONSTRUCTION
 
 Creation of a predictive tool that return the probability of a future event based on factors in order to inform clinical diagnosis and prognosis in healthcare.
 
@@ -244,5 +251,38 @@ ceiling(34/((0.9-1)*log(1-0.25/0.9)))
 * 34 : number of potential predictors
 * 0.9  : expected shrinkage
 * 0.25 : expected predictive capacities
+
+</details>
+
+### &nbsp;&nbsp;&nbsp;&nbsp;EXTERNAL VALIDATION
+
+External validation for a predictive tool that return the probability of a future event based on factors in order to inform clinical diagnosis and prognosis in healthcare.
+
+<details>
+<summary>Example</summary>
+<br>	
+
+*Sample size for external validation of a logistic regression model based with an expected outcome event proportions of 50%, with a alpha risk at 5% and with a target confidence interval width of 20% (Riley et al.  Statistics in Medicine. 2021;19:4230-4251).*
+
+```r
+se <- function(width, alpha) # The standard error associated with the 1-alpha confidence interval
+{
+  fun <- function(x) { exp( qnorm(1-alpha/2, mean=0, sd=1) * x ) - exp(-1* qnorm(1-alpha/2, mean=0, sd=1) * x ) - width } 
+  return(uniroot(fun, lower = 0.001, upper = 100)$root)
+} 
+
+size.calib <- function(p0, width, alpha) # the minimum sample size to achieve this precision
+{   
+  (1-p0) / ((p0 * se(width=width, alpha=alpha)**2 ))
+}
+
+size.calib(p0=0.5, width=0.2, alpha=0.05)
+```
+
+**Parameters :**
+
+* p0 : expected event outcome proportion
+* width  : size of the target confidence interval
+* alpha : type I error rate
 
 </details>
