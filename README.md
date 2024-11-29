@@ -1,15 +1,15 @@
-# Estimation of the recquired sample size in RCT
+# RECQUIRED SAMPLE SIZES
 
 
 <div style="text-align: justify">
 
-This page is devoted to the calculation of the number of patients required for a randomized clinical trial (RCT) by using R. Click [here](https://poitiers-health-data.shinyapps.io/SampleSize/) to access the online calculator with no code.
+This page is devoted to the calculation of the number of patients required for several studies such as an randomized clinical trial (RCT) for causal inference or a cohort for constructing or validating a predictive tool. R codes are proposed. We can click [here](https://poitiers-health-data.shinyapps.io/SampleSize/) to access to the related user-friendly calculatos.
 
 ## REMINDERS
 
-**Superiority :** Use to show that the experimental treatment is more effective than standard therapy.
+**Superiority RCT:** Use to demonstrate that the experimental treatment is more effective than standard therapy.
 
-**Non-inferiority :** Use to show that the experimental treatment is as effective as standard therapy.
+**Non-inferiority RCT:** Use to demonstrate that the experimental treatment is as effective as standard therapy.
 
 ## COMPARING TWO MEANS
 
@@ -19,15 +19,14 @@ This page is devoted to the calculation of the number of patients required for a
 <summary>Normal design</summary>
 <br>
 
-*Consider an RCT with two parallel groups with a 1:1 randomization ratio. The expected mean is 66 units in patients in the experimental arm versus 72 units in the control arme. In order to demonstrate such a difference of 6 units, with a standard deviation of 23, a 5% two-sided type-I error rate and a power of 80%, the minimum sample size per arm equals 231 (i.e., a total of 462 patients).*
+*Consider the following RCT with two parallel groups with a 1:1 randomization ratio. The expected mean is 66 units in patients in the experimental arm versus 72 units in the control arm. In order to demonstrate such a difference of 6 units, with a standard deviation of 23, a 5% two-sided type-I error rate and a power of 80%, the minimum sample size per arm equals 231 (i.e., a total of 462 patients).*
 
 	
 ```r
 library(epiR)
 		
-epi.sscompc(treat = 66, control = 72, 
-			sigma = 23, n = NA, power = 0.8, 
-			r = 1, sided.test = 2, conf.level = 1-0.05)
+epi.sscompc(treat = 66, control = 72,	sigma = 23, n = NA, power = 0.8, 
+		      	r = 1, sided.test = 2, conf.level = 1-0.05)
 
 #> $n.total
 #> [1] 462
@@ -45,14 +44,14 @@ epi.sscompc(treat = 66, control = 72,
 #> [1] 6
 ```
 
-**Parameters :**
+**Input parameters:**
 
 * treat: mean expected in the experimental arm
 * control: mean expected in the control arm
 * sigma: expected standard deviation in the two arms
 * power : recquired power (1 minus type-II error rate)
 * r : randomization ratio (experimental:control)
-* sided.test : one-side test (1), two-side test (2) 
+* sided.test : one-sided test (1) or two-sided test (2) 
 * conf.level : confidence level (1-type-I error rate)
 
 </summary>
@@ -62,24 +61,30 @@ epi.sscompc(treat = 66, control = 72,
 <summary>Sequential design</summary>
 <br>
 
-*Sample size for a randomised controlled superiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. 
-The average quality of life was 66 points with treatment B compared to 72 points with treatment A. In order to highlight this absolute difference of 6 points, with a standard deviation of 23, 
-and by planning 2 intermediate efficacy analyses and using the O'Brien-Fleming method to take into account the repetition of the tests (inflation of the risk of the first kind), the final analysis should be 
-carried out on 2,588 patients (1,294 patients per group) in order to respect an overall risk of the first kind equal to 5% (two-sided) and a power of 80%. 
-The first and second intermediate analyses would be performed on 863 and 1726 patients respectively, i.e. 33 and 66% of the 
-maximum number of patients, the sample size is related to the result of the script bellow :*
+*Consider the following RCT with two parallel groups with a 1:1 randomization ratio and 2 planned intermediate analyses for efficacy by using the O'Brien-Fleming method for considering the inflation of the type-I error rate). The expected mean is 66 units in patients in the experimental arm versus 72 units in the control arm. In order to demonstrate such a difference of 6 units, with a standard deviation of 23, a 5% two-sided type-I error rate and a power of 80%,  the final analysis should be carried out on 472 patients (236 patients per group). The first and second intermediate analyses would be performed on 158 and 316 patients respectively, i.e. 33% and 66% of the maximum number of included patients if their is no decision of stopping the study.*
 
 ```r
 library("rpact")
 		
-design <- getDesignGroupSequential(typeOfDesign = "OF", 
-                informationRates = c(1/3, 2/3, 1), alpha = alpha, beta = 1-power, sided = 2)
+design <- getDesignGroupSequential(typeOfDesign = "OF", informationRates = c(1/3, 2/3, 1),
+                                   alpha = 0.05, beta = 1-0.8, sided = 2)
 
-designPlan <- getSampleSizeMeans(design, riskRatio = FALSE, thetaH0 = 0,
-                   normalApproximation = TRUE, pi1 = p1, pi2 = p2, groups = 2, stDev = 23,
-                   allocationRatioPlanned = 1)
+designPlan <- getSampleSizeMeans(design, alternative = 6, stDev = 23, allocationRatioPlanned = 1)
 
 summary(designPlan)
+
+#> Stage                                          1       2       3 
+#> Planned information rate                   33.3%   66.7%    100% 
+#> Cumulative alpha spent                    0.0005  0.0143  0.0500 
+#> Stage levels (two-sided)                  0.0005  0.0141  0.0451 
+#> Efficacy boundary (z-value scale)          3.471   2.454   2.004 
+#> Lower efficacy boundary (t)              -13.012  -6.405  -4.258 
+#> Upper efficacy boundary (t)               13.012   6.405   4.258 
+#> Cumulative power                          0.0329  0.4424  0.8000 
+#> Number of subjects                         157.1   314.2   471.3 
+#> Expected number of subjects under H1                       396.7 
+#> Exit probability for efficacy (under H0)  0.0005  0.0138 
+#> Exit probability for efficacy (under H1)  0.0329  0.4095 
 ```
 
 **Parameters :**
