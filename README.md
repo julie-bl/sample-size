@@ -11,17 +11,18 @@ This page is devoted to the calculation of the number of patients required for s
 
 **Non-inferiority RCT:** Use to demonstrate that the experimental treatment is as effective as standard therapy.
 
+**Sequential RCT:** Intermediate analyses are planned for early stopping the study, for instance for efficacy or futility.
+
 ## COMPARING TWO MEANS
 
-### &nbsp;&nbsp;&nbsp;&nbsp;SUPERIORITY
+### &nbsp;&nbsp;&nbsp;&nbsp;SUPERIORITY TRIALS
 
 <details>
-<summary>Normal design</summary>
+<summary>No intermediate anlysis</summary>
 <br>
 
 *Consider the following RCT with two parallel groups with a 1:1 randomization ratio. The expected mean is 66 units in patients in the experimental arm versus 72 units in the control arm. In order to demonstrate such a difference of 6 units, with a standard deviation of 23, a 5% two-sided type-I error rate and a power of 80%, the minimum sample size per arm equals 231 (i.e., a total of 462 patients).*
 
-	
 ```r
 library(epiR)
 		
@@ -46,13 +47,13 @@ epi.sscompc(treat = 66, control = 72,	sigma = 23, n = NA, power = 0.8,
 
 **Input parameters:**
 
-* treat: mean expected in the experimental arm
-* control: mean expected in the control arm
+* treat: expected mean in the experimental arm
+* control: expected mean in the control arm
 * sigma: expected standard deviation in the two arms
 * power : recquired power (1 minus type-II error rate)
 * r : randomization ratio (experimental:control)
 * sided.test : one-sided test (1) or two-sided test (2) 
-* conf.level : confidence level (1-type-I error rate)
+* conf.level : recquired confidence level (1-type-I error rate)
 
 </summary>
 </details>	
@@ -66,10 +67,12 @@ epi.sscompc(treat = 66, control = 72,	sigma = 23, n = NA, power = 0.8,
 ```r
 library("rpact")
 		
-design <- getDesignGroupSequential(typeOfDesign = "OF", informationRates = c(1/3, 2/3, 1),
-                                   alpha = 0.05, beta = 1-0.8, sided = 2)
+design <- getDesignGroupSequential(
+               typeOfDesign = "OF", informationRates = c(1/3, 2/3, 1),
+               alpha = 0.05, beta = 1-0.8, sided = 2)
 
-designPlan <- getSampleSizeMeans(design, alternative = 6, stDev = 23, allocationRatioPlanned = 1)
+designPlan <- getSampleSizeMeans(design, alternative = 6, stDev = 23,
+                                 allocationRatioPlanned = 1)
 
 summary(designPlan)
 
@@ -87,51 +90,45 @@ summary(designPlan)
 #> Exit probability for efficacy (under H1)  0.0329  0.4095 
 ```
 
-**Parameters :**
+**Input parameters:**
 
-* typeOfDesign : type of design
-* informationRates : information rates
-* alpha : type I error rate
-* beta : type II error rate
-* sided : one-side test (=1), two-side test (=2)
-* riskRatio : one-side test (=TRUE), two-side test (=FALSE)
-* thetaH0 : non-inferiority bound when ≠ 0
-* normalApproximation : one treatment group is calculated exactly using the binomial distribution (=FALSE), else (=FALSE)
-* pi1 : assumed probability in the experimental treatment group
-* pi2 : assumed probability in the control treatment group
-* groups: the number of treatment groups
-* allocationRatioPlanned : planned allocation ratio (n1/n2)
+* typeOfDesign: type of design ("OF" for the O'Brien-Fleming method)
+* informationRates: planned analyses defined as proportions of the maximum sample size
+* alpha: recquired type I error rate
+* beta: recquired type II error rate (1-power)
+* sided: one-sided test (1), two-sided test (2)
+* alternative: expected difference between the two arms
+* stDev: expected standard deviation in the two arms
 
 </summary>	
 </details>
 
-### &nbsp;&nbsp;&nbsp;&nbsp;NON-INFERIORITY
+### &nbsp;&nbsp;&nbsp;&nbsp;NON-INFERIORITY TRIALS
 
 <details>
-<summary>Normal design</summary>
+<summary>No intermediate anlysis</summary>
 <br>
 
-*Sample size for a randomised controlled non-inferiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. 
-The average quality of life was 66 points with treatment B. Assuming an absolute non-inferiority margin of 7 points, with a standard deviation of 23, with a one-sided alpha risk of 5% and a power of 80%, 
-the sample size is related to the result of the script bellow :*
-	
+*Consider the following RCT with two parallel groups with a 1:1 randomization ratio. The expected mean is 66 units in patients in the control arm and no difference compared to the experimental arm. Assuming an absolute non-inferiority margin of 7 points, a standard deviation of 23, the minimum sample size per arm equals 134 (i.e., a total of 268 patients) to achieve a 5% one-sided type-I error rate and a power of 80%*
+
+
 ```r
 library(epiR)
 	
-epi.ssninfc(treat = 66, control = 66, sigma = 23, 
-			delta = 7, n = NA, power = 0.8, alpha = 0.05, r = 1)
+epi.ssninfc(treat = 66, control = 66, sd= 23, delta = 7,
+            power = 0.8, alpha = 0.05, r = 1, n = NA)
 ```
 	
-**Parameters :**
+**Input parameters:**
 
-* treat : mean expected in the experimental group
-* control : mean expected in the control group
-* sigma : standard deviation (commun for both group)
-* delta : equivalence limit, which represents the clinically significant difference (>0)
-* n : number of subjects to include (experimental + control), define as NA
-* power : power of the trial
-* alpha : type I error rate
-* r : randomization ratio, number of patients of the experimental group divided by the number of patients of the control group
+* treat: expected mean in the experimental arm
+* control: expected mean in the control arm
+* sd: expected standard deviation in the two arms
+* delta: equivalence limit
+* alpha: recquired type I error rate
+* power: required power (1 minus type-II error rate)
+* r: randomization ratio (experimental:control)
+* n: number of subjects to include (experimental + control), define as NA
 
 </summary>
 </details>
