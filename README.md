@@ -236,15 +236,13 @@ summary(designPlan)
 ### &nbsp;&nbsp;&nbsp;&nbsp;NON-INFERIORITY
 
 <details>
-<summary>Normal design</summary>
+<summary>No interim analysis</summary>
 <br>	
 
-	
 *Sample size for a randomised controlled non-inferiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. 
 The proportion of patients with an episode of hypertension was 35% with the B treatment. Assuming an absolute non-inferiority margin of 5%, with a one-sided alpha risk of 5% and a power of 80%, 
 the sample size is related to the result of the script bellow :*
-	
-	
+
 ```r
 epi.ssninfb(treat = 0.35, control = 0.35, delta = 0.05, 
 			n = NA, r = 1, power = 0.8, alpha = 0.05)
@@ -261,39 +259,31 @@ epi.ssninfb(treat = 0.35, control = 0.35, delta = 0.05,
 
 </details>
 
-## BINARY EVENT PREDICTION
+## PREDICTING A PROPORTION
 
-### &nbsp;&nbsp;&nbsp;&nbsp;CONSTRUCTION
-
-Creation of a predictive tool that return the probability of a future event based on factors in order to inform clinical diagnosis and prognosis in healthcare.
+### &nbsp;&nbsp;&nbsp;&nbsp;MODEL CONSTRUCTION
 
 <details>
 <summary>Example</summary>
 <br>	
 
-*Sample size for developing a logistic regression model based on up to  candidate 34 predictors, with an anticipated R2 of at least 0.25, and to target an expected shrinkage of 0.9(equation 11 in Riley et al. Statistics in Medicine. 2019;38:1276–1296)."), the sample size is related to the result of the script bellow:*
+*For developing a model/alghorithm based on 34 predictors as candidates with an expected R2 of at least 0.25 and an expected shrinkage of 0.9 (equation 11 in Riley et al. Statistics in Medicine. 2019;38:1276–1296), the minimal sample size is 1045.*
 
 ```r
-ceiling(34/((0.9-1)*log(1-0.25/0.9)))
+34/((0.9-1)*log(1-0.25/0.9))
+
+#> [1] 1044.796
 ```
-
-**Parameters :**
-
-* 34 : number of potential predictors
-* 0.9  : expected shrinkage
-* 0.25 : expected predictive capacities
 
 </details>
 
-### &nbsp;&nbsp;&nbsp;&nbsp;EXTERNAL VALIDATION
-
-External validation for a predictive tool that return the probability of a future event based on factors in order to inform clinical diagnosis and prognosis in healthcare.
+### &nbsp;&nbsp;&nbsp;&nbsp;EXTERNAL VALIDATION OF A MODEL
 
 <details>
 <summary>Example</summary>
 <br>	
 
-*Sample size for external validation of a logistic regression model based with an expected outcome event proportions of 50%, with a alpha risk at 5% and with a target confidence interval width of 20% (Riley et al.  Statistics in Medicine. 2021;19:4230-4251).*
+*Consider O/E the ratio between the number of observed events versus expected ones. To achieve a precision defined as a length of the (1-α)% confidence interval of this ratio equals to 0.2, if the expected proportions is 50%, the required sample size is 386 (Riley et al. Minimum sample size for external validation of a clinical prediction model with a binary outcome. Statistics in Medicine. 2021;19:4230-4251).*
 
 ```r
 se <- function(width, alpha) # The standard error associated with the 1-alpha confidence interval
@@ -302,12 +292,14 @@ se <- function(width, alpha) # The standard error associated with the 1-alpha co
   return(uniroot(fun, lower = 0.001, upper = 100)$root)
 } 
 
-size.calib <- function(p0, width, alpha) # the minimum sample size to achieve this precision
+size.calib <- function(p, width, alpha) # the minimum sample size to achieve this precision
 {   
-  (1-p0) / ((p0 * se(width=width, alpha=alpha)**2 ))
+  (1-p) / ((p * se(width=width, alpha=alpha)**2 ))
 }
 
-size.calib(p0=0.5, width=0.2, alpha=0.05)
+size.calib(p=0.5, width=0.2, alpha=0.05)
+
+#> [1] 385.4265
 ```
 
 **Parameters :**
