@@ -239,23 +239,36 @@ summary(designPlan)
 <summary>No interim analysis</summary>
 <br>	
 
-*Sample size for a randomised controlled non-inferiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. 
-The proportion of patients with an episode of hypertension was 35% with the B treatment. Assuming an absolute non-inferiority margin of 5%, with a one-sided alpha risk of 5% and a power of 80%, 
-the sample size is related to the result of the script bellow :*
+*Consider the following RCT with two parallel groups with a 1:1 randomization ratio. The expected percentage of events is 35% in patients in the control arm and no difference compared to the experimental arm. Assuming an absolute non-inferiority margin of 5%,  the minimum sample size per arm equals 1,126 (i.e., a total of 2,252 patients) to achieve a 5% one-sided type I error rate and a power of 80%.*
 
 ```r
 epi.ssninfb(treat = 0.35, control = 0.35, delta = 0.05, 
 			n = NA, r = 1, power = 0.8, alpha = 0.05)
+
+#> $n.total
+#> [1] 2252
+
+#> $n.treat
+#> [1] 1126
+
+#> $n.control
+#> [1] 1126
+
+#> $delta
+#> [1] 0.05
+
+#> $power
+#> [1] 0.8
 ```
 	
 **Parameters :**
-* treat : proportion expected in the experimental group
-* control : proportion expected in the control group
-* delta : equivalence limit, which represents the clinically significant difference (>0)
-* n : number of subjects to include (experimental + control), define as NA
-* r : randomization ratio, number of patients of the experimental group divided by the number of patients of the control group
-* power : power of the trial
-* alpha : type I error rate
+* treat: expected proportion in the experimental arm
+* control: expected proportion in the control arm
+* delta: equivalence limit
+* alpha: recquired type I error rate
+* power: required power (1 minus type II error rate)
+* r: randomization ratio (experimental:control)
+* n: number of subjects to include (experimental + control) define as NA
 
 </details>
 
