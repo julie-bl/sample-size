@@ -261,10 +261,8 @@ epi.ssninfb(treat = 0.35, control = 0.35, delta = 0.05,
 
 ## PREDICTING A PROPORTION
 
-### &nbsp;&nbsp;&nbsp;&nbsp;MODEL CONSTRUCTION
-
 <details>
-<summary>Example</summary>
+<summary>Construction of predictive model</summary>
 <br>	
 
 *For developing a model/alghorithm based on 34 predictors as candidates with an expected R2 of at least 0.25 and an expected shrinkage of 0.9 (equation 11 in Riley et al. Statistics in Medicine. 2019;38:1276–1296), the minimal sample size is 1045.*
@@ -275,12 +273,8 @@ epi.ssninfb(treat = 0.35, control = 0.35, delta = 0.05,
 #> [1] 1044.796
 ```
 
-</details>
-
-### &nbsp;&nbsp;&nbsp;&nbsp;EXTERNAL VALIDATION OF A MODEL
-
 <details>
-<summary>Example</summary>
+<summary>External validation</summary>
 <br>	
 
 *Consider O/E the ratio between the number of observed events versus expected ones. To achieve a precision defined as a length of the (1-α)% confidence interval of this ratio equals to 0.2, if the expected proportions is 50%, the required sample size is 386 (Riley et al. Minimum sample size for external validation of a clinical prediction model with a binary outcome. Statistics in Medicine. 2021;19:4230-4251).*
@@ -301,11 +295,9 @@ size.calib(p=0.5, width=0.2, alpha=0.05)
 
 #> [1] 385.4265
 ```
-
-**Parameters :**
-
-* p0 : expected event outcome proportion
-* width  : size of the target confidence interval
-* alpha : type I error rate
+**Input parameters:**
+* p: expected proportion of events
+* width: size of the (1-α)% confidence interval
+* alpha: type I error rate (α)
 
 </details>
