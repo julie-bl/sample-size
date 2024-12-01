@@ -272,7 +272,9 @@ epi.ssninfb(treat = 0.35, control = 0.35, delta = 0.05,
 
 #> [1] 1044.796
 ```
-<details>
+
+</summary>
+</details>
 
 <details>
 <summary>External validation</summary>
