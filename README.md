@@ -8,7 +8,7 @@ This page is devoted to the calculation of the number of patients required for s
 
 * **Non-inferiority RCT:** Use to demonstrate that the experimental treatment is as effective as standard therapy.
 
-* **Sequential RCT:** Intermediate analyses are planned for early stopping the study, for instance for efficacy or futility.
+* **Sequential RCT:** Intermediate analyses for early stopping the study.
 
 ## COMPARING TWO MEANS
 
@@ -43,7 +43,6 @@ epi.sscompc(treat = 66, control = 72,	sigma = 23, n = NA, power = 0.8,
 ```
 
 **Input parameters:**
-
 * treat: expected mean in the experimental arm
 * control: expected mean in the control arm
 * sigma: expected standard deviation in the two arms
@@ -88,7 +87,6 @@ summary(designPlan)
 ```
 
 **Input parameters:**
-
 * typeOfDesign: type of design ("OF" for the O'Brien-Fleming method)
 * informationRates: planned analyses defined as proportions of the maximum sample size
 * alpha: recquired type I error rate
@@ -96,6 +94,7 @@ summary(designPlan)
 * sided: one-sided test (1), two-sided test (2)
 * alternative: expected difference between the two arms
 * stDev: expected standard deviation in the two arms
+* allocationRatioPlanned: randomization ratio
 
 </summary>	
 </details>
@@ -107,7 +106,6 @@ summary(designPlan)
 <br>
 
 *Consider the following RCT with two parallel groups with a 1:1 randomization ratio. The expected mean is 66 units in patients in the control arm and no difference compared to the experimental arm. Assuming an absolute non-inferiority margin of 7 points, a standard deviation of 23, the minimum sample size per arm equals 134 (i.e., a total of 268 patients) to achieve a 5% one-sided type I error rate and a power of 80%*
-
 
 ```r
 library(epiR)
@@ -132,7 +130,6 @@ epi.ssninfc(treat = 66, control = 66, sd= 23, delta = 7,
 ```
 	
 **Input parameters:**
-
 * treat: expected mean in the experimental arm
 * control: expected mean in the control arm
 * sd: expected standard deviation in the two arms
@@ -180,8 +177,7 @@ epi.sscohortc(irexp1 = 0.35, irexp0 = 0.28, power = 0.80, r = 1,
 #> [1] 1.384615
 ```
 	
-**Parameters :**
-
+**Input parameters:**
 *	irexp1: expected proportion in the experimental group
 *	irexp0: expected proportion  in the control group
 *	power: required power (1 minus type II error rate)
@@ -192,42 +188,47 @@ epi.sscohortc(irexp1 = 0.35, irexp0 = 0.28, power = 0.80, r = 1,
 </summary>
 </details>
 
-</summary>	
-</details>
-
 <details>
 <summary>Sequential design</summary>
 <br>
 
-*The prevalence of infections at 30 days is assumed to be 15% in the population and a relative reduction of at least 25% in the experimental population (prevalence of 11.25%). By planning 2 intermediate efficacy analyses and using the O'Brien-Fleming method to take into account the repetition of the tests (inflation of the risk of the first kind), the final analysis should be carried out on 2,588 patients (1,294 patients per group) in order to respect an overall risk of the first kind equal to 5% (two-sided) and a power of 80%. The first and second intermediate analyses would be performed on 864 and 1726 patients respectively, i.e. 33 and 66% of the maximum number of patients, the sample size is related to the result of the script bellow :*
+*Consider the following RCT with two parallel groups with a 1:1 randomization ratio and 2 planned intermediate analyses for efficacy by using the O'Brien-Fleming method for considering the inflation of the type I error rate. The expected proportion of event is 11% in patients in the experimental arm versus 15% units in the control arm. In order to demonstrate such a difference of 4%, with a 5% two-sided type I error rate and a power of 80%, the final analysis should be carried out on 2,256 patients (1,128 patients per group). The first and second intermediate analyses would be performed on 752 and 1,504 patients respectively, i.e. 33% and 66% of the maximum number of included patients if their is no decision of stopping the study.*
 
 ```r
 library("rpact")
 		
 design <- getDesignGroupSequential(typeOfDesign = "OF", 
-                informationRates = c(1/3, 2/3, 1), alpha = 0.05, beta = 1-0.8, sided = 2)
+                informationRates = c(1/3, 2/3, 1), alpha = 0.05,
+                beta = 1-0.8, sided = 2)
 
-designPlan <- getSampleSizeRates(design, riskRatio = FALSE, thetaH0 = 0,
-                   normalApproximation = TRUE, pi1 = 0.15*0.75, pi2 = 0.15, groups = 2,
+designPlan <- getSampleSizeRates(design,  pi1 = 0.11, pi2 = 0.15,
                    allocationRatioPlanned = 1)
 
 summary(designPlan)
+
+#> Stage                                         1      2      3 
+#> Planned information rate                  33.3%  66.7%   100% 
+#> Cumulative alpha spent                   0.0005 0.0143 0.0500 
+#> Stage levels (two-sided)                 0.0005 0.0141 0.0451 
+#> Efficacy boundary (z-value scale)         3.471  2.454  2.004 
+#> Lower efficacy boundary (t)              -0.079 -0.042 -0.029 
+#> Upper efficacy boundary (t)               0.101  0.048  0.031 
+#> Cumulative power                         0.0329 0.4424 0.8000 
+#> Number of subjects                        751.8 1503.7 2255.5 
+#> Expected number of subjects under H1                   1898.1 
+#> Exit probability for efficacy (under H0) 0.0005 0.0138 
+#> Exit probability for efficacy (under H1) 0.0329 0.4095 
 ```
 
-**Parameters :**
-
-* typeOfDesign : type of design
-* informationRates : information rates
-* alpha : type I error rate
-* beta : type II error rate
-* sided : one-side test (=1), two-side test (=2)
-* riskRatio : one-side test (=TRUE), two-side test (=FALSE)
-* thetaH0 : non-inferiority bound when ≠ 0
-* normalApproximation : one treatment group is calculated exactly using the binomial distribution (=FALSE), else (=FALSE)
-* pi1 : assumed probability in the experimental treatment group
-* pi2 : assumed probability in the control treatment group
-* groups: the number of treatment groups
-* allocationRatioPlanned : planned allocation ratio (n1/n2)
+**Input parameters:**
+* typeOfDesign: type of design ("OF" for the O'Brien-Fleming method)
+* informationRates: planned analyses defined as proportions of the maximum sample size
+* alpha: recquired type I error rate
+* beta: recquired type II error rate (1 minus power)
+* sided: one-sided test (1), two-sided test (2)
+* pi1: expected probability in the experimental group
+* pi2: expected probability in the control group
+* allocationRatioPlanned: randomization ratio (experimental/control)
 
 </summary>	
 </details>
@@ -250,7 +251,6 @@ epi.ssninfb(treat = 0.35, control = 0.35, delta = 0.05,
 ```
 	
 **Parameters :**
-
 * treat : proportion expected in the experimental group
 * control : proportion expected in the control group
 * delta : equivalence limit, which represents the clinically significant difference (>0)
