@@ -1,6 +1,5 @@
 # RECQUIRED SAMPLE SIZES
 
-
 <div style="text-align: justify">
 
 This page is devoted to the calculation of the number of patients required for several studies such as an randomized clinical trial (RCT) for causal inference or a cohort for constructing or validating a predictive tool. R codes are proposed. We can click [here](https://poitiers-health-data.shinyapps.io/SampleSize/) to access to the related user-friendly calculators. Some reminders:
@@ -19,7 +18,7 @@ This page is devoted to the calculation of the number of patients required for s
 <summary>No intermediate anlysis</summary>
 <br>
 
-*Consider the following RCT with two parallel groups with a 1:1 randomization ratio. The expected mean is 66 units in patients in the experimental arm versus 72 units in the control arm. In order to demonstrate such a difference of 6 units, with a standard deviation of 23, a 5% two-sided type-I error rate and a power of 80%, the minimum sample size per arm equals 231 (i.e., a total of 462 patients).*
+*Consider the following RCT with two parallel groups with a 1:1 randomization ratio. The expected mean is 66 units in patients in the experimental arm versus 72 units in the control arm. In order to demonstrate such a difference of 6 units, with a standard deviation of 23, a 5% two-sided type I error rate and a power of 80%, the minimum sample size per arm equals 231 (i.e., a total of 462 patients).*
 
 ```r
 library(epiR)
@@ -48,10 +47,10 @@ epi.sscompc(treat = 66, control = 72,	sigma = 23, n = NA, power = 0.8,
 * treat: expected mean in the experimental arm
 * control: expected mean in the control arm
 * sigma: expected standard deviation in the two arms
-* power : recquired power (1 minus type-II error rate)
-* r : randomization ratio (experimental:control)
-* sided.test : one-sided test (1) or two-sided test (2) 
-* conf.level : recquired confidence level (1-type-I error rate)
+* power: recquired power (1 minus type II error rate)
+* r: randomization ratio (experimental:control)
+* sided.test: one-sided test (1) or two-sided test (2) 
+* conf.level: recquired confidence level (1 minus type I error rate)
 
 </summary>
 </details>	
@@ -60,7 +59,7 @@ epi.sscompc(treat = 66, control = 72,	sigma = 23, n = NA, power = 0.8,
 <summary>Sequential design</summary>
 <br>
 
-*Consider the following RCT with two parallel groups with a 1:1 randomization ratio and 2 planned intermediate analyses for efficacy by using the O'Brien-Fleming method for considering the inflation of the type-I error rate). The expected mean is 66 units in patients in the experimental arm versus 72 units in the control arm. In order to demonstrate such a difference of 6 units, with a standard deviation of 23, a 5% two-sided type-I error rate and a power of 80%,  the final analysis should be carried out on 472 patients (236 patients per group). The first and second intermediate analyses would be performed on 158 and 316 patients respectively, i.e. 33% and 66% of the maximum number of included patients if their is no decision of stopping the study.*
+*Consider the following RCT with two parallel groups with a 1:1 randomization ratio and 2 planned intermediate analyses for efficacy by using the O'Brien-Fleming method for considering the inflation of the type I error rate). The expected mean is 66 units in patients in the experimental arm versus 72 units in the control arm. In order to demonstrate such a difference of 6 units, with a standard deviation of 23, a 5% two-sided type I error rate and a power of 80%,  the final analysis should be carried out on 472 patients (236 patients per group). The first and second intermediate analyses would be performed on 158 and 316 patients respectively, i.e. 33% and 66% of the maximum number of included patients if their is no decision of stopping the study.*
 
 ```r
 library("rpact")
@@ -93,7 +92,7 @@ summary(designPlan)
 * typeOfDesign: type of design ("OF" for the O'Brien-Fleming method)
 * informationRates: planned analyses defined as proportions of the maximum sample size
 * alpha: recquired type I error rate
-* beta: recquired type II error rate (1-power)
+* beta: recquired type II error rate (1 minus power)
 * sided: one-sided test (1), two-sided test (2)
 * alternative: expected difference between the two arms
 * stDev: expected standard deviation in the two arms
@@ -107,7 +106,7 @@ summary(designPlan)
 <summary>No intermediate anlysis</summary>
 <br>
 
-*Consider the following RCT with two parallel groups with a 1:1 randomization ratio. The expected mean is 66 units in patients in the control arm and no difference compared to the experimental arm. Assuming an absolute non-inferiority margin of 7 points, a standard deviation of 23, the minimum sample size per arm equals 134 (i.e., a total of 268 patients) to achieve a 5% one-sided type-I error rate and a power of 80%*
+*Consider the following RCT with two parallel groups with a 1:1 randomization ratio. The expected mean is 66 units in patients in the control arm and no difference compared to the experimental arm. Assuming an absolute non-inferiority margin of 7 points, a standard deviation of 23, the minimum sample size per arm equals 134 (i.e., a total of 268 patients) to achieve a 5% one-sided type I error rate and a power of 80%*
 
 
 ```r
@@ -115,6 +114,21 @@ library(epiR)
 	
 epi.ssninfc(treat = 66, control = 66, sd= 23, delta = 7,
             power = 0.8, alpha = 0.05, r = 1, n = NA)
+
+#> $n.total
+#> [1] 268
+
+#> $n.treat
+#> [1] 134
+
+#> $n.control
+#> [1] 134
+
+#> $delta
+#> [1] 7
+
+#> $power
+#> [1] 0.8
 ```
 	
 **Input parameters:**
@@ -124,47 +138,57 @@ epi.ssninfc(treat = 66, control = 66, sd= 23, delta = 7,
 * sd: expected standard deviation in the two arms
 * delta: equivalence limit
 * alpha: recquired type I error rate
-* power: required power (1 minus type-II error rate)
+* power: required power (1 minus type II error rate)
 * r: randomization ratio (experimental:control)
-* n: number of subjects to include (experimental + control), define as NA
+* n: number of subjects to include (experimental + control) define as NA
 
 </summary>
 </details>
 
-
-## COMPARING PROPORTIONS
-
-Evaluation of treatment effect based on discrete clinical endpoint, the proportions of events that have occurred between treatment groups are compared.
+## COMPARING TWO PROPORTIONS
 
 ### &nbsp;&nbsp;&nbsp;&nbsp;SUPERIORITY
 
 <details>
-<summary>Normal design</summary>
+<summary>No intermediate anlysis</summary>
 <br>
 
-	
-*Sample size for a randomised controlled superiority trial in two parallel groups (experimental treatment A versus control treatment B) with balanced randomisation (ratio 1 :1) for a binary endpoint. The proportion of patients with an episode of hypertension was 35% with the B treatment compared to 28% with treatment A. In order to highlight this absolute difference of 7%, with a two-sided alpha risk of 5% and a power of 80%, the sample size is related to the result of the script bellow :*
-	
-	
+*Consider the following RCT with two parallel groups with a 1:1 randomization ratio. The expected proportion of events is 35% in the experimental arm compared to 28% in the control arm. In order to demonstrate such a difference of 7%, with a two-sided type I error rate of 5% and a power of 80%, the minimum sample size per arm equals 691 (i.e., a total of 1382 patients).*
+
 ```r
 library(epiR)
 
-epi.sscohortc(N = NA, irexp1 = 0.35, irexp0 = 0.28, pexp = NA, n = NA, 
-			power = 0.80, r = 1, design = 1, sided.test = 2, 
-			finite.correction = FALSE, nfractional = FALSE, conf.level = 0.95)
+epi.sscohortc(irexp1 = 0.35, irexp0 = 0.28, power = 0.80, r = 1,
+              sided.test = 2, conf.level = 1-0.05)
 
+#> $n.total
+#> [1] 1382
+
+#> $n.exp1
+#> [1] 691
+
+#> $n.exp0
+#> [1] 691
+
+#> $power
+#> [1] 0.8
+
+#> $irr
+#> [1] 1.25
+
+#> $or
+#> [1] 1.384615
 ```
 	
 **Parameters :**
 
-*	irexp1 : Proportion expected within the experimental group
-*	irexp0 : Proportion expected within the control group
-* n : number of subjects to include (experimental + control), define as NA
-*	power : Power of the trial
-* r : randomization ratio, number of patients of the experimental group divided by the number of patients of the control group
-* design : estimated design effect
-*	sided.test : One-side test (=1), two-side test (=2) 
-*	conf.level : Confidence level (1-α)
+*	irexp1: expected proportion in the experimental group
+*	irexp0: expected proportion  in the control group
+*	power: required power (1 minus type II error rate)
+* r: randomization ratio (experimental:control)
+* sided: one-sided test (1), two-sided test (2)
+* conf.level: recquired confidence level (1 minus type I error rate)
+
 </summary>
 </details>
 
