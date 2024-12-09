@@ -1,5 +1,3 @@
-
-
 library(shiny)
 library(shinydashboard)
 library(epiR)
@@ -32,11 +30,38 @@ ui <- fluidPage(
                   tags$a(href='https://chu-poitiers.fr',
                          tags$img(src='LogoCHU.png', height = "100%" , align="left"))),
            column(width = 9,
-                  style="height: 100%",
-                  includeHTML("appName.html"))
+                  h1("SAMPLE SIZE CALCULATOR"))
            ),
   fluidRow(
     navbarPage(title = icon("users",class ="fa-solid fa-users"),
+# DESCRIBE PROPORTION ---------------------------------------------------------------------------------------------------
+             tabPanel(title = "DESCRIBE PROPORTION",
+                      fluidRow(column(width = 12,
+                                      h3("DESCRIBE PROPORTION"))),
+                      br(),
+                      sidebarLayout(
+                        sidebarPanel(
+                          numericInput(inputId = "descExpProp",
+                                       label = "Expected proportion (%)",
+                                       value = NULL,
+                                       max = 100,
+                                       min = 0),
+                          numericInput(inputId = "widthDesc",
+                                       label = "Confidence interval width (%)",
+                                       value = NULL,
+                                       max = 100,
+                                       min = 0),
+                          numericInput(inputId = "descAlpha",
+                                       label = "Type I error rate, alpha (%)",
+                                       value = 5)
+                        ),
+                        mainPanel(
+                          actionButton(inputId = "Desc", label =  "Results"),
+                          br(),
+                          htmlOutput("description"))
+                      )
+             ),
+
 # PAGE COMPARING PROPORTIONS --------------------------------------------------------------------------------------------
              tabPanel(title = "COMPARING PROPORTIONS",
                       fluidRow(column(width = 12,
@@ -50,12 +75,12 @@ ui <- fluidPage(
                           #when an item is selected, the next appear
                           numericInput(inputId = "powerProp",
                                        label = "Power (%)",
-                                       value = NULL,
+                                       value = 80,
                                        max = 100,
                                        min = 0),
                           numericInput(inputId = "alphaProp",
-                                       label = "Alpha (%)",
-                                       value = NULL,
+                                       label = "Type I error rate, alpha (%)",
+                                       value = 5,
                                        max = 20,
                                        min = 0,
                                        step = 0.5),
@@ -83,14 +108,13 @@ ui <- fluidPage(
                                          label = "Delta",
                                          value = NULL,
                                          step = 0.005))
-                          ),
+                        ),
                         mainPanel(
                           actionButton(inputId = "Prop", label =  "Results"),
                           br(),
                           htmlOutput("proportion"))
-                        ) # sidebarLayout
-                      ), # Comparing proportion
-
+                      ) # sidebarLayout
+                    ), # Comparing proportion
 
 # PAGE COMPARING MEANS --------------------------------------------------------------------------------------------------
 
@@ -106,10 +130,10 @@ ui <- fluidPage(
                           #when an item is selected, the next appear
                           numericInput(inputId = "powerMean",
                                        label = "Power (%)",
-                                       value = NULL),
+                                       value = 80),
                           numericInput(inputId = "alphaMean",
-                                       label = "Alpha (%)",
-                                       value = NULL,
+                                       label = "Type I error rate, alpha (%)",
+                                       value = 5,
                                        step = 0.5),
                           conditionalPanel(
                             condition = "input.hypMean == 'superiority' || input.hypMean == 'non-inferiority'",
@@ -139,13 +163,13 @@ ui <- fluidPage(
                                          label = "Delta",
                                          value = NULL,
                                          step = 0,005))
-                          ), # sidebar panel
+                        ), # sidebar panel
                         mainPanel(
                           actionButton("Mean", "Results"),
                           br(),
                           htmlOutput("mean"))
-                        ) # sidebarLayout
-                      ), # Comparing means
+                      ) # sidebarLayout
+                    ), # Comparing means
 
 
 # PAGE BINARY EVENT PREDICTION ------------------------------------------------------------------------------------------
@@ -181,7 +205,7 @@ ui <- fluidPage(
                                         step = 1),
                            numericInput(inputId = "alphaExtVal",
                                         label = "Type I error rate, alpha (%)",
-                                        value = NULL,
+                                        value = 5,
                                         step = 0.5),
                            #The total length of the confidence of O/E
                            numericInput(inputId = "widthExtVal",
@@ -189,13 +213,13 @@ ui <- fluidPage(
                                         value = NULL,
                                         step = 0.1)
                            )
-                         ),
+                        ),
                        mainPanel(
                          actionButton("Pred", "Results"),
                          br(),
                          htmlOutput("prediction"))
-                       )
-                     ) # BINARY EVENT PREDICTION
+                      )
+                    ) # BINARY EVENT PREDICTION
     )
   )
 )
@@ -219,6 +243,16 @@ server <- function(input, output) {
 
   
   # sample size result of the computation -------------------------
+  #DESCRITPION
+  resDesc <- eventReactive(input$Desc,{
+    sampleSizeDesc <- function(p=input$descExpProp/100, alpha=input$descAlpha/100, width=input$widthDesc/100){
+      Z <- qnorm(1-alpha/2)
+      (((2*Z)**2)*(p*(1-p)))/(width**2)
+    }
+    
+    ceiling(sampleSizeDesc())
+  })
+  
   # MEAN
   resMean <- eventReactive(input$Mean,{
     if(reactive(input$hypMean)()=='superiority')
@@ -251,6 +285,12 @@ server <- function(input, output) {
   })
   
   # reactive example sentence -------------------------
+  z <- eventReactive(input$Desc,{
+    paste0("This sample size is for a binary endpoint descriptive study.In order to demonstrate the expected proportion
+           of event of 35% with a precision define by a 10% width confidence interval and a 5% two-sided type I error
+           rate, the minimum sample size needed is ",resDesc()," patients")
+  })
+  
   a <- eventReactive(input$Mean,{
     if(reactive(input$hypMean)()=='superiority')
     paste0("This sample size is for a randomised controlled superiority trial in two parallel groups 
@@ -299,6 +339,7 @@ server <- function(input, output) {
   
   
   # display the result -------------------------
+  output$description <- renderText(paste("<p>The needed sample size is <b>",resDesc(), "</b> patients. </p>", z()))
   output$mean <- renderText(paste("<p>The needed sample size is <b>",resMean(), "</b> patients in each group. </p>", a()))
   output$proportion <- renderText(paste0("<p>The needed sample size is <b>",resProp(), "</b> patients in each group. </p>", b()))
   output$prediction <- renderText(paste0("<p>The needed sample size is <b>",resPred(), "</b> patients. </p>", c()))
