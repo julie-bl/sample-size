@@ -3,6 +3,8 @@ library(shinydashboard)
 library(epiR)
 library(shinythemes)
 library(shinyjs)
+library(drcarlate)
+library(rpact)
 
 
 se <- function(width, alpha) # The standard error associated with the 1-alpha confidence interval
@@ -72,7 +74,9 @@ ui <- fluidPage(
                           selectInput(inputId = "hypProp",
                                       label = "Hypothesis",
                                       choices = c(" ","superiority", "non-inferiority")),
-                          #when an item is selected, the next appear
+                          selectInput(inputId = "meanDesign",
+                                      label = "Design",
+                                      choices = c("","No intermediate analysis", "Sequential design")),
                           numericInput(inputId = "powerProp",
                                        label = "Power (%)",
                                        value = 80,
@@ -127,7 +131,9 @@ ui <- fluidPage(
                           selectInput(inputId = "hypMean",
                                       label = "Hypothesis",
                                       choices = c(" ","superiority", "non-inferiority")), 
-                          #when an item is selected, the next appear
+                          selectInput(inputId = "meanDesign",
+                                      label = "Design",
+                                      choices = c("","No intermediate analysis", "Sequential design")),
                           numericInput(inputId = "powerMean",
                                        label = "Power (%)",
                                        value = 80),
@@ -219,7 +225,39 @@ ui <- fluidPage(
                          br(),
                          htmlOutput("prediction"))
                       )
-                    ) # BINARY EVENT PREDICTION
+                    ), # BINARY EVENT PREDICTION
+
+# PAGE COMPARING TWO ROC CURVES -----------------------------------------------------------------------------------------
+            tabPanel(title = "COMPARING TWO ROC CURVES",
+                     fluidRow(column(width = 12,
+                                     h3("COMPARING TWO ROC CURVES"))),
+                     br(),
+                     sidebarLayout(
+                       sidebarPanel(
+                         numericInput(inputId = "AUC1",
+                                      label = "First diagnostic test AUC",
+                                      value = NULL,
+                                      step = 0.001),
+                         numericInput(inputId = "AUC2",
+                                      label = "Second diagnostic test AUC",
+                                      value = NULL,
+                                      step = 0.001),
+                         numericInput(inputId = "alphaAUC",
+                                      label = "Type I error rate, alpha (%)",
+                                      value = 5,
+                                      step = 0.5),
+                         numericInput(inputId = "powerAUC",
+                                      label = "Power (%)",
+                                      value = 80,
+                                      min = 0,
+                                      max = 100)
+                       ),
+                       mainPanel(
+                         actionButton("AUC", "Results"),
+                         br(),
+                         htmlOutput("AUC"))
+                       )
+                     )
     )
   )
 )
@@ -228,13 +266,13 @@ ui <- fluidPage(
 
 
 
-#########################################################################################################################
-#################################################   SERVER   ############################################################
-#########################################################################################################################
+##################################################################################################################################
+##########################################################   SERVER   ############################################################
+##################################################################################################################################
 
 server <- function(input, output) {
   
-  # convert to numeric value --------------------------------------
+  # convert to numeric value -----------------------------------------------------------------------------------------------------
   # "one-sided" <- 1
   # "tow-sided" <- 2
   stMean <- reactive( if (reactive(input$sidetestMean)()=="one-sided") 1 else 2 )
@@ -242,8 +280,9 @@ server <- function(input, output) {
   stProp <- reactive( if (reactive(input$sidetestProp)()=="one-sided") 1 else 2 )
 
   
-  # sample size result of the computation -------------------------
-  #DESCRITPION
+  # sample size result of the computation ----------------------------------------------------------------------------------------
+  
+  #DESCRITPION -------------------------------------------------------------------------------------------------------------------
   resDesc <- eventReactive(input$Desc,{
     sampleSizeDesc <- function(p=input$descExpProp/100, alpha=input$descAlpha/100, width=input$widthDesc/100){
       Z <- qnorm(1-alpha/2)
@@ -253,19 +292,34 @@ server <- function(input, output) {
     ceiling(sampleSizeDesc())
   })
   
-  # MEAN
+  # MEAN -------------------------------------------------------------------------------------------------------------------------
   resMean <- eventReactive(input$Mean,{
-    if(reactive(input$hypMean)()=='superiority')
-      epi.sscompc(N = NA, treat = input$prevMean, control = input$obsMean, 
-                  sigma = input$sigmaMean, n = NA, power = input$powerMean/100, 
-                  r = 1, design = 1, sided.test = stMean(), conf.level = 1-(input$alphaMean/100))$n.treat
-    else
-      epi.ssninfc(treat = input$obsMean, control = input$obsMean, sigma = input$sigmaMean, 
-                  delta = input$deltaMean, n = NA, power = input$powerMean/100, alpha = input$alphaMean/100, r = 1)$n.treat
-      })
+    if(reactive(input$hypMean)()=='superiority'){ # MEAN SUPERIORITY -------------------------------------------------------------
+      if(reactive(input$meanDesign)()=='No intermediate analysis') # MEAN SUPERIORITY NO INTERMEDIATE DESIGN ----------------------
+        epi.sscompc(N = NA, treat = input$prevMean, control = input$obsMean, 
+                    sigma = input$sigmaMean, n = NA, power = input$powerMean/100, 
+                    r = 1, design = 1, sided.test = stMean(), conf.level = 1-(input$alphaMean/100))$n.treat
+      else # MEAN SUPERIORITY SEQUENTIAL DESIGN ----------------------------------------------------------------------------------
+        design <- getDesignGroupSequential(typeOfDesign = "OF", informationRates = c(1/3, 2/3, 1),
+                                           alpha = input$alpharMean/100, beta = 1-input$powerMean/100, sided = stMean())
+        designPlan <- getSampleSizeMeans(design, alternative = abs(input$prevMean-input$obsMean), stDev = input$sigmaMean,
+                                       allocationRatioPlanned = 1)
+        designPlan
+    }else{ # MEAN NON-INFERIORITY -----------------------------------------------------------------------------------------------
+      if(reactive(input$meanDesign)()=='No intermediate analysis') # MEAN NON-INFERIORITY NO INTERMEDIATE DESIGN -----------------
+        epi.ssninfc(treat = input$obsMean, control = input$obsMean, sigma = input$sigmaMean, 
+                    delta = input$deltaMean, n = NA, power = input$powerMean/100, alpha = input$alphaMean/100, r = 1)$n.treat
+      else # MEAN NON-INFERIORITY SEQUENTIAL DESIGN -----------------------------------------------------------------------------
+        design <- getDesignGroupSequential(typeOfDesign = "OF", informationRates = c(1/3, 2/3, 1),
+                                           alpha = input$alphaMean/100, beta = 1-input$powerMean/100, sided = 1)
+        designPlan <- getSampleSizeMeans(design, alternative = 0, stDev = input$sigmaMean,
+                                       allocationRatioPlanned = 1)
+        designPlan
+      }
+    })
     
       
-  # PROPORTION
+  # PROPORTION ------------------------------------------------------------------------------------------------------------------
   resProp <- eventReactive(input$Prop,{
     if(reactive(input$hypProp)()=='superiority')
       epi.sscohortc(N = NA, irexp1 = input$prevProp/100, irexp0 = input$obsProp/100, pexp = NA, n = NA, 
@@ -276,37 +330,64 @@ server <- function(input, output) {
                   n = NA, r = 1, power = input$powerProp/100, alpha = input$alphaProp/100)$n.treat
     })
   
-  # PREDICTIVE
+  # PREDICTIVE ------------------------------------------------------------------------------------------------------------------
   resPred <- eventReactive(input$Pred,{
-    if(reactive(input$typePred)()=='construction')
+    if(reactive(input$typePred)()=='Construction of predictive model')
       ceiling(input$predictorsToTest/((input$shrinkageExpected-1)*log(1-input$R2/input$shrinkageExpected)))
     else
       ceiling(size.calib(p0=input$P0/100, width = input$widthExtVal/100, alpha = input$alphaExtVal/100))
   })
   
-  # reactive example sentence -------------------------
+  # AUC -------------------------------------------------------------------------------------------------------------------------
+  resAUC <- eventReactive(input$AUC,{
+    varAUC <- function(auc){
+      a <- norminv(auc)*1.414
+      (0.0099*exp(-(a**2)/2))*(6*(a**2)+16)
+    }
+    
+    compAUC <- function(auc1=input$AUC1, auc2=input$AUC2, alpha=input$alphaAUC/100, power=input$powerAUC/100){
+      ((qnorm(1-alpha/2)*sqrt(2*varAUC((auc1+auc2)/2))+qnorm(power)*sqrt(varAUC(auc1)+varAUC(auc2)))**2)/((auc2-auc1)**2)
+    }
+    
+    ceiling(compAUC())
+  })
+  
+  # reactive example sentence ---------------------------------------------------------------------------------------------------
   z <- eventReactive(input$Desc,{
-    paste0("This sample size is for a binary endpoint descriptive study.In order to demonstrate the expected proportion
+    paste0("This sample size is for a binary endpoint descriptive study. In order to demonstrate the expected proportion
            of event of 35% with a precision define by a 10% width confidence interval and a 5% two-sided type I error
            rate, the minimum sample size needed is ",resDesc()," patients")
   })
   
   a <- eventReactive(input$Mean,{
     if(reactive(input$hypMean)()=='superiority')
-    paste0("This sample size is for a randomised controlled superiority trial in two parallel groups 
+      if(reactive(input$meanDesign)()=='')
+      paste0("This sample size is for a randomised controlled superiority trial in two parallel groups 
            experimental treatment versus control treatment with balanced randomisation (ratio 1 :1) for a continuous 
            endpoint. The mean of the criteria is ",input$prevMean," with experimental treatment compared to
            ",input$obsMean," with control treatment. In order to highlight this absolute difference of 
            ",abs(input$prevMean-input$obsMean),", with a standard deviation of ",input$sigmaMean,", with a "
            ,input$sidetestMean," alpha risk of ",input$alphaMean,"% and a power of ",input$powerMean,"%,
            the needed sample size is ",resMean(), " patients in each group.")
+      else
+        paste0("This sample size is for a RCT with an expected mean of ",input$prevMean," units in patients in the 
+               experimental arm versus ",input$obsMean," units in the control arm. In order to demonstrate such a 
+               difference of ",abs(input$prevMean-input$obsMean)," units, with a standard deviation of ",input$sigmaMean,"
+               , a ",input$alphaMean,"% ",input$sidetestMean," type I error rate and a power of ",input$powerMean,"%, 
+               the final analysis should be carried out on ",ceiling(resMean$numberOfSubjects[3])," patients 
+               (",ceiling(resMean$numberOfSubjects[3]/2)," patients per group). The first and second intermediate 
+               analyses would be performed on ",ceiling(resMean$numberOfSubjects[1])," and 316 patients respectively, i.e. 33% and 66% of the maximum number of included 
+               patients if their is no decision of stopping the study")
     else
+      if(reactive(input$meanDesign)()=='')
       paste0("This sample size for a randomised controlled non-inferiority trial in two parallel groups experimental 
              treatment versus control treatment with balanced randomisation (ratio 1 :1) for a continuous endpoint. 
              The mean of the criteria is ",input$obsMean," with treatment A. Assuming an absolute non-inferiority margin 
              of ",input$deltaMean,", with a standard deviation of ",input$sigmaMean,", with a one-sided alpha risk of "
              ,input$alphaMean,"% and a power of ",input$powerMean,"%, the needed sample size is ",resMean(), "
               patients in each group.")
+    else
+      paste0("")
       
       })
   
@@ -337,12 +418,18 @@ server <- function(input, output) {
              interval width of ",input$widthExtVal,"% (Riley et al.  Statistics in Medicine. 2021;19:4230-4251).")
     })
   
+  d <- eventReactive(input$AUC,{
+    paste0("This sample size is for comparing accuracy of two diagnostic tests assuming a detection of ",(input$AUC2-input$AUC1)*100,"
+           % difference in estimating two independent diagnostic systems (AUC1 = ",input$AUC1," and AUC2 = ",input$AUC2,") 
+           with ",(100-input$alphaAUC),"% confidence and ",input$powerAUC,"% power.")
+  })  
   
-  # display the result -------------------------
+  # display the result ----------------------------------------------------------------------------------------------------------
   output$description <- renderText(paste("<p>The needed sample size is <b>",resDesc(), "</b> patients. </p>", z()))
   output$mean <- renderText(paste("<p>The needed sample size is <b>",resMean(), "</b> patients in each group. </p>", a()))
   output$proportion <- renderText(paste0("<p>The needed sample size is <b>",resProp(), "</b> patients in each group. </p>", b()))
   output$prediction <- renderText(paste0("<p>The needed sample size is <b>",resPred(), "</b> patients. </p>", c()))
+  output$AUC <- renderText(paste0("<p>The needed sample size is <b>",resAUC(),"</b> patients.</p>", d()))
 }
 
 # Run the application

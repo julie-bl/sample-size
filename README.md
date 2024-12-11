@@ -10,10 +10,10 @@ This page is devoted to the calculation of the number of patients required for s
 
 * **Sequential RCT:** Intermediate analyses for early stopping the study.
 
-## DESCRIBE A PROPORTION
+## DESCRIBE A POPULATION
 
 <details>
-<summary>No intermediate analysis</summary>
+<summary>PROPORTION ENDPOINT</summary>
 <br>
 
 *Consider the following binary endpoint descriptive study. In order to demonstrate the expected proportion of event of 35% with a precision define by a 10% width confidence interval and a 5% two-sided type I error rate, the minimum sample size needed is 350 patients.**
@@ -320,7 +320,7 @@ sampleSize()
 **Input parameters:**
 * predictors : number of predictors as candidates
 * R2 : expected R2
-* shrinkage : expected shrinkage
+* shrink : expected shrinkage
 
 </summary>
 </details>
