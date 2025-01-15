@@ -82,10 +82,10 @@ epi.sscompc(treat = 66, control = 72,	sigma = 23, n = NA, power = 0.8,
 * control: expected mean in the control arm
 * sigma: expected standard deviation in the two arms
 * n: define as NA
-* power: recquired power (1 minus type II error rate)
+* power: required power (1 minus type II error rate)
 * r: randomization ratio (experimental:control)
 * sided.test: one-sided test (1) or two-sided test (2) 
-* conf.level: recquired confidence level (1 minus type I error rate)
+* conf.level: required confidence level (1 minus type I error rate)
 
 </details>
 
@@ -123,7 +123,7 @@ N_tot_SW <- Npat_center*center
 
 
 SampSize_I <- epi.sscompc(treat = 38, control = 48, sigma = 17, n = NA, 
-                          power = 0.9, r = 1, sided.test = 2, conf.level = 1-0.05)
+                          r = 1, power = 0.9, sided.test = 2, conf.level = 1-0.05)
 
 SampleSize_SW(ni = SampSize_I$n.total, center = 30, sequence = 30, icc = 0.05)
 
@@ -136,10 +136,10 @@ SampleSize_SW(ni = SampSize_I$n.total, center = 30, sequence = 30, icc = 0.05)
 * control: expected mean in the control arm
 * sigma: expected standard deviation in the two arms
 * n: number of subjects to include (experimental + control) define as NA
-* power: recquired power (1 minus type II error rate)
 * r: randomization ratio (experimental:control)
+* power: required power (1 minus type II error rate)
 * sided.test: one-sided test (1) or two-sided test (2) 
-* conf.level: recquired confidence level (1 minus type I error rate)
+* conf.level: required confidence level (1 minus type I error rate)
 * ni: sample size in case of individual randomization
 * center: number of centers in the stepped wedge design
 * sequence: number of sequences in the stepped wedge design
@@ -233,7 +233,7 @@ epi.ssninfc(treat = 66, control = 66, sigma = 23, delta = 7,
 * control: expected mean in the control arm
 * sigma: expected standard deviation in the two arms
 * delta: equivalence limit
-* alpha: recquired type I error rate
+* alpha: required type I error rate
 * power: required power (1 minus type II error rate)
 * r: randomization ratio (experimental:control)
 * n: number of subjects to include (experimental + control) define as NA
@@ -276,7 +276,7 @@ N_tot_SW <- Npat_center*center
 
 
 SampSize_I <- epi.ssninfc(treat = 48, control = 48, sigma = 17, delta = 7,
-                          power = 0.9, alpha = 0.05, r = 1, n = NA)
+                           n = NA, r = 1, power = 0.9, alpha = 0.05)
                           
 SampleSize_SW(ni = SampSize_I$n.total, center = 30, sequence = 30, icc = 0.05)
 
@@ -290,9 +290,9 @@ SampleSize_SW(ni = SampSize_I$n.total, center = 30, sequence = 30, icc = 0.05)
 * sigma: expected standard deviation in the two arms
 * delta: equivalence limit
 * n: number of subjects to include (experimental + control) define as NA
-* power: recquired power (1 minus type II error rate)
-* alpha: recquired confidence level (type I error rate)
 * r: randomization ratio (experimental:control)
+* power: required power (1 minus type II error rate)
+* alpha: required confidence level (type I error rate)
 * ni: sample size in case of individual randomization
 * center: number of centers in the stepped wedge design
 * sequence: number of sequences in the stepped wedge design
@@ -345,7 +345,7 @@ epi.sscohortc(irexp1 = 0.35, irexp0 = 0.28, n = NA, power = 0.80,
 **Input parameters:**
 *	irexp1: expected proportion in the experimental group
 *	irexp0: expected proportion in the control group
-*	n: define as NA
+*	n: number of subjects to include (experimental + control) define as NA
 *	power: required power (1 minus type II error rate)
 * r: randomization ratio (experimental:control)
 * sided: one-sided test (1), two-sided test (2)
@@ -388,8 +388,8 @@ N_tot_SW <- Npat_center*center
 }
 
 
-SampSize_I <- epi.sscohortc(irexp1 = 0.72, irexp0 = 0.62, n = NA, 
-                            power = 0.80, r = 1, sided.test = 2, conf.level = 1-0.05)
+SampSize_I <- epi.sscohortc(irexp1 = 0.72, irexp0 = 0.62, n = NA, r = 1,
+                            power = 0.80, sided.test = 2, conf.level = 1-0.05)
                             
 SampleSize_SW(ni = SampSize_I$n.total, center = 15, sequence = 5, icc = 0.01)
 
@@ -401,10 +401,10 @@ SampleSize_SW(ni = SampSize_I$n.total, center = 15, sequence = 5, icc = 0.01)
 *	irexp1: expected proportion in the experimental group
 *	irexp0: expected proportion in the control group
 * n: number of subjects to include (experimental + control) define as NA
-*	power: required power (1 minus type II error rate)
 * r: randomization ratio (experimental:control)
-* sided: one-sided test (1), two-sided test (2)
-* conf.level: recquired confidence level (1 minus type I error rate)
+*	power: required power (1 minus type II error rate)
+* sided.test: one-sided test (1), two-sided test (2)
+* conf.level: required confidence level (1 minus type I error rate)
 * ni: sample size in case of individual randomization
 * center: number of centers in the stepped wedge design
 * sequence: number of sequences in the stepped wedge design
@@ -450,8 +450,8 @@ summary(designPlan)
 **Input parameters:**
 * typeOfDesign: type of design ("OF" for the O'Brien-Fleming method)
 * informationRates: planned analyses defined as proportions of the maximum sample size
-* alpha: recquired type I error rate
-* beta: recquired type II error rate (1 minus power)
+* alpha: required type I error rate
+* beta: required type II error rate (1 minus power)
 * sided: one-sided test (1), two-sided test (2)
 * pi1: expected probability in the experimental group
 * pi2: expected probability in the control group
@@ -496,7 +496,7 @@ epi.ssninfb(treat = 0.35, control = 0.35, delta = 0.05,
 * treat: expected proportion in the experimental arm
 * control: expected proportion in the control arm
 * delta: equivalence limit
-* alpha: recquired type I error rate
+* alpha: required type I error rate
 * power: required power (1 minus type II error rate)
 * r: randomization ratio (experimental:control)
 * n: number of subjects to include (experimental + control) define as NA
@@ -553,7 +553,7 @@ SampleSize_SW(ni = SampSize_I$n.total, center = 15, sequence = 5, icc = 0.01)
 * n: number of subjects to include (experimental + control) define as NA
 * r: randomization ratio (experimental:control)
 * power: required power (1 minus type II error rate)
-* alpha: recquired type I error rate
+* alpha: required type I error rate
 * ni: sample size in case of individual randomization
 * center: number of centers in the stepped wedge design
 * sequence: number of sequences in the stepped wedge design
