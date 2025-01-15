@@ -10,6 +10,10 @@ This page is devoted to the calculation of the number of patients required for s
 
 * **Sequential RCT:** Intermediate analyses for early stopping the study.
 
+* **Stepped wedge RCT:** Clusters are randomized sequentially to cross from control to experimental intervention <sup>1</sup>.
+
+<sup>1</sup> Hemming K, Taljaard M. <a href=https://doi.org/10.1016/j.jclinepi.2015.08.015>Sample size calculations for stepped wedge and cluster randomised trials: a unified approach.</a> J Clin Epidemiol. 2016 Jan;69:137-46
+
 ## DESCRIBE A POPULATION
 
 <details>
@@ -45,6 +49,10 @@ sampleSize()
 <summary>No intermediate analysis</summary>
 <br>
 
+<details>
+<summary>Individual randomization</summary>
+<br>
+
 *Consider the following RCT with two parallel groups with a 1:1 randomization ratio. The expected mean is 66 units in patients in the experimental arm versus 72 units in the control arm. In order to demonstrate such a difference of 6 units, with a standard deviation of 23, a 5% two-sided type I error rate and a power of 80%, the minimum sample size per arm equals 231 (i.e., a total of 462 patients).*
 
 ```r
@@ -73,13 +81,98 @@ epi.sscompc(treat = 66, control = 72,	sigma = 23, n = NA, power = 0.8,
 * treat: expected mean in the experimental arm
 * control: expected mean in the control arm
 * sigma: expected standard deviation in the two arms
+* n: define as NA
 * power: recquired power (1 minus type II error rate)
 * r: randomization ratio (experimental:control)
 * sided.test: one-sided test (1) or two-sided test (2) 
 * conf.level: recquired confidence level (1 minus type I error rate)
 
 </summary>
-</details>	
+</details>
+
+<details>
+<summary>Stepped wedge randomization</summary>
+<br>
+
+*Consider the following stepped wedge RCT with 30 centers randomized in 30 sequences. The expected mean is 38 units in patients in the experimental arm versus 48 units in the control arm. In order to demonstrate such a difference of 10 units, with a standard deviation of 17, a 5% two-sided type I error rate and a power of 90%, the minimum sample size per arm equals 61 (i.e., a total of 122 patients) in case of individual randomization with a 1:1 ratio.* 
+<br>
+*According to our stepped wedge design and assuming an intraclass correlation coefficient of 0.05, we need to recruit 208 patients (104 in each arm).*
+
+```r
+library(epiR)
+		
+SampSize_I <- epi.sscompc(treat = 38, control = 48,	sigma = 17, n = NA, 
+                          power = 0.9, r = 1, sided.test = 2, conf.level = 1-0.05)
+
+#> $n.total
+#> [1] 122
+ 
+#> $n.treat
+#> [1] 61
+ 
+#> $n.control
+#> [1] 61
+ 
+#> $power
+#> [1] 0.9
+
+#> $delta
+#> [1] 10
+
+Nindiv <- SampSize_I$n.total
+
+```
+
+**Input parameters:**
+* treat: expected mean in the experimental arm
+* control: expected mean in the control arm
+* sigma: expected standard deviation in the two arms
+* n: define as NA
+* power: recquired power (1 minus type II error rate)
+* r: randomization ratio (experimental:control)
+* sided.test: one-sided test (1) or two-sided test (2) 
+* conf.level: recquired confidence level (1 minus type I error rate)
+
+
+```r
+
+# Define stepped wedge parameters
+
+N_center = 30 
+N_seq = 30  
+rho = 0.05 
+
+# Resolve the quadratic equation
+
+N_ratio = N_center/N_seq 
+aa <- -2*N_center*(N_seq - 1/N_seq)*rho*(1+N_seq/2)
+bb <- 3*Nindiv*(1-rho)*rho*(1+N_seq) - 2*N_center*(N_seq -1/N_seq)*(1-rho)
+cc <- 3*Nindiv*(1-rho)*(1-rho)
+
+m1 <- (-bb + sqrt(bb^2 - 4*aa*cc)) / (2*aa)
+m2 <- (-bb - sqrt(bb^2 - 4*aa*cc)) / (2*aa)
+m_sol <- max(m1,m2) 
+
+Npat_center <- m_sol*(N_seq+1) 
+N_tot_SW <- Npat_center*N_center 
+
+# Results
+
+N_total_SW <- 2*ceiling(N_tot_SW /2)
+N_total_SW
+
+```
+
+**Input parameters:**
+* N_center: number of centers in the stepped wedge design
+* N_seq: number of sequences in the stepped wedge design
+* rho: intraclass correlation coefficient anticipated 
+
+
+</summary>
+</details>
+
+</details>
 
 <details>
 <summary>Sequential design</summary>
@@ -132,12 +225,16 @@ summary(designPlan)
 <summary>No intermediate analysis</summary>
 <br>
 
+<details>
+<summary>Individual randomization</summary>
+<br>
+
 *Consider the following RCT with two parallel groups with a 1:1 randomization ratio. The expected mean is 66 units in patients in the control arm and no difference compared to the experimental arm. Assuming an absolute non-inferiority margin of 7 points, a standard deviation of 23, the minimum sample size per arm equals 134 (i.e., a total of 268 patients) to achieve a 5% one-sided type I error rate and a power of 80%*
 
 ```r
 library(epiR)
 	
-epi.ssninfc(treat = 66, control = 66, sd= 23, delta = 7,
+epi.ssninfc(treat = 66, control = 66, sigma = 23, delta = 7,
             power = 0.8, alpha = 0.05, r = 1, n = NA)
 
 #> $n.total
@@ -159,7 +256,7 @@ epi.ssninfc(treat = 66, control = 66, sd= 23, delta = 7,
 **Input parameters:**
 * treat: expected mean in the experimental arm
 * control: expected mean in the control arm
-* sd: expected standard deviation in the two arms
+* sigma: expected standard deviation in the two arms
 * delta: equivalence limit
 * alpha: recquired type I error rate
 * power: required power (1 minus type II error rate)
@@ -169,6 +266,94 @@ epi.ssninfc(treat = 66, control = 66, sd= 23, delta = 7,
 </summary>
 </details>
 
+
+<details>
+<summary>Stepped wedge randomization</summary>
+<br>
+
+*Consider the following stepped wedge RCT with 30 centers randomized in 30 sequences. The expected mean is 48 units in patients in the control arm and no difference compared to the experimental arm. Assuming an absolute non-inferiority margin of 7 points, a standard deviation of 17, the minimum sample size per arm equals 102 (i.e., a total of 204 patients) to achieve a 5% one-sided type I error rate and a power of 90% in case of individual randomization with a 1:1 ratio.* 
+<br>
+*According to our stepped wedge design and assuming an intraclass correlation coefficient of 0.05, we need to recruit 372 patients (186 in each arm).*
+
+```r
+library(epiR)
+		
+SampSize_I <- epi.ssninfc(treat = 48, control = 48, sigma = 17, delta = 7,
+                          power = 0.9, alpha = 0.05, r = 1, n = NA)
+
+#> $n.total
+#> [1] 204
+ 
+#> $n.treat
+#> [1] 102
+ 
+#> $n.control
+#> [1] 102
+
+#> $delta
+#> [1] 7
+ 
+#> $power
+#> [1] 0.9
+
+Nindiv <- SampSize_I$n.total
+
+```
+
+**Input parameters:**
+* treat: expected mean in the experimental arm
+* control: expected mean in the control arm
+* sigma: expected standard deviation in the two arms
+* delta: equivalence limit
+* n: number of subjects to include (experimental + control) define as NA
+* power: recquired power (1 minus type II error rate)
+* alpha: recquired confidence level (type I error rate)
+* r: randomization ratio (experimental:control)
+
+
+```r
+
+# Define stepped wedge parameters
+
+N_center = 30 
+N_seq = 30  
+rho = 0.05 
+
+# Resolve the quadratic equation
+
+N_ratio = N_center/N_seq 
+aa <- -2*N_center*(N_seq - 1/N_seq)*rho*(1+N_seq/2)
+bb <- 3*Nindiv*(1-rho)*rho*(1+N_seq) - 2*N_center*(N_seq -1/N_seq)*(1-rho)
+cc <- 3*Nindiv*(1-rho)*(1-rho)
+
+m1 <- (-bb + sqrt(bb^2 - 4*aa*cc)) / (2*aa)
+m2 <- (-bb - sqrt(bb^2 - 4*aa*cc)) / (2*aa)
+m_sol <- max(m1,m2) 
+
+Npat_center <- m_sol*(N_seq+1) 
+N_tot_SW <- Npat_center*N_center 
+
+# Results
+
+N_total_SW <- 2*ceiling(N_tot_SW /2)
+N_total_SW
+
+# [1] 372
+
+```
+
+**Input parameters:**
+* N_center: number of centers in the stepped wedge design
+* N_seq: number of sequences in the stepped wedge design
+* rho: intraclass correlation coefficient anticipated 
+
+
+</summary>
+</details>
+
+</details>
+
+
 ## COMPARING TWO PROPORTIONS
 
 ### &nbsp;&nbsp;&nbsp;&nbsp;SUPERIORITY
@@ -177,13 +362,17 @@ epi.ssninfc(treat = 66, control = 66, sd= 23, delta = 7,
 <summary>No intermediate analysis</summary>
 <br>
 
-*Consider the following RCT with two parallel groups with a 1:1 randomization ratio. The expected proportion of events is 35% in the experimental arm compared to 28% in the control arm. In order to demonstrate such a difference of 7%, with a two-sided type I error rate of 5% and a power of 80%, the minimum sample size per arm equals 691 (i.e., a total of 1382 patients).*
+<details>
+<summary>Individual randomization</summary>
+<br>
+
+*Consider the following RCT with two parallel groups with a 1:1 randomization ratio. The expected proportion of events is 35% in the experimental arm compared to 28% in the control arm. In order to demonstrate such a difference of 7%, with a two-sided type I error rate of 5% and a power of 80%, the minimum sample size per arm equals 691 (i.e., a total of 1,382 patients).*
 
 ```r
 library(epiR)
 
-epi.sscohortc(irexp1 = 0.35, irexp0 = 0.28, power = 0.80, r = 1,
-              sided.test = 2, conf.level = 1-0.05)
+epi.sscohortc(irexp1 = 0.35, irexp0 = 0.28, n = NA, power = 0.80, 
+              r = 1, sided.test = 2, conf.level = 1-0.05)
 
 #> $n.total
 #> [1] 1382
@@ -206,7 +395,8 @@ epi.sscohortc(irexp1 = 0.35, irexp0 = 0.28, power = 0.80, r = 1,
 	
 **Input parameters:**
 *	irexp1: expected proportion in the experimental group
-*	irexp0: expected proportion  in the control group
+*	irexp0: expected proportion in the control group
+*	n: define as NA
 *	power: required power (1 minus type II error rate)
 * r: randomization ratio (experimental:control)
 * sided: one-sided test (1), two-sided test (2)
@@ -214,6 +404,96 @@ epi.sscohortc(irexp1 = 0.35, irexp0 = 0.28, power = 0.80, r = 1,
 
 </summary>
 </details>
+
+
+<details>
+<summary>Stepped wedge randomization</summary>
+<br>
+
+*Consider the following stepped wedge RCT with 15 centers randomized in 5 sequences. The expected proportion of events is 72% in the experimental arm compared to 62% in the control arm. In order to demonstrate such a difference of 10%, with a two-sided type I error rate of 5% and a power of 80%, the minimum sample size per arm equals 346 (i.e., a total of 692 patients) in case of individual randomization with a 1:1 ratio.* 
+<br>
+*According to our stepped wedge design and assuming an intraclass correlation coefficient of 0.01, we need to recruit 1,646 patients (823 in each arm).*
+
+```r
+library(epiR)
+
+SampSize_I <- epi.sscohortc(irexp1 = 0.72, irexp0 = 0.62, n = NA, 
+                            power = 0.80, r = 1, sided.test = 2, conf.level = 1-0.05)
+
+#> $n.total
+#> [1] 692
+
+#> $n.exp1
+#> [1] 346
+
+#> $n.exp0
+#> [1] 346
+
+#> $power
+#> [1] 0.8
+
+#> $irr
+#> [1] 1.16129
+
+#> $or
+#> [1] 1.576037
+
+Nindiv <- SampSize_I$n.total
+
+```
+	
+**Input parameters:**
+*	irexp1: expected proportion in the experimental group
+*	irexp0: expected proportion in the control group
+* n: number of subjects to include (experimental + control) define as NA
+*	power: required power (1 minus type II error rate)
+* r: randomization ratio (experimental:control)
+* sided: one-sided test (1), two-sided test (2)
+* conf.level: recquired confidence level (1 minus type I error rate)
+
+
+```r
+
+# Define stepped wedge parameters
+
+N_center = 15 
+N_seq = 5  
+rho = 0.01 
+
+# Resolve the quadratic equation
+
+N_ratio = N_center/N_seq 
+aa <- -2*N_center*(N_seq - 1/N_seq)*rho*(1+N_seq/2)
+bb <- 3*Nindiv*(1-rho)*rho*(1+N_seq) - 2*N_center*(N_seq -1/N_seq)*(1-rho)
+cc <- 3*Nindiv*(1-rho)*(1-rho)
+
+m1 <- (-bb + sqrt(bb^2 - 4*aa*cc)) / (2*aa)
+m2 <- (-bb - sqrt(bb^2 - 4*aa*cc)) / (2*aa)
+m_sol <- max(m1,m2) 
+
+Npat_center <- m_sol*(N_seq+1) 
+N_tot_SW <- Npat_center*N_center 
+
+# Results
+
+N_total_SW <- 2*ceiling(N_tot_SW /2)
+N_total_SW
+
+# [1] 1646
+
+```
+
+**Input parameters:**
+* N_center: number of centers in the stepped wedge design
+* N_seq: number of sequences in the stepped wedge design
+* rho: intraclass correlation coefficient anticipated 
+
+
+</summary>
+</details>
+
+</details>
+
 
 <details>
 <summary>Sequential design</summary>
@@ -266,6 +546,10 @@ summary(designPlan)
 <summary>No interim analysis</summary>
 <br>	
 
+<details>
+<summary>Individual randomization</summary>
+<br>
+
 *Consider the following RCT with two parallel groups with a 1:1 randomization ratio. The expected percentage of events is 35% in patients in the control arm and no difference compared to the experimental arm. Assuming an absolute non-inferiority margin of 5%,  the minimum sample size per arm equals 1,126 (i.e., a total of 2,252 patients) to achieve a 5% one-sided type I error rate and a power of 80%.*
 
 ```r
@@ -296,6 +580,92 @@ epi.ssninfb(treat = 0.35, control = 0.35, delta = 0.05,
 * power: required power (1 minus type II error rate)
 * r: randomization ratio (experimental:control)
 * n: number of subjects to include (experimental + control) define as NA
+
+</details>
+
+
+<details>
+<summary>Stepped wedge randomization</summary>
+<br>
+
+*Consider the following stepped wedge RCT with 15 centers randomized in 5 sequences. The expected proportion of events is 72% in patients in the control arm and no difference compared to the experimental arm. Assuming an absolute non-inferiority margin of 8%, the minimum sample size per arm equals 390 (i.e., a total of 780 patients) to achieve a one-sided type I error rate of 5% and a power of 80%, in case of individual randomization with a 1 :1 ratio.* 
+<br>
+*According to our stepped wedge design and assuming an intraclass correlation coefficient of 0.01, we need to recruit 1,890 patients (945 in each arm).*
+
+```r
+library(epiR)
+
+SampSize_I <- epi.ssninfb(treat = 0.72, control = 0.72, delta = 0.08, 
+			n = NA, r = 1, power = 0.8, alpha = 0.05)
+
+
+#> $n.total
+#> [1] 780
+
+#> $n.treat
+#> [1] 390
+
+#> $n.control
+#> [1] 390
+
+#> $delta
+#> [1] 0.08
+
+#> $power
+#> [1] 0.8
+
+Nindiv <- SampSize_I$n.total
+
+```
+	
+**Input parameters:**
+* treat: expected proportion in the experimental arm
+* control: expected proportion in the control arm
+* delta: equivalence limit
+* alpha: recquired type I error rate
+* power: required power (1 minus type II error rate)
+* r: randomization ratio (experimental:control)
+* n: number of subjects to include (experimental + control) define as NA
+
+
+```r
+
+# Define stepped wedge parameters
+
+N_center = 15 
+N_seq = 5  
+rho = 0.01 
+
+# Resolve the quadratic equation
+
+N_ratio = N_center/N_seq 
+aa <- -2*N_center*(N_seq - 1/N_seq)*rho*(1+N_seq/2)
+bb <- 3*Nindiv*(1-rho)*rho*(1+N_seq) - 2*N_center*(N_seq -1/N_seq)*(1-rho)
+cc <- 3*Nindiv*(1-rho)*(1-rho)
+
+m1 <- (-bb + sqrt(bb^2 - 4*aa*cc)) / (2*aa)
+m2 <- (-bb - sqrt(bb^2 - 4*aa*cc)) / (2*aa)
+m_sol <- max(m1,m2) 
+
+Npat_center <- m_sol*(N_seq+1) 
+N_tot_SW <- Npat_center*N_center 
+
+# Results
+
+N_total_SW <- 2*ceiling(N_tot_SW /2)
+N_total_SW
+
+# [1] 1890
+
+```
+
+**Input parameters:**
+* N_center: number of centers in the stepped wedge design
+* N_seq: number of sequences in the stepped wedge design
+* rho: intraclass correlation coefficient anticipated 
+
+</summary>
+</details>
 
 </details>
 
