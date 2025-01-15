@@ -46,12 +46,10 @@ sampleSize()
 ### &nbsp;&nbsp;&nbsp;&nbsp;SUPERIORITY TRIALS
 
 <details>
-<summary><h3>No intermediate analysis</h3></summary>
-<br>
+<summary><h5>No intermediate analysis</h5></summary>
 
 <details>
-<summary><h4>Individual randomization</h4></summary>
-<br>
+<summary><h6>Individual randomization</h6></summary>
 
 *Consider the following RCT with two parallel groups with a 1:1 randomization ratio. The expected mean is 66 units in patients in the experimental arm versus 72 units in the control arm. In order to demonstrate such a difference of 6 units, with a standard deviation of 23, a 5% two-sided type I error rate and a power of 80%, the minimum sample size per arm equals 231 (i.e., a total of 462 patients).*
 
@@ -91,8 +89,7 @@ epi.sscompc(treat = 66, control = 72,	sigma = 23, n = NA, power = 0.8,
 </details>
 
 <details>
-<summary><h4>Stepped wedge randomization</h4></summary>
-<br>
+<summary><h6>Stepped wedge randomization</h6></summary>
 
 *Consider the following stepped wedge RCT with 30 centers randomized in 30 sequences. The expected mean is 38 units in patients in the experimental arm versus 48 units in the control arm. In order to demonstrate such a difference of 10 units, with a standard deviation of 17, a 5% two-sided type I error rate and a power of 90%, the minimum sample size per arm equals 61 (i.e., a total of 122 patients) in case of individual randomization with a 1:1 ratio.* 
 <br>
