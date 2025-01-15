@@ -10,12 +10,39 @@ This page is devoted to the calculation of the number of patients required for s
 
 * **Sequential RCT:** Intermediate analyses for early stopping the study.
 
+## DESCRIBE A POPULATION
+
+<details>
+<summary>PROPORTION ENDPOINT</summary>
+<br>
+
+*Consider the following binary endpoint descriptive study. In order to demonstrate the expected proportion of event of 35% with a precision define by a 10% width confidence interval and a 5% two-sided type I error rate, the minimum sample size needed is 350 patients.**
+
+```r
+sampleSize <- function(p=0.35, alpha=0.05, width=0.1){
+  Z <- qnorm(1-alpha/2)
+  (((2*Z)**2)*(p*(1-p)))/(width**2)
+}
+
+sampleSize()
+
+#> [1] 349.5728
+```
+
+**Input parameters:**
+* p : expected proportion of event
+* alpha : recquired type I error rate
+* width : size of the (1-α)% confidence interval
+
+</summary>
+</details>	
+
 ## COMPARING TWO MEANS
 
 ### &nbsp;&nbsp;&nbsp;&nbsp;SUPERIORITY TRIALS
 
 <details>
-<summary>No intermediate anlysis</summary>
+<summary>No intermediate analysis</summary>
 <br>
 
 *Consider the following RCT with two parallel groups with a 1:1 randomization ratio. The expected mean is 66 units in patients in the experimental arm versus 72 units in the control arm. In order to demonstrate such a difference of 6 units, with a standard deviation of 23, a 5% two-sided type I error rate and a power of 80%, the minimum sample size per arm equals 231 (i.e., a total of 462 patients).*
@@ -102,7 +129,7 @@ summary(designPlan)
 ### &nbsp;&nbsp;&nbsp;&nbsp;NON-INFERIORITY TRIALS
 
 <details>
-<summary>No intermediate anlysis</summary>
+<summary>No intermediate analysis</summary>
 <br>
 
 *Consider the following RCT with two parallel groups with a 1:1 randomization ratio. The expected mean is 66 units in patients in the control arm and no difference compared to the experimental arm. Assuming an absolute non-inferiority margin of 7 points, a standard deviation of 23, the minimum sample size per arm equals 134 (i.e., a total of 268 patients) to achieve a 5% one-sided type I error rate and a power of 80%*
@@ -147,7 +174,7 @@ epi.ssninfc(treat = 66, control = 66, sd= 23, delta = 7,
 ### &nbsp;&nbsp;&nbsp;&nbsp;SUPERIORITY
 
 <details>
-<summary>No intermediate anlysis</summary>
+<summary>No intermediate analysis</summary>
 <br>
 
 *Consider the following RCT with two parallel groups with a 1:1 randomization ratio. The expected proportion of events is 35% in the experimental arm compared to 28% in the control arm. In order to demonstrate such a difference of 7%, with a two-sided type I error rate of 5% and a power of 80%, the minimum sample size per arm equals 691 (i.e., a total of 1382 patients).*
@@ -281,10 +308,19 @@ epi.ssninfb(treat = 0.35, control = 0.35, delta = 0.05,
 *For developing a model/alghorithm based on 34 predictors as candidates with an expected R2 of at least 0.25 and an expected shrinkage of 0.9 (equation 11 in Riley et al. Statistics in Medicine. 2019;38:1276–1296), the minimal sample size is 1045.*
 
 ```r
-34/((0.9-1)*log(1-0.25/0.9))
+sampleSize <- function(predictors=34, R2=0.25, shrink=0.9){
+  predictors/((shrink-1)*log(1-R2/shrink))
+}
+
+sampleSize()
 
 #> [1] 1044.796
 ```
+
+**Input parameters:**
+* predictors : number of predictors as candidates
+* R2 : expected R2
+* shrink : expected shrinkage
 
 </summary>
 </details>
