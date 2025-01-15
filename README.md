@@ -116,7 +116,6 @@ Npat_center <- m_sol*(sequence+1)
 N_tot_SW <- Npat_center*center 
 
 # Results
-
 2*ceiling(N_tot_SW /2)
 
 }
@@ -269,14 +268,13 @@ Npat_center <- m_sol*(sequence+1)
 N_tot_SW <- Npat_center*center 
 
 # Results
-
 2*ceiling(N_tot_SW /2)
 
 }
 
 
 SampSize_I <- epi.ssninfc(treat = 48, control = 48, sigma = 17, delta = 7,
-                           n = NA, r = 1, power = 0.9, alpha = 0.05)
+                          n = NA, r = 1, power = 0.9, alpha = 0.05)
                           
 SampleSize_SW(ni = SampSize_I$n.total, center = 30, sequence = 30, icc = 0.05)
 
@@ -382,7 +380,6 @@ Npat_center <- m_sol*(sequence+1)
 N_tot_SW <- Npat_center*center 
 
 # Results
-
 2*ceiling(N_tot_SW /2)
 
 }
@@ -531,14 +528,13 @@ Npat_center <- m_sol*(sequence+1)
 N_tot_SW <- Npat_center*center 
 
 # Results
-
 2*ceiling(N_tot_SW /2)
 
 }
 
 
 SampSize_I <- epi.ssninfb(treat = 0.72, control = 0.72, delta = 0.08, 
-			                    n = NA, r = 1, power = 0.8, alpha = 0.05)
+                          n = NA, r = 1, power = 0.8, alpha = 0.05)
 			
 SampleSize_SW(ni = SampSize_I$n.total, center = 15, sequence = 5, icc = 0.01)
 
