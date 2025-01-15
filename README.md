@@ -366,29 +366,35 @@ epi.sscohortc(irexp1 = 0.35, irexp0 = 0.28, n = NA, power = 0.80,
 ```r
 library(epiR)
 
+SampleSize_SW <- function(ni, center=15, sequence=5, icc=0.01) {
+
+# Resolve the quadratic equation
+
+aa <- -2*center*(sequence - 1/sequence)*rho*(1+sequence/2)
+bb <- 3*ni*(1-icc)*icc*(1+sequence) - 2*center*(sequence -1/sequence)*(1-icc)
+cc <- 3*ni*(1-icc)*(1-icc)
+
+m1 <- (-bb + sqrt(bb^2 - 4*aa*cc)) / (2*aa)
+m2 <- (-bb - sqrt(bb^2 - 4*aa*cc)) / (2*aa)
+m_sol <- max(m1,m2) 
+
+Npat_center <- m_sol*(sequence+1) 
+N_tot_SW <- Npat_center*center 
+
+# Results
+
+2*ceiling(N_tot_SW /2)
+
+}
+
+
 SampSize_I <- epi.sscohortc(irexp1 = 0.72, irexp0 = 0.62, n = NA, 
                             power = 0.80, r = 1, sided.test = 2, conf.level = 1-0.05)
+                            
+SampleSize_SW(ni = SampSize_I$n.total, center = 15, sequence = 5, icc = 0.01)
 
-#> $n.total
-#> [1] 692
-
-#> $n.exp1
-#> [1] 346
-
-#> $n.exp0
-#> [1] 346
-
-#> $power
-#> [1] 0.8
-
-#> $irr
-#> [1] 1.16129
-
-#> $or
-#> [1] 1.576037
-
-Nindiv <- SampSize_I$n.total
-
+# [1] 1646
+		
 ```
 	
 **Input parameters:**
@@ -399,46 +405,11 @@ Nindiv <- SampSize_I$n.total
 * r: randomization ratio (experimental:control)
 * sided: one-sided test (1), two-sided test (2)
 * conf.level: recquired confidence level (1 minus type I error rate)
+* ni: sample size in case of individual randomization
+* center: number of centers in the stepped wedge design
+* sequence: number of sequences in the stepped wedge design
+* icc: intraclass correlation coefficient anticipated
 
-
-```r
-
-# Define stepped wedge parameters
-
-N_center = 15 
-N_seq = 5  
-rho = 0.01 
-
-# Resolve the quadratic equation
-
-N_ratio = N_center/N_seq 
-aa <- -2*N_center*(N_seq - 1/N_seq)*rho*(1+N_seq/2)
-bb <- 3*Nindiv*(1-rho)*rho*(1+N_seq) - 2*N_center*(N_seq -1/N_seq)*(1-rho)
-cc <- 3*Nindiv*(1-rho)*(1-rho)
-
-m1 <- (-bb + sqrt(bb^2 - 4*aa*cc)) / (2*aa)
-m2 <- (-bb - sqrt(bb^2 - 4*aa*cc)) / (2*aa)
-m_sol <- max(m1,m2) 
-
-Npat_center <- m_sol*(N_seq+1) 
-N_tot_SW <- Npat_center*N_center 
-
-# Results
-
-N_total_SW <- 2*ceiling(N_tot_SW /2)
-N_total_SW
-
-# [1] 1646
-
-```
-
-**Input parameters:**
-* N_center: number of centers in the stepped wedge design
-* N_seq: number of sequences in the stepped wedge design
-* rho: intraclass correlation coefficient anticipated 
-
-
-</summary>
 </details>
 
 </details>
@@ -544,76 +515,50 @@ epi.ssninfb(treat = 0.35, control = 0.35, delta = 0.05,
 ```r
 library(epiR)
 
-SampSize_I <- epi.ssninfb(treat = 0.72, control = 0.72, delta = 0.08, 
-			n = NA, r = 1, power = 0.8, alpha = 0.05)
-
-
-#> $n.total
-#> [1] 780
-
-#> $n.treat
-#> [1] 390
-
-#> $n.control
-#> [1] 390
-
-#> $delta
-#> [1] 0.08
-
-#> $power
-#> [1] 0.8
-
-Nindiv <- SampSize_I$n.total
-
-```
-	
-**Input parameters:**
-* treat: expected proportion in the experimental arm
-* control: expected proportion in the control arm
-* delta: equivalence limit
-* alpha: recquired type I error rate
-* power: required power (1 minus type II error rate)
-* r: randomization ratio (experimental:control)
-* n: number of subjects to include (experimental + control) define as NA
-
-
-```r
-
-# Define stepped wedge parameters
-
-N_center = 15 
-N_seq = 5  
-rho = 0.01 
+SampleSize_SW <- function(ni, center=15, sequence=5, icc=0.01) {
 
 # Resolve the quadratic equation
 
-N_ratio = N_center/N_seq 
-aa <- -2*N_center*(N_seq - 1/N_seq)*rho*(1+N_seq/2)
-bb <- 3*Nindiv*(1-rho)*rho*(1+N_seq) - 2*N_center*(N_seq -1/N_seq)*(1-rho)
-cc <- 3*Nindiv*(1-rho)*(1-rho)
+aa <- -2*center*(sequence - 1/sequence)*rho*(1+sequence/2)
+bb <- 3*ni*(1-icc)*icc*(1+sequence) - 2*center*(sequence -1/sequence)*(1-icc)
+cc <- 3*ni*(1-icc)*(1-icc)
 
 m1 <- (-bb + sqrt(bb^2 - 4*aa*cc)) / (2*aa)
 m2 <- (-bb - sqrt(bb^2 - 4*aa*cc)) / (2*aa)
 m_sol <- max(m1,m2) 
 
-Npat_center <- m_sol*(N_seq+1) 
-N_tot_SW <- Npat_center*N_center 
+Npat_center <- m_sol*(sequence+1) 
+N_tot_SW <- Npat_center*center 
 
 # Results
 
-N_total_SW <- 2*ceiling(N_tot_SW /2)
-N_total_SW
+2*ceiling(N_tot_SW /2)
+
+}
+
+
+SampSize_I <- epi.ssninfb(treat = 0.72, control = 0.72, delta = 0.08, 
+			                    n = NA, r = 1, power = 0.8, alpha = 0.05)
+			
+SampleSize_SW(ni = SampSize_I$n.total, center = 15, sequence = 5, icc = 0.01)
 
 # [1] 1890
-
+		
 ```
 
 **Input parameters:**
-* N_center: number of centers in the stepped wedge design
-* N_seq: number of sequences in the stepped wedge design
-* rho: intraclass correlation coefficient anticipated 
+* treat: expected proportion in the experimental arm
+* control: expected proportion in the control arm
+* delta: equivalence limit
+* n: number of subjects to include (experimental + control) define as NA
+* r: randomization ratio (experimental:control)
+* power: required power (1 minus type II error rate)
+* alpha: recquired type I error rate
+* ni: sample size in case of individual randomization
+* center: number of centers in the stepped wedge design
+* sequence: number of sequences in the stepped wedge design
+* icc: intraclass correlation coefficient anticipated 
 
-</summary>
 </details>
 
 </details>
