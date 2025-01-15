@@ -100,27 +100,38 @@ epi.sscompc(treat = 66, control = 72,	sigma = 23, n = NA, power = 0.8,
 
 ```r
 library(epiR)
-		
-SampSize_I <- epi.sscompc(treat = 38, control = 48,	sigma = 17, n = NA, 
+
+
+SampleSize_SW <- function(ni, center=30, sequence=30, icc=0.05) {
+
+# Resolve the quadratic equation
+
+aa <- -2*center*(sequence - 1/sequence)*rho*(1+sequence/2)
+bb <- 3*ni*(1-icc)*icc*(1+sequence) - 2*center*(sequence -1/sequence)*(1-icc)
+cc <- 3*ni*(1-icc)*(1-icc)
+
+m1 <- (-bb + sqrt(bb^2 - 4*aa*cc)) / (2*aa)
+m2 <- (-bb - sqrt(bb^2 - 4*aa*cc)) / (2*aa)
+m_sol <- max(m1,m2) 
+
+Npat_center <- m_sol*(sequence+1) 
+N_tot_SW <- Npat_center*center 
+
+# Results
+
+2*ceiling(N_tot_SW /2)
+
+}
+
+
+
+SampSize_I <- epi.sscompc(treat = 38, control = 48, sigma = 17, n = NA, 
                           power = 0.9, r = 1, sided.test = 2, conf.level = 1-0.05)
 
-#> $n.total
-#> [1] 122
- 
-#> $n.treat
-#> [1] 61
- 
-#> $n.control
-#> [1] 61
- 
-#> $power
-#> [1] 0.9
+SampleSize_SW(ni = SampSize_I$n.total, center = 30, sequence = 30, icc = 0.05)
 
-#> $delta
-#> [1] 10
-
-Nindiv <- SampSize_I$n.total
-
+# [1] 208
+		
 ```
 
 **Input parameters:**
@@ -132,41 +143,10 @@ Nindiv <- SampSize_I$n.total
 * r: randomization ratio (experimental:control)
 * sided.test: one-sided test (1) or two-sided test (2) 
 * conf.level: recquired confidence level (1 minus type I error rate)
-
-
-```r
-
-# Define stepped wedge parameters
-
-N_center = 30 
-N_seq = 30  
-rho = 0.05 
-
-# Resolve the quadratic equation
-
-N_ratio = N_center/N_seq 
-aa <- -2*N_center*(N_seq - 1/N_seq)*rho*(1+N_seq/2)
-bb <- 3*Nindiv*(1-rho)*rho*(1+N_seq) - 2*N_center*(N_seq -1/N_seq)*(1-rho)
-cc <- 3*Nindiv*(1-rho)*(1-rho)
-
-m1 <- (-bb + sqrt(bb^2 - 4*aa*cc)) / (2*aa)
-m2 <- (-bb - sqrt(bb^2 - 4*aa*cc)) / (2*aa)
-m_sol <- max(m1,m2) 
-
-Npat_center <- m_sol*(N_seq+1) 
-N_tot_SW <- Npat_center*N_center 
-
-# Results
-
-N_total_SW <- 2*ceiling(N_tot_SW /2)
-N_total_SW
-
-```
-
-**Input parameters:**
-* N_center: number of centers in the stepped wedge design
-* N_seq: number of sequences in the stepped wedge design
-* rho: intraclass correlation coefficient anticipated 
+* ni: sample size in case of indivudal randomization
+* center: number of centers in the stepped wedge design
+* sequence: number of sequences in the stepped wedge design
+* icc: intraclass correlation coefficient anticipated 
 
 
 </summary>
