@@ -475,7 +475,7 @@ summary(designPlan)
 <summary>No intermediate analysis</summary>
 <br>	
 
-</ul>
+<ul>
   <details>
     <summary>Individual randomization</summary>
     <br>
