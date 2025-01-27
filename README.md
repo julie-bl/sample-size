@@ -623,7 +623,7 @@ SampleSize_SW(ni = SampSize_I$n.total, center = 15, sequence = 5, icc = 0.01)
 <summary>Sequential Design</summary>
 <br>
 
-*This sample size is for a randomised controlled non-inferiority trial in two parallel groups experimental treatment versus control treatment with balanced randomisation (ratio 1 :1) for a binary endpoint. The expected percentage of events is 35% in patients in the control arm and no difference compared to the experimental arm. Assuming an absolute non-inferiority margin of 10%, with a one-sided alpha risk of 5% and a power of 80%, the final analysis should be carried out on 724 patients(362 patients per group).The two intermediate analyses would be performed on 242 and 484 patients respectively, i.e. 33%, 66% of the maximum number of included patients if their is no decision of stopping the study*
+*This sample size is for a randomised controlled non-inferiority trial in two parallel groups experimental treatment versus control treatment with balanced randomisation (ratio 1 :1) for a binary endpoint. The expected percentage of events is 35% in patients in the control arm and no difference compared to the experimental arm. Assuming an absolute non-inferiority margin of 10%, with a one-sided alpha risk of 5% and a power of 80%, the final analysis should be carried out on 576 patients(288 patients per group).The two intermediate analyses would be performed on 192 and 384 patients respectively, i.e. 33%, 66% of the maximum number of included patients if their is no decision of stopping the study*
 
 ```r
 library("rpact")
