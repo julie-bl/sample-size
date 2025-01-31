@@ -10,25 +10,50 @@ This page is devoted to the calculation of the number of patients required for s
 
 * **Sequential RCT:** Intermediate analyses for early stopping the study.
 
-* **Stepped wedge RCT:** Clusters are randomized sequentially to cross from control to experimental intervention <sup>1</sup>.
+* **Stepped wedge RCT:** Clusters are randomized sequentially to cross from control to experimental intervention.
 
-<sup>1</sup> Hemming K, Taljaard M. <a href=https://doi.org/10.1016/j.jclinepi.2015.08.015>Sample size calculations for stepped wedge and cluster randomised trials: a unified approach.</a> J Clin Epidemiol. 2016 Jan;69:137-46
-
-## DESCRIBE A POPULATION
+## DESCRIBING A CHARACTERISTIC
 
 <details>
-<summary>PROPORTION ENDPOINT</summary>
+<summary>Mean</summary>
 <br>
 
-*Consider the following binary endpoint descriptive study. In order to demonstrate the expected proportion of event of 35% with a precision define by a 10% width confidence interval and a 5% two-sided type I error rate, the minimum sample size needed is 350 patients.**
+*In order to describe an mean for an outcome with an expected standard deviation of 25 units with a total length of the 95% confidence interval equals to 10 units (5 units around the mean), the minimum sample size is 97 patients.*
 
 ```r
-sampleSize <- function(p=0.35, alpha=0.05, width=0.1){
+sampleSize <- function(stDev, alpha, length)
+  {
   Z <- qnorm(1-alpha/2)
-  (((2*Z)**2)*(p*(1-p)))/(width**2)
-}
+  return( (2 * Z * stDev / length)**2 )
+  }
 
-sampleSize()
+sampleSize(stDev=25, alpha=0.05, length=10)
+
+#> [1] 96.03647
+```
+
+**Input parameters:**
+* p : expected proportion of event
+* alpha : recquired type I error rate
+* width : size of the (1-α)% confidence interval
+
+</summary>
+</details>	
+
+<details>
+<summary>Proportion</summary>
+<br>
+
+*In order to describe an expected proportion of 35% with a total length of the 95% confidence interval equals to 10%, the minimum sample size is 350 patients.**
+
+```r
+sampleSize <- function(p, alpha, length)
+  {
+  Z <- qnorm(1-alpha/2)
+  return((((2*Z)**2)*(p*(1-p)))/(length**2))
+  }
+
+sampleSize(p=0.35, alpha=0.05, length=0.1)
 
 #> [1] 349.5728
 ```
@@ -36,7 +61,7 @@ sampleSize()
 **Input parameters:**
 * p : expected proportion of event
 * alpha : recquired type I error rate
-* width : size of the (1-α)% confidence interval
+* length : total size of the (1-α)% confidence interval
 
 </summary>
 </details>	
@@ -97,41 +122,36 @@ epi.sscompc(treat = 66, control = 72,	sigma = 23, n = NA, power = 0.8,
   <summary>Stepped wedge randomization</summary>
 <br>
 
-*Consider the following stepped wedge RCT with 30 centers randomized in 30 sequences. The expected mean is 38 units in patients in the experimental arm versus 48 units in the control arm. In order to demonstrate such a difference of 10 units, with a standard deviation of 17, a 5% two-sided type I error rate and a power of 90%, the minimum sample size per arm equals 61 (i.e., a total of 122 patients) in case of individual randomization with a 1:1 ratio.* 
-<br>
-*According to our stepped wedge design and assuming an intraclass correlation coefficient of 0.05, we need to recruit 208 patients (104 in each arm).*
+*Consider the following stepped wedge RCT with 30 centers randomized in 30 sequences. The expected mean is 38 units in patients in the experimental arm versus 48 units in the control arm. In order to demonstrate such a difference of 10 units, with a standard deviation of 17 units, a 5% two-sided type I error rate and a power of 90%, the minimum sample size per arm equals 61 (i.e., a total of 122 patients) in case of individual randomization with a 1:1 ratio. According to our stepped wedge design and assuming an intraclass correlation coefficient of 0.05, we need to recruit 208 patients (104 in each arm).*
 
 ```r
 library(epiR)
 
-SampleSize_SW <- function(ni, center=30, sequence=30, icc=0.05) {
-
-# Resolve the quadratic equation
-
-aa <- -2*center*(sequence - 1/sequence)*rho*(1+sequence/2)
-bb <- 3*ni*(1-icc)*icc*(1+sequence) - 2*center*(sequence -1/sequence)*(1-icc)
-cc <- 3*ni*(1-icc)*(1-icc)
-
-m1 <- (-bb + sqrt(bb^2 - 4*aa*cc)) / (2*aa)
-m2 <- (-bb - sqrt(bb^2 - 4*aa*cc)) / (2*aa)
-m_sol <- max(m1,m2) 
-
-Npat_center <- m_sol*(sequence+1) 
-N_tot_SW <- Npat_center*center 
-
-# Results
-2*ceiling(N_tot_SW /2)
-
-}
-
-
 SampSize_I <- epi.sscompc(treat = 38, control = 48, sigma = 17, n = NA, 
                           r = 1, power = 0.9, sided.test = 2, conf.level = 1-0.05)
+
+SampSize_I$n.total
+
+# [1] 122
+
+SampleSize_SW <- function(ni, center=30, sequence=30, icc=0.05)
+  {
+  aa <- -2*center*(sequence - 1/sequence)*rho*(1+sequence/2) #CAMILLE : une erreur car rho n'est pas en input
+  bb <- 3*ni*(1-icc)*icc*(1+sequence) - 2*center*(sequence -1/sequence)*(1-icc)
+  cc <- 3*ni*(1-icc)*(1-icc) 
+  m1 <- (-bb + sqrt(bb^2 - 4*aa*cc)) / (2*aa)
+  m2 <- (-bb - sqrt(bb^2 - 4*aa*cc)) / (2*aa)
+  m_sol <- max(m1,m2)
+  Npat_center <- m_sol*(sequence+1) 
+  N_tot_SW <- Npat_center*center 
+  return(2*ceiling(N_tot_SW /2))
+  }
 
 SampleSize_SW(ni = SampSize_I$n.total, center = 30, sequence = 30, icc = 0.05)
 
 # [1] 208
-		
+
+# Hemming K, Taljaard M. Sample size calculations for stepped wedge and cluster randomised trials: a unified approach. J Clin Epidemiol. 2016 Jan;69:137-46
 ```
 
 **Input parameters:**
@@ -144,9 +164,9 @@ SampleSize_SW(ni = SampSize_I$n.total, center = 30, sequence = 30, icc = 0.05)
 * sided.test: one-sided test (1) or two-sided test (2) 
 * conf.level: required confidence level (1 minus type I error rate)
 * ni: sample size in case of individual randomization
-* center: number of centers in the stepped wedge design
-* sequence: number of sequences in the stepped wedge design
-* icc: intraclass correlation coefficient anticipated 
+* center: number of centers
+* sequence: number of sequences
+* icc: expected intraclass correlation coefficient
 
   </details>
 </ul>
@@ -252,37 +272,31 @@ epi.ssninfc(treat = 66, control = 66, sigma = 23, delta = 7,
   <summary>Stepped wedge randomization</summary>
   <br>
 
-*Consider the following stepped wedge RCT with 30 centers randomized in 30 sequences. The expected mean is 48 units in patients in the control arm and no difference compared to the experimental arm. Assuming an absolute non-inferiority margin of 7 points, a standard deviation of 17, the minimum sample size per arm equals 102 (i.e., a total of 204 patients) to achieve a 5% one-sided type I error rate and a power of 90% in case of individual randomization with a 1:1 ratio.* 
-<br>
-*According to our stepped wedge design and assuming an intraclass correlation coefficient of 0.05, we need to recruit 372 patients (186 in each arm).*
+*Consider the following stepped wedge RCT with 30 centers randomized in 30 sequences. The expected mean is 48 units in patients in the control arm and no difference compared to the experimental arm. Assuming an absolute non-inferiority margin of 7 points, a standard deviation of 17, the minimum sample size per arm equals 102 (i.e., a total of 204 patients) to achieve a 5% one-sided type I error rate and a power of 90% in case of individual randomization with a 1:1 ratio. According to our stepped wedge design and assuming an intraclass correlation coefficient of 0.05, we need to recruit 372 patients (186 in each arm).*
 
 ```r
 library(epiR)
 
-SampleSize_SW <- function(ni, center=30, sequence=30, icc=0.05) {
-
-# Resolve the quadratic equation
-
-aa <- -2*center*(sequence - 1/sequence)*rho*(1+sequence/2)
-bb <- 3*ni*(1-icc)*icc*(1+sequence) - 2*center*(sequence -1/sequence)*(1-icc)
-cc <- 3*ni*(1-icc)*(1-icc)
-
-m1 <- (-bb + sqrt(bb^2 - 4*aa*cc)) / (2*aa)
-m2 <- (-bb - sqrt(bb^2 - 4*aa*cc)) / (2*aa)
-m_sol <- max(m1,m2) 
-
-Npat_center <- m_sol*(sequence+1) 
-N_tot_SW <- Npat_center*center 
-
-# Results
-2*ceiling(N_tot_SW /2)
-
-}
-
-
 SampSize_I <- epi.ssninfc(treat = 48, control = 48, sigma = 17, delta = 7,
                           n = NA, r = 1, power = 0.9, alpha = 0.05)
-                          
+
+SampSize_I$n.total
+
+# [1] 204          
+               
+SampleSize_SW <- function(ni, center=30, sequence=30, icc=0.05)
+  {
+  aa <- -2*center*(sequence - 1/sequence)*rho*(1+sequence/2) ### CAMILLE : Meme Problème
+  bb <- 3*ni*(1-icc)*icc*(1+sequence) - 2*center*(sequence -1/sequence)*(1-icc)
+  cc <- 3*ni*(1-icc)*(1-icc)
+  m1 <- (-bb + sqrt(bb^2 - 4*aa*cc)) / (2*aa)
+  m2 <- (-bb - sqrt(bb^2 - 4*aa*cc)) / (2*aa)
+  m_sol <- max(m1,m2) 
+  Npat_center <- m_sol*(sequence+1) 
+  N_tot_SW <- Npat_center*center 
+  return(2*ceiling(N_tot_SW /2))
+  }
+
 SampleSize_SW(ni = SampSize_I$n.total, center = 30, sequence = 30, icc = 0.05)
 
 # [1] 372
@@ -299,9 +313,9 @@ SampleSize_SW(ni = SampSize_I$n.total, center = 30, sequence = 30, icc = 0.05)
 * power: required power (1 minus type II error rate)
 * alpha: required confidence level (type I error rate)
 * ni: sample size in case of individual randomization
-* center: number of centers in the stepped wedge design
-* sequence: number of sequences in the stepped wedge design
-* icc: intraclass correlation coefficient anticipated 
+* center: number of centers
+* sequence: number of sequences
+* icc: expected ntraclass correlation coefficient 
 
   </details>
 </ul>
@@ -368,37 +382,31 @@ epi.sscohortc(irexp1 = 0.35, irexp0 = 0.28, n = NA, power = 0.80,
     <summary>Stepped wedge randomization</summary>
     <br>
 
-*Consider the following stepped wedge RCT with 15 centers randomized in 5 sequences. The expected proportion of events is 72% in the experimental arm compared to 62% in the control arm. In order to demonstrate such a difference of 10%, with a two-sided type I error rate of 5% and a power of 80%, the minimum sample size per arm equals 346 (i.e., a total of 692 patients) in case of individual randomization with a 1:1 ratio.* 
-<br>
-*According to our stepped wedge design and assuming an intraclass correlation coefficient of 0.01, we need to recruit 1,646 patients (823 in each arm).*
+*Consider the following stepped wedge RCT with 15 centers randomized in 5 sequences. The expected proportion of events is 72% in the experimental arm compared to 62% in the control arm. In order to demonstrate such a difference of 10%, with a two-sided type I error rate of 5% and a power of 80%, the minimum sample size per arm equals 346 (i.e., a total of 692 patients) in case of individual randomization with a 1:1 ratio. According to our stepped wedge design and assuming an intraclass correlation coefficient of 0.01, we need to recruit 1,646 patients (823 in each arm).*
 
 ```r
 library(epiR)
 
-SampleSize_SW <- function(ni, center=15, sequence=5, icc=0.01) {
-
-# Resolve the quadratic equation
-
-aa <- -2*center*(sequence - 1/sequence)*rho*(1+sequence/2)
-bb <- 3*ni*(1-icc)*icc*(1+sequence) - 2*center*(sequence -1/sequence)*(1-icc)
-cc <- 3*ni*(1-icc)*(1-icc)
-
-m1 <- (-bb + sqrt(bb^2 - 4*aa*cc)) / (2*aa)
-m2 <- (-bb - sqrt(bb^2 - 4*aa*cc)) / (2*aa)
-m_sol <- max(m1,m2) 
-
-Npat_center <- m_sol*(sequence+1) 
-N_tot_SW <- Npat_center*center 
-
-# Results
-2*ceiling(N_tot_SW /2)
-
-}
-
-
 SampSize_I <- epi.sscohortc(irexp1 = 0.72, irexp0 = 0.62, n = NA, r = 1,
                             power = 0.80, sided.test = 2, conf.level = 1-0.05)
                             
+SampSize_I$n.total
+
+# [1] 692
+
+SampleSize_SW <- function(ni, center=15, sequence=5, icc=0.01)
+  {
+  aa <- -2*center*(sequence - 1/sequence)*rho*(1+sequence/2) # CAMILLE
+  bb <- 3*ni*(1-icc)*icc*(1+sequence) - 2*center*(sequence -1/sequence)*(1-icc)
+  cc <- 3*ni*(1-icc)*(1-icc)
+  m1 <- (-bb + sqrt(bb^2 - 4*aa*cc)) / (2*aa)
+  m2 <- (-bb - sqrt(bb^2 - 4*aa*cc)) / (2*aa)
+  m_sol <- max(m1,m2) 
+  Npat_center <- m_sol*(sequence+1) 
+  N_tot_SW <- Npat_center*center 
+  return(2*ceiling(N_tot_SW /2))
+  }
+
 SampleSize_SW(ni = SampSize_I$n.total, center = 15, sequence = 5, icc = 0.01)
 
 # [1] 1646
@@ -414,9 +422,9 @@ SampleSize_SW(ni = SampSize_I$n.total, center = 15, sequence = 5, icc = 0.01)
 * sided.test: one-sided test (1), two-sided test (2)
 * conf.level: required confidence level (1 minus type I error rate)
 * ni: sample size in case of individual randomization
-* center: number of centers in the stepped wedge design
-* sequence: number of sequences in the stepped wedge design
-* icc: intraclass correlation coefficient anticipated
+* center: number of centers
+* sequence: number of sequences
+* icc: expected intraclass correlation coefficient
 
   </details>
 </ul>
@@ -519,37 +527,31 @@ epi.ssninfb(treat = 0.35, control = 0.35, delta = 0.05,
     <summary>Stepped wedge randomization</summary>
     <br>
 
-*Consider the following stepped wedge RCT with 15 centers randomized in 5 sequences. The expected proportion of events is 72% in patients in the control arm and no difference compared to the experimental arm. Assuming an absolute non-inferiority margin of 8%, the minimum sample size per arm equals 390 (i.e., a total of 780 patients) to achieve a one-sided type I error rate of 5% and a power of 80%, in case of individual randomization with a 1 :1 ratio.* 
-<br>
-*According to our stepped wedge design and assuming an intraclass correlation coefficient of 0.01, we need to recruit 1,890 patients (945 in each arm).*
+*Consider the following stepped wedge RCT with 15 centers randomized in 5 sequences. The expected proportion of events is 72% in patients in the control arm and no difference compared to the experimental arm. Assuming an absolute non-inferiority margin of 8%, the minimum sample size per arm equals 390 (i.e., a total of 780 patients) to achieve a one-sided type I error rate of 5% and a power of 80%, in case of individual randomization with a 1 :1 ratio. According to our stepped wedge design and assuming an intraclass correlation coefficient of 0.01, we need to recruit 1,890 patients (945 in each arm).*
 
 ```r
 library(epiR)
 
-SampleSize_SW <- function(ni, center=15, sequence=5, icc=0.01) {
-
-# Resolve the quadratic equation
-
-aa <- -2*center*(sequence - 1/sequence)*rho*(1+sequence/2)
-bb <- 3*ni*(1-icc)*icc*(1+sequence) - 2*center*(sequence -1/sequence)*(1-icc)
-cc <- 3*ni*(1-icc)*(1-icc)
-
-m1 <- (-bb + sqrt(bb^2 - 4*aa*cc)) / (2*aa)
-m2 <- (-bb - sqrt(bb^2 - 4*aa*cc)) / (2*aa)
-m_sol <- max(m1,m2) 
-
-Npat_center <- m_sol*(sequence+1) 
-N_tot_SW <- Npat_center*center 
-
-# Results
-2*ceiling(N_tot_SW /2)
-
-}
-
-
 SampSize_I <- epi.ssninfb(treat = 0.72, control = 0.72, delta = 0.08, 
                           n = NA, r = 1, power = 0.8, alpha = 0.05)
-			
+                          
+SampSize_I$n.total
+
+# [1] 780
+
+SampleSize_SW <- function(ni, center=15, sequence=5, icc=0.01)
+  {
+  aa <- -2*center*(sequence - 1/sequence)*rho*(1+sequence/2) # CAMILLE
+  bb <- 3*ni*(1-icc)*icc*(1+sequence) - 2*center*(sequence -1/sequence)*(1-icc)
+  cc <- 3*ni*(1-icc)*(1-icc)
+  m1 <- (-bb + sqrt(bb^2 - 4*aa*cc)) / (2*aa)
+  m2 <- (-bb - sqrt(bb^2 - 4*aa*cc)) / (2*aa)
+  m_sol <- max(m1,m2) 
+  Npat_center <- m_sol*(sequence+1) 
+  N_tot_SW <- Npat_center*center
+  return(2*ceiling(N_tot_SW /2))
+  }
+
 SampleSize_SW(ni = SampSize_I$n.total, center = 15, sequence = 5, icc = 0.01)
 
 # [1] 1890
@@ -565,9 +567,9 @@ SampleSize_SW(ni = SampSize_I$n.total, center = 15, sequence = 5, icc = 0.01)
 * power: required power (1 minus type II error rate)
 * alpha: required type I error rate
 * ni: sample size in case of individual randomization
-* center: number of centers in the stepped wedge design
-* sequence: number of sequences in the stepped wedge design
-* icc: intraclass correlation coefficient anticipated 
+* center: number of centers
+* sequence: number of sequences
+* icc: expected intraclass correlation coefficient
 
   </details>
 </ul>
@@ -583,9 +585,8 @@ SampleSize_SW(ni = SampSize_I$n.total, center = 15, sequence = 5, icc = 0.01)
 *For developing a model/alghorithm based on 34 predictors as candidates with an expected R2 of at least 0.25 and an expected shrinkage of 0.9 (equation 11 in Riley et al. Statistics in Medicine. 2019;38:1276–1296), the minimal sample size is 1045.*
 
 ```r
-sampleSize <- function(predictors=34, R2=0.25, shrink=0.9){
-  predictors/((shrink-1)*log(1-R2/shrink))
-}
+sampleSize <- function(predictors=34, R2=0.25, shrink=0.9)
+ {  predictors/((shrink-1)*log(1-R2/shrink)) }
 
 sampleSize()
 
@@ -608,15 +609,15 @@ sampleSize()
 
 ```r
 se <- function(width, alpha) # The standard error associated with the 1-alpha confidence interval
-{
+  {
   fun <- function(x) { exp( qnorm(1-alpha/2, mean=0, sd=1) * x ) - exp(-1* qnorm(1-alpha/2, mean=0, sd=1) * x ) - width } 
   return(uniroot(fun, lower = 0.001, upper = 100)$root)
-} 
+  } 
 
 size.calib <- function(p, width, alpha) # the minimum sample size to achieve this precision
-{   
+  {   
   (1-p) / ((p * se(width=width, alpha=alpha)**2 ))
-}
+  }
 
 size.calib(p=0.5, width=0.2, alpha=0.05)
 
