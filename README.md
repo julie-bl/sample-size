@@ -128,9 +128,9 @@ SampleSize_SW(ni = SampSize_I$n.total, center = 30, sequence = 30, icc = 0.05)
 # Hemming K, Taljaard M. Sample size calculations for stepped wedge and cluster randomised trials: a unified approach. J Clin Epidemiol. 2016 Jan;69:137-46
 ```
 
-*Input parameters:
-**treat: expected mean in the experimental arm
-**control: expected mean in the control arm
+* Input parameters:
+** treat: expected mean in the experimental arm
+** control: expected mean in the control arm
 * sigma: expected standard deviation in the two arms
 * n: number of subjects to include (experimental + control) define as NA
 * r: randomization ratio (experimental:control)
