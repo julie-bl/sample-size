@@ -177,6 +177,8 @@ SampleSize_SW(ni = SampSize_I$n.total, center = 30, sequence = 30, icc = 0.05)
 <summary>Sequential design</summary>
 <br>
 
+
+
 *Consider the following RCT with two parallel groups with a 1:1 randomization ratio and 2 planned intermediate analyses for efficacy by using the O'Brien-Fleming method for considering the inflation of the type I error rate). The expected mean is 66 units in patients in the experimental arm versus 72 units in the control arm. In order to demonstrate such a difference of 6 units, with a standard deviation of 23, a 5% two-sided type I error rate and a power of 80%,  the final analysis should be carried out on 472 patients (236 patients per group). The first and second intermediate analyses would be performed on 158 and 316 patients respectively, i.e. 33% and 66% of the maximum number of included patients if their is no decision of stopping the study.*
 
 ```r
@@ -321,6 +323,49 @@ SampleSize_SW(ni = SampSize_I$n.total, center = 30, sequence = 30, icc = 0.05)
 </ul>
 
 </details>
+
+<details>
+<summary>Sequential Design</summary>
+<br>
+
+*This sample size is for a randomised controlled non-inferiority trial in two parallel groups experimental treatment versus control treatment with balanced randomisation (ratio 1 :1) for a continuous endpoint. Assuming an absolute non-inferiority margin of 7, with a standard deviation of 23, with a one-sided alpha risk of 5% and a power of 80%, the final analysis should be carried out on 276 patients(138 patients per group).Intermediate analyses would be performed on 92 and 184 patients respectively, i.e. 33%, 66% of the maximum number of included patients if their is no decision of stopping the study*
+
+```r
+library("rpact")
+		
+design <- getDesignGroupSequential(typeOfDesign = "OF", informationRates = c(1/3,2/3,1),
+                                   alpha = 0.05, beta = 1-0.8, sided = 1)
+                                   
+designPlan <- getSampleSizeMeans(design, alternative = 0, stDev = 23,
+                                 allocationRatioPlanned = 1, thetaH0 = -7)
+
+summary(designPlan)
+
+#> Stage                                          1       2       3 
+#> Planned information rate                   33.3%   66.7%    100% 
+#> Cumulative alpha spent                    0.0015  0.0187  0.0500 
+#> Stage levels (one-sided)                  0.0015  0.0181  0.0437 
+#> Efficacy boundary (z-value scale)          2.961   2.094   1.710 
+#> Efficacy boundary (t)                      7.607   0.159  -2.246 
+#> Cumulative power                          0.0660  0.4879  0.8000 
+#> Number of subjects                          91.9   183.7   275.6 
+#> Expected number of subjects under H1                       224.7 
+#> Exit probability for efficacy (under H0)  0.0015  0.0172 
+#> Exit probability for efficacy (under H1)  0.0660  0.4219 
+```
+**Input parameters:**
+* typeOfDesign: type of design ("OF" for the O'Brien-Fleming method)
+* informationRates: planned analyses defined as proportions of the maximum sample size
+* alpha: recquired type I error rate
+* beta: recquired type II error rate (1 minus power)
+* sided: one-sided test (1)
+* alternative: no difference between the two arms
+* stDev: expected standard deviation in the two arms
+* thetaH0 : equivalence limit
+* allocationRatioPlanned: randomization ratio
+
+</details>
+
 
 
 ## COMPARING TWO PROPORTIONS
@@ -573,6 +618,46 @@ SampleSize_SW(ni = SampSize_I$n.total, center = 15, sequence = 5, icc = 0.01)
 
   </details>
 </ul>
+
+</details>
+
+<details>
+<summary>Sequential Design</summary>
+<br>
+
+*This sample size is for a randomised controlled non-inferiority trial in two parallel groups experimental treatment versus control treatment with balanced randomisation (ratio 1 :1) for a binary endpoint. The expected percentage of events is 35% in patients in the control arm and no difference compared to the experimental arm. Assuming an absolute non-inferiority margin of 10%, with a one-sided alpha risk of 5% and a power of 80%, the final analysis should be carried out on 576 patients(288 patients per group).The two intermediate analyses would be performed on 192 and 384 patients respectively, i.e. 33%, 66% of the maximum number of included patients if their is no decision of stopping the study*
+
+```r
+library("rpact")
+		
+design <- getDesignGroupSequential(typeOfDesign = "OF", informationRates = c(1/3,2/3,1),
+                                   alpha = 0.05, beta = 1-0.8, sided = 1)
+                                   
+designPlan <- getSampleSizeRates(design, pi1 = 0.35, pi2 = 0.35, thetaH0 = 0.10)
+
+summary(designPlan)
+
+#> Stage                                          1       2       3 
+#> Planned information rate                   33.3%   66.7%    100% 
+#> Cumulative alpha spent                    0.0015  0.0187  0.0500 
+#> Stage levels (one-sided)                  0.0015  0.0181  0.0437 
+#> Efficacy boundary (z-value scale)          2.961   2.094   1.710 
+#> Efficacy boundary (t)                     -0.097  -0.002   0.032 
+#> Cumulative power                          0.0660  0.4879  0.8000 
+#> Number of subjects                         191.7   383.5   575.2 
+#> Expected number of subjects under H1                       469.0 
+#> Exit probability for efficacy (under H0)  0.0015  0.0172 
+#> Exit probability for efficacy (under H1)  0.0660  0.4219 
+```
+**Input parameters:**
+* typeOfDesign: type of design ("OF" for the O'Brien-Fleming method)
+* informationRates: planned analyses defined as proportions of the maximum sample size
+* alpha: recquired type I error rate
+* beta: recquired type II error rate (1 minus power)
+* sided: one-sided test (1)
+* pi1 = pi2 : no difference between the two arms
+* thetaH0 : equivalence limit
+* allocationRatioPlanned: randomization ratio
 
 </details>
 
