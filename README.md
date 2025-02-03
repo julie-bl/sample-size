@@ -41,6 +41,7 @@ sampleSize(stDev=25, alpha=0.05, length=10)
 </details>	
 </ul>
 
+<ul>
 <details>
 <summary>Proportion</summary>
 <br>
@@ -64,14 +65,16 @@ sampleSize(p=0.35, alpha=0.05, length=0.1)
 * alpha : recquired type I error rate
 * length : total size of the (1-α)% confidence interval
 
-</details>	
+</details>
+</ul>
 
 ## COMPARING TWO MEANS
 
 ### &nbsp;&nbsp;&nbsp;&nbsp;SUPERIORITY TRIALS
 
+<ul>
 <details>
-  <summary>No intermediate analysis</summary>
+<summary>No intermediate analysis</summary>
 <br>
 
 <ul>
@@ -168,11 +171,13 @@ SampleSize_SW(ni = SampSize_I$n.total, center = 30, sequence = 30, icc = 0.05)
 * sequence: number of sequences
 * icc: expected intraclass correlation coefficient
 
-  </details>
+</details>
 </ul>
 
 </details>
+</ul>
 
+<ul>
 <details>
 <summary>Sequential design</summary>
 <br>
@@ -218,9 +223,11 @@ summary(designPlan)
 * allocationRatioPlanned: randomization ratio
 
 </details>
+</ul>
 
 ### &nbsp;&nbsp;&nbsp;&nbsp;NON-INFERIORITY TRIALS
 
+</ul>
 <details>
 <summary>No intermediate analysis</summary>
 <br>
@@ -264,14 +271,13 @@ epi.ssninfc(treat = 66, control = 66, sigma = 23, delta = 7,
 * r: randomization ratio (experimental:control)
 * n: number of subjects to include (experimental + control) define as NA
 
-  </summary>
-  </details>
+</details>
 </ul>
 
 <ul>
-  <details>
-  <summary>Stepped wedge randomization</summary>
-  <br>
+<details>
+<summary>Stepped wedge randomization</summary>
+<br>
 
 *Consider the following stepped wedge RCT with 30 centers randomized in 30 sequences. The expected mean is 48 units in patients in the control arm and no difference compared to the experimental arm. Assuming an absolute non-inferiority margin of 7 points, a standard deviation of 17, the minimum sample size per arm equals 102 (i.e., a total of 204 patients) to achieve a 5% one-sided type I error rate and a power of 90% in case of individual randomization with a 1:1 ratio. According to our stepped wedge design and assuming an intraclass correlation coefficient of 0.05, we need to recruit 372 patients (186 in each arm).*
 
@@ -318,11 +324,13 @@ SampleSize_SW(ni = SampSize_I$n.total, center = 30, sequence = 30, icc = 0.05)
 * sequence: number of sequences
 * icc: expected ntraclass correlation coefficient 
 
-  </details>
+</details>
 </ul>
 
 </details>
+</ul>
 
+<ul>
 <details>
 <summary>Sequential Design</summary>
 <br>
@@ -364,13 +372,14 @@ summary(designPlan)
 * allocationRatioPlanned: randomization ratio
 
 </details>
-
+</ul>
 
 
 ## COMPARING TWO PROPORTIONS
 
 ### &nbsp;&nbsp;&nbsp;&nbsp;SUPERIORITY
 
+<ul>
 <details>
 <summary>No intermediate analysis</summary>
 <br>
@@ -474,8 +483,9 @@ SampleSize_SW(ni = SampSize_I$n.total, center = 15, sequence = 5, icc = 0.01)
 </ul>
 
 </details>
+</ul>
 
-
+<ul>
 <details>
   <summary>Sequential design</summary>
   <br>
@@ -518,11 +528,12 @@ summary(designPlan)
 * pi2: expected probability in the control group
 * allocationRatioPlanned: randomization ratio (experimental/control)
 
-  </summary>	
 </details>
+</ul>
 
 ### &nbsp;&nbsp;&nbsp;&nbsp;NON-INFERIORITY
 
+<ul>
 <details>
 <summary>No intermediate analysis</summary>
 <br>	
@@ -567,9 +578,9 @@ epi.ssninfb(treat = 0.35, control = 0.35, delta = 0.05,
 </ul>
 
 <ul>
-  <details>
-    <summary>Stepped wedge randomization</summary>
-    <br>
+<details>
+<summary>Stepped wedge randomization</summary>
+<br>
 
 *Consider the following stepped wedge RCT with 15 centers randomized in 5 sequences. The expected proportion of events is 72% in patients in the control arm and no difference compared to the experimental arm. Assuming an absolute non-inferiority margin of 8%, the minimum sample size per arm equals 390 (i.e., a total of 780 patients) to achieve a one-sided type I error rate of 5% and a power of 80%, in case of individual randomization with a 1 :1 ratio. According to our stepped wedge design and assuming an intraclass correlation coefficient of 0.01, we need to recruit 1,890 patients (945 in each arm).*
 
@@ -615,11 +626,13 @@ SampleSize_SW(ni = SampSize_I$n.total, center = 15, sequence = 5, icc = 0.01)
 * sequence: number of sequences
 * icc: expected intraclass correlation coefficient
 
-  </details>
+</details>
 </ul>
 
 </details>
+</ul>
 
+<ul>
 <details>
 <summary>Sequential Design</summary>
 <br>
@@ -659,9 +672,11 @@ summary(designPlan)
 * allocationRatioPlanned: randomization ratio
 
 </details>
+</ul>
 
 ## PREDICTING A PROPORTION
 
+<ul>
 <details>
 <summary>Construction of predictive model</summary>
 <br>	
@@ -684,7 +699,9 @@ sampleSize()
 
 </summary>
 </details>
+</ul>
 
+<ul>
 <details>
 <summary>External validation</summary>
 <br>	
@@ -713,3 +730,4 @@ size.calib(p=0.5, width=0.2, alpha=0.05)
 * alpha: type I error rate (α)
 
 </details>
+</ul>
