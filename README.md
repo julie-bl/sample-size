@@ -14,6 +14,7 @@ This page is devoted to the calculation of the number of patients required for s
 
 ## DESCRIBING A CHARACTERISTIC
 
+<ul>
 <details>
 <summary>Mean</summary>
 <br>
@@ -38,6 +39,7 @@ sampleSize(stDev=25, alpha=0.05, length=10)
 * width : size of the (1-α)% confidence interval
 
 </details>	
+</ul>
 
 <details>
 <summary>Proportion</summary>
@@ -62,7 +64,6 @@ sampleSize(p=0.35, alpha=0.05, length=0.1)
 * alpha : recquired type I error rate
 * length : total size of the (1-α)% confidence interval
 
-</summary>
 </details>	
 
 ## COMPARING TWO MEANS
@@ -216,7 +217,6 @@ summary(designPlan)
 * stDev: expected standard deviation in the two arms
 * allocationRatioPlanned: randomization ratio
 
-</summary>	
 </details>
 
 ### &nbsp;&nbsp;&nbsp;&nbsp;NON-INFERIORITY TRIALS
