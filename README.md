@@ -15,57 +15,55 @@ This page is devoted to the calculation of the number of patients required for s
 ## DESCRIBING A CHARACTERISTIC
 <ul>
 	<details>
-	<summary><li>Mean</li></summary>
-	<br>
-	
-	*In order to describe an mean for an outcome with an expected standard deviation of 25 units with a total length of the 95% confidence interval equals to 10 units (5 units around the mean), the minimum sample size is 97 patients.*
-	
-	```r
-	sampleSize <- function(stDev, alpha, length)
-	{
-	Z <- qnorm(1-alpha/2)
-	return( (2 * Z * stDev / length)**2 )
-	}
-	
-	sampleSize(stDev=25, alpha=0.05, length=10)
-	
-	#> [1] 96.03647
-	```
-	
-	**Input parameters:**
-	* p : expected proportion of event
-	* alpha : recquired type I error rate
-	* width : size of the (1-α)% confidence interval
-	
-	</summary>
+		<summary>Mean</summary>
+		<br>
+		
+		*In order to describe an mean for an outcome with an expected standard deviation of 25 units with a total length of the 95% confidence interval equals to 10 units (5 units around the mean), the minimum sample size is 97 patients.*
+		
+		```r
+		sampleSize <- function(stDev, alpha, length)
+		{
+		Z <- qnorm(1-alpha/2)
+		return( (2 * Z * stDev / length)**2 )
+		}
+		
+		sampleSize(stDev=25, alpha=0.05, length=10)
+		
+		#> [1] 96.03647
+		```
+		
+		**Input parameters:**
+		* p : expected proportion of event
+		* alpha : recquired type I error rate
+		* width : size of the (1-α)% confidence interval
+		
 	</details>	
 </ul>
 
 <ul>
 	<details>
-	<summary>Proportion</summary>
-	<br>
-	
-	*In order to describe an expected proportion of 35% with a total length of the 95% confidence interval equals to 10%, the minimum sample size is 350 patients.**
-	
-	```r
-	sampleSize <- function(p, alpha, length)
-	{
-	Z <- qnorm(1-alpha/2)
-	return((((2*Z)**2)*(p*(1-p)))/(length**2))
-	}
-	
-	sampleSize(p=0.35, alpha=0.05, length=0.1)
-	
-	#> [1] 349.5728
-	```
-	
-	**Input parameters:**
-	* p : expected proportion of event
-	* alpha : recquired type I error rate
-	* length : total size of the (1-α)% confidence interval
-	
-	</summary>
+		<summary>Proportion</summary>
+		<br>
+		
+		*In order to describe an expected proportion of 35% with a total length of the 95% confidence interval equals to 10%, the minimum sample size is 350 patients.**
+		
+		```r
+		sampleSize <- function(p, alpha, length)
+		{
+		Z <- qnorm(1-alpha/2)
+		return((((2*Z)**2)*(p*(1-p)))/(length**2))
+		}
+		
+		sampleSize(p=0.35, alpha=0.05, length=0.1)
+		
+		#> [1] 349.5728
+		```
+		
+		**Input parameters:**
+		* p : expected proportion of event
+		* alpha : recquired type I error rate
+		* length : total size of the (1-α)% confidence interval
+		
 	</details>	
 </ul>
 
