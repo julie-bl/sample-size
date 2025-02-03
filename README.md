@@ -136,7 +136,7 @@ SampSize_I$n.total
 
 SampleSize_SW <- function(ni, center=30, sequence=30, icc=0.05)
   {
-  aa <- -2*center*(sequence - 1/sequence)*rho*(1+sequence/2) #CAMILLE : une erreur car rho n'est pas en input
+  aa <- -2*center*(sequence - 1/sequence)*icc*(1+sequence/2)
   bb <- 3*ni*(1-icc)*icc*(1+sequence) - 2*center*(sequence -1/sequence)*(1-icc)
   cc <- 3*ni*(1-icc)*(1-icc) 
   m1 <- (-bb + sqrt(bb^2 - 4*aa*cc)) / (2*aa)
@@ -288,7 +288,7 @@ SampSize_I$n.total
                
 SampleSize_SW <- function(ni, center=30, sequence=30, icc=0.05)
   {
-  aa <- -2*center*(sequence - 1/sequence)*rho*(1+sequence/2) ### CAMILLE : Meme Problème
+  aa <- -2*center*(sequence - 1/sequence)*icc*(1+sequence/2)
   bb <- 3*ni*(1-icc)*icc*(1+sequence) - 2*center*(sequence -1/sequence)*(1-icc)
   cc <- 3*ni*(1-icc)*(1-icc)
   m1 <- (-bb + sqrt(bb^2 - 4*aa*cc)) / (2*aa)
@@ -441,7 +441,7 @@ SampSize_I$n.total
 
 SampleSize_SW <- function(ni, center=15, sequence=5, icc=0.01)
   {
-  aa <- -2*center*(sequence - 1/sequence)*rho*(1+sequence/2) # CAMILLE
+  aa <- -2*center*(sequence - 1/sequence)*icc*(1+sequence/2) 
   bb <- 3*ni*(1-icc)*icc*(1+sequence) - 2*center*(sequence -1/sequence)*(1-icc)
   cc <- 3*ni*(1-icc)*(1-icc)
   m1 <- (-bb + sqrt(bb^2 - 4*aa*cc)) / (2*aa)
@@ -586,7 +586,7 @@ SampSize_I$n.total
 
 SampleSize_SW <- function(ni, center=15, sequence=5, icc=0.01)
   {
-  aa <- -2*center*(sequence - 1/sequence)*rho*(1+sequence/2) # CAMILLE
+  aa <- -2*center*(sequence - 1/sequence)*icc*(1+sequence/2) 
   bb <- 3*ni*(1-icc)*icc*(1+sequence) - 2*center*(sequence -1/sequence)*(1-icc)
   cc <- 3*ni*(1-icc)*(1-icc)
   m1 <- (-bb + sqrt(bb^2 - 4*aa*cc)) / (2*aa)
