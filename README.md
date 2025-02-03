@@ -15,28 +15,28 @@ This page is devoted to the calculation of the number of patients required for s
 ## DESCRIBING A CHARACTERISTIC
 
 <details>
-	<summary>Mean</summary>
-	<br>
-	
-	*In order to describe an mean for an outcome with an expected standard deviation of 25 units with a total length of the 95% confidence interval equals to 10 units (5 units around the mean), the minimum sample size is 97 patients.*
-	
-	```r
-	sampleSize <- function(stDev, alpha, length)
-	{
-	Z <- qnorm(1-alpha/2)
-	return( (2 * Z * stDev / length)**2 )
-	}
-	
-	sampleSize(stDev=25, alpha=0.05, length=10)
-	
-	#> [1] 96.03647
-	```
-	
-	**Input parameters:**
-	* p : expected proportion of event
-	* alpha : recquired type I error rate
-	* width : size of the (1-α)% confidence interval
-	
+<summary>Mean</summary>
+<br>
+
+*In order to describe an mean for an outcome with an expected standard deviation of 25 units with a total length of the 95% confidence interval equals to 10 units (5 units around the mean), the minimum sample size is 97 patients.*
+
+```r
+sampleSize <- function(stDev, alpha, length)
+{
+Z <- qnorm(1-alpha/2)
+return( (2 * Z * stDev / length)**2 )
+}
+
+sampleSize(stDev=25, alpha=0.05, length=10)
+
+#> [1] 96.03647
+```
+
+**Input parameters:**
+* p : expected proportion of event
+* alpha : recquired type I error rate
+* width : size of the (1-α)% confidence interval
+
 </details>	
 
 <details>
