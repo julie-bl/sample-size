@@ -37,33 +37,35 @@ This page is devoted to the calculation of the number of patients required for s
 		* alpha : recquired type I error rate
 		* width : size of the (1-α)% confidence interval
 		
+		</summary>
 	</details>	
 
 
 <ul>
 	<details>
-		<summary>Proportion</summary>
-		<br>
-		
-		*In order to describe an expected proportion of 35% with a total length of the 95% confidence interval equals to 10%, the minimum sample size is 350 patients.**
-		
-		```r
-		sampleSize <- function(p, alpha, length)
-		{
-		Z <- qnorm(1-alpha/2)
-		return((((2*Z)**2)*(p*(1-p)))/(length**2))
-		}
-		
-		sampleSize(p=0.35, alpha=0.05, length=0.1)
-		
-		#> [1] 349.5728
-		```
-		
-		**Input parameters:**
-		* p : expected proportion of event
-		* alpha : recquired type I error rate
-		* length : total size of the (1-α)% confidence interval
-		
+	<summary>Proportion</summary>
+	<br>
+	
+	*In order to describe an expected proportion of 35% with a total length of the 95% confidence interval equals to 10%, the minimum sample size is 350 patients.**
+	
+	```r
+	sampleSize <- function(p, alpha, length)
+	{
+	Z <- qnorm(1-alpha/2)
+	return((((2*Z)**2)*(p*(1-p)))/(length**2))
+	}
+	
+	sampleSize(p=0.35, alpha=0.05, length=0.1)
+	
+	#> [1] 349.5728
+	```
+	
+	**Input parameters:**
+	* p : expected proportion of event
+	* alpha : recquired type I error rate
+	* length : total size of the (1-α)% confidence interval
+	
+	</summary>
 	</details>	
 </ul>
 
