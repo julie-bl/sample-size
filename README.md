@@ -13,7 +13,7 @@ This page is devoted to the calculation of the number of patients required for s
 * **Stepped wedge RCT:** Clusters are randomized sequentially to cross from control to experimental intervention.
 
 ## DESCRIBING A CHARACTERISTIC
-<ul>
+
 	<details>
 		<summary>Mean</summary>
 		<br>
@@ -38,7 +38,7 @@ This page is devoted to the calculation of the number of patients required for s
 		* width : size of the (1-α)% confidence interval
 		
 	</details>	
-</ul>
+
 
 <ul>
 	<details>
