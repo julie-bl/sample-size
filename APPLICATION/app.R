@@ -5,6 +5,8 @@ library(shinythemes)
 library(shinyjs)
 library(drcarlate)
 library(rpact)
+library(shinycssloaders)
+library(shinyjs)
 
 
 se <- function(width, alpha) # The standard error associated with the 1-alpha confidence interval
@@ -19,320 +21,361 @@ size.calib <- function(p0, width, alpha) # the minimum sample size to achieve th
 }
 
 
-#########################################################################################################################
-###################################################   UI  ###############################################################
-#########################################################################################################################
 
-ui <- fluidPage(
-  useShinyjs(),
-  theme = shinytheme("flatly"),
-  fluidRow(style = "height:100px",
-           column(width = 3,
-                  style = "height:100%",
-                  tags$a(href='https://chu-poitiers.fr',
-                         tags$img(src='LogoCHU.png', height = "100%" , align="left"))),
-           column(width = 9,
-                  h1("SAMPLE SIZE CALCULATOR"))
-           ),
-  fluidRow(
-    navbarPage(title = icon("users",class ="fa-solid fa-users"),
+ui <- dashboardPage(
+  dashboardHeader(title = "SAMPLE SIZE CALCULATOR",
+                  titleWidth = "100%"), 
+  dashboardSidebar(
+    sidebarMenu(
+      id = "sidebarID",
+      menuItem("DESCRIBE A POPULATION", tabName = "dp", id = "DPid", expandedName = "DP",
+               radioButtons(inputId = "typeDP",
+                            label = "Design",
+                            choices = "PROPORTION ENDPOINT")),
+      hidden(menuItem("hiddenChartsDP", tabName = "hiddenChartsDP")),
+      menuItem("COMPARING MEANS",tabName = "comparingmean",id = "CMid",expandedName = "COMPARINGMEAN",
+               radioButtons(inputId = "hypMean",
+                            label = "Hypothesis",
+                            choices = c("superiority", "non-inferiority")), 
+               radioButtons(inputId = "meanDesign",
+                            label = "Design",
+                            choices = c("No intermediate analysis", "Sequential design"))),
+      hidden(menuItem("hiddenChartsMean", tabName = "hiddenChartsMean")),
+      menuItem("COMPARING PROPORTION",tabName = "comparingprop",id = "CPid",expandedName = "COMPARINGPROP",
+               radioButtons(inputId = "hypProp",
+                            label = "Hypothesis",
+                            choices = c("superiority", "non-inferiority")), 
+               radioButtons(inputId = "propDesign",
+                            label = "Design",
+                            choices = c("No intermediate analysis", "Sequential design"))),
+      hidden(menuItem("hiddenChartsProp", tabName = "hiddenChartsProp")),
+      menuItem("PREDICTING A PROPORTION", tabName = "bep", id = "BEPid", expandedName = "BEP",
+               radioButtons(inputId = "typePredBEP",
+                            label = "Design",
+                            choices = c("Construction of predictive model", "External validation"))),
+      hidden(menuItem("hiddenChartsBEP", tabName = "hiddenChartsBEP")),
+      menuItem("COMPARING TWO ROC CURVES", tabName = "CTRC")
+    )
+  ),
+  dashboardBody(
+    useShinyjs(),
+    tabItems(
+      
 # DESCRIBE PROPORTION ---------------------------------------------------------------------------------------------------
-             tabPanel(title = "DESCRIBE PROPORTION",
-                      fluidRow(column(width = 12,
-                                      h3("DESCRIBE PROPORTION"))),
-                      br(),
-                      sidebarLayout(
-                        sidebarPanel(
-                          numericInput(inputId = "descExpProp",
-                                       label = "Expected proportion (%)",
-                                       value = NULL,
-                                       max = 100,
-                                       min = 0),
-                          numericInput(inputId = "widthDesc",
-                                       label = "Confidence interval width (%)",
-                                       value = NULL,
-                                       max = 100,
-                                       min = 0),
-                          numericInput(inputId = "descAlpha",
-                                       label = "Type I error rate, alpha (%)",
-                                       value = 5)
-                        ),
-                        mainPanel(
-                          actionButton(inputId = "Desc", label =  "Results"),
-                          br(),
-                          htmlOutput("description"))
-                      )
-             ),
+tabItem(tabName = "hiddenChartsDP",
+        fluidRow(column(width = 12,
+                        h3("DESCRIBE PROPORTION"))),
+        br(),
+        sidebarLayout(
+          sidebarPanel(
+            numericInput(inputId = "descExpProp",
+                         label = "Expected proportion (%)",
+                         value = NULL,
+                         max = 100,
+                         min = 0),
+            numericInput(inputId = "widthDesc",
+                         label = "Confidence interval width (%)",
+                         value = NULL,
+                         max = 100,
+                         min = 0),
+            numericInput(inputId = "descAlpha",
+                         label = "Type I error rate (%)",
+                         value = 5)
+          ),
+          mainPanel(
+            box(
+              htmlOutput("description")))
+        )),
+      
+# PAGE COMPARING MEANS --------------------------------------------------------------------------------------------------
+      tabItem(tabName = "hiddenChartsMean",
+              fluidRow(column(width = 12,
+                              h3("COMPARING MEANS"))),
+              br(),
+              sidebarLayout(
+                sidebarPanel(
+                  conditionalPanel(
+                    conditionalPanel(
+                      radioButtons(inputId = "sidetestMean",
+                                   label = "Two sided test ?",
+                                   choices = c("Yes", "No")),
+                      condition = "input.hypMean == 'superiority'",
+                      numericInput(inputId = "prevMean",
+                                   label = "Experimental (%)",
+                                   value = NULL,
+                                   step = 0.005)),
+                    condition = "input.hypMean == 'superiority' || input.hypMean == 'non-inferiority'",
+                    numericInput(inputId = "obsMean",
+                                 label = "Control (%)",
+                                 value = NULL,
+                                 step = 0.005)),
+                  numericInput(inputId = "powerMean",
+                               label = "Power (%)",
+                               value = 80),
+                  numericInput(inputId = "alphaMean",
+                               label = "Type I error rate (%)",
+                               value = 5,
+                               step = 0.5),
+                  numericInput(inputId = "sigmaMean",
+                               label = "Sigma",
+                               value = NULL,
+                               step = 0.005),
+                  conditionalPanel(
+                    condition = "input.hypMean == 'non-inferiority'",
+                    numericInput(inputId = "deltaMean",
+                                 label = "Absolute margin",
+                                 value = NULL,
+                                 step = 0,005)),
+                  conditionalPanel(
+                    condition = "input.meanDesign == 'Sequential design'",
+                    numericInput(inputId = "meanSlice",
+                                 label = "Number of planned intermediate analysis",
+                                 value = 2))
+                ), # sidebar panel
+                mainPanel(
+                  htmlOutput("mean"))
+              )
+      ),
 
 # PAGE COMPARING PROPORTIONS --------------------------------------------------------------------------------------------
-             tabPanel(title = "COMPARING PROPORTIONS",
-                      fluidRow(column(width = 12,
-                                      h3("COMPARING PROPORTIONS"))),
-                      br(),
-                      sidebarLayout(
-                        sidebarPanel(
-                          selectInput(inputId = "hypProp",
-                                      label = "Hypothesis",
-                                      choices = c(" ","superiority", "non-inferiority")),
-                          selectInput(inputId = "meanDesign",
-                                      label = "Design",
-                                      choices = c("","No intermediate analysis", "Sequential design")),
-                          numericInput(inputId = "powerProp",
-                                       label = "Power (%)",
-                                       value = 80,
-                                       max = 100,
-                                       min = 0),
-                          numericInput(inputId = "alphaProp",
-                                       label = "Type I error rate, alpha (%)",
-                                       value = 5,
-                                       max = 20,
-                                       min = 0,
-                                       step = 0.5),
-                          conditionalPanel(
-                            condition = "input.hypProp == 'superiority' || input.hypProp == 'non-inferiority'",
-                            h5("Proportion expected in the control group :"),
-                            numericInput(inputId = "obsProp",
-                                         label = "Control (%)",
-                                         value = NULL,
-                                         step = 0.005)),
-                          conditionalPanel(
-                            condition = "input.hypProp == 'superiority'",
-                            h5("Proportion expected in the experimental group :"),
-                            numericInput(inputId = "prevProp",
-                                         label = "Experimental (%)",
-                                         value = NULL,
-                                         step = 0.005),
-                            selectInput(inputId = "sidetestProp",
-                                        label = "test",
-                                        choices = c("two-sided", "one-sided"))),
-                          conditionalPanel(
-                            condition = "input.hypProp == 'non-inferiority'",
-                            h5("Absolute margin :"),
-                            numericInput(inputId = "deltaProp",
-                                         label = "Delta",
-                                         value = NULL,
-                                         step = 0.005))
-                        ),
-                        mainPanel(
-                          actionButton(inputId = "Prop", label =  "Results"),
-                          br(),
-                          htmlOutput("proportion"))
-                      ) # sidebarLayout
-                    ), # Comparing proportion
-
-# PAGE COMPARING MEANS --------------------------------------------------------------------------------------------------
-
-             tabPanel(title = "COMPARING MEANS",
-                      fluidRow(column(width = 12,
-                                      h3("COMPARING MEANS"))),
-                      br(),
-                      sidebarLayout(
-                        sidebarPanel(
-                          selectInput(inputId = "hypMean",
-                                      label = "Hypothesis",
-                                      choices = c(" ","superiority", "non-inferiority")), 
-                          selectInput(inputId = "meanDesign",
-                                      label = "Design",
-                                      choices = c("","No intermediate analysis", "Sequential design")),
-                          numericInput(inputId = "powerMean",
-                                       label = "Power (%)",
-                                       value = 80),
-                          numericInput(inputId = "alphaMean",
-                                       label = "Type I error rate, alpha (%)",
-                                       value = 5,
-                                       step = 0.5),
-                          conditionalPanel(
-                            condition = "input.hypMean == 'superiority' || input.hypMean == 'non-inferiority'",
-                            h5("Mean expected in the control group :"),
-                            numericInput(inputId = "obsMean",
-                                         label = "Control",
-                                         value = NULL,
-                                         step = 0.005)),
-                          conditionalPanel(
-                            condition = "input.hypMean == 'superiority'",
-                            h5("Mean expected in the experimental group :"),
-                            numericInput(inputId = "prevMean",
-                                         label = "Experimental",
-                                         value = NULL,
-                                         step = 0.005),
-                            selectInput(inputId = "sidetestMean",
-                                        label = "test",
-                                        choices = c("two-sided", "one-sided"))),
-                          numericInput(inputId = "sigmaMean",
-                                       label = "Sigma",
-                                       value = NULL,
-                                       step = 0.005),
-                          conditionalPanel(
-                            condition = "input.hypMean == 'non-inferiority'",
-                            h5("Absolute margin :"),
-                            numericInput(inputId = "deltaMean",
-                                         label = "Delta",
-                                         value = NULL,
-                                         step = 0,005))
-                        ), # sidebar panel
-                        mainPanel(
-                          actionButton("Mean", "Results"),
-                          br(),
-                          htmlOutput("mean"))
-                      ) # sidebarLayout
-                    ), # Comparing means
-
+      tabItem(tabName = "hiddenChartsProp",
+               fluidRow(column(width = 12,
+                               h3("COMPARING PROPORTIONS"))),
+               br(),
+               sidebarLayout(
+                 sidebarPanel(
+                   conditionalPanel(
+                     radioButtons(inputId = "sidetestProp",
+                                  label = "Two sided test ?",
+                                  choices = c("Yes", "No")),
+                     condition = "input.hypProp == 'superiority'",
+                     numericInput(inputId = "prevProp",
+                                  label = "Experimental (%)",
+                                  value = NULL,
+                                  step = 0.005)),
+                   conditionalPanel(
+                     condition = "input.hypProp == 'superiority' || input.hypProp == 'non-inferiority'",
+                     numericInput(inputId = "obsProp",
+                                  label = "Control (%)",
+                                  value = NULL,
+                                  step = 0.005)),
+                   numericInput(inputId = "powerProp",
+                                label = "Power (%)",
+                                value = 80,
+                                max = 100,
+                                min = 0),
+                   numericInput(inputId = "alphaProp",
+                                label = "Type I error rate (%)",
+                                value = 5,
+                                max = 20,
+                                min = 0,
+                                step = 0.5),
+                   conditionalPanel(
+                     condition = "input.hypProp == 'non-inferiority'",
+                     numericInput(inputId = "deltaProp",
+                                  label = "Absolute margin (%)",
+                                  value = NULL,
+                                  step = 0.005)),
+                   conditionalPanel(
+                     condition = "input.propDesign == 'Sequential design'",
+                     numericInput(inputId = "propSlice",
+                                  label = "Number of planned intermediate analysis",
+                                  value = 2))
+                 ),
+                 mainPanel(
+                   htmlOutput("proportion"))
+               ) # sidebarLayout
+      ),# Comparing proportion
 
 # PAGE BINARY EVENT PREDICTION ------------------------------------------------------------------------------------------
-            tabPanel(title = "BINARY EVENT PREDICTION",
-                     fluidRow(column(width = 12,
-                                     h3("BINARY EVENT PREDICTION"))),
-                     br(),
-                     sidebarLayout(
-                       sidebarPanel(
-                         selectInput(inputId = "typePred",
-                                     label = "Design",
-                                     choices = c(" ","Construction of predictive model", "External validation")), 
-                         conditionalPanel(
-                           condition = "input.typePred == 'Construction of predictive model'",
-                           numericInput(inputId = "predictorsToTest",
-                                        label = "Number of potential predictors",
-                                        value = NULL,
-                                        step = 1),
-                           numericInput(inputId = "shrinkageExpected",
-                                        label = "Expected Shrinkage",
-                                        value = NULL,
-                                        step = 0.1),
-                           numericInput(inputId = "R2",
-                                        label = "anticipated R2 : expected predictive capacities",
-                                        value = NULL,
-                                        step = 0.01)
-                         ),
-                         conditionalPanel(
-                           condition = "input.typePred == 'External validation'",
-                           numericInput(inputId = "P0",
-                                        label = "Expected proportion of events in the validation study (%)",
-                                        value = NULL,
-                                        step = 1),
-                           numericInput(inputId = "alphaExtVal",
-                                        label = "Type I error rate, alpha (%)",
-                                        value = 5,
-                                        step = 0.5),
-                           #The total length of the confidence of O/E
-                           numericInput(inputId = "widthExtVal",
-                                        label = "Confidence interval width",
-                                        value = NULL,
-                                        step = 0.1)
-                           )
-                        ),
-                       mainPanel(
-                         actionButton("Pred", "Results"),
-                         br(),
-                         htmlOutput("prediction"))
-                      )
-                    ), # BINARY EVENT PREDICTION
-
+tabItem(tabName = "hiddenChartsBEP",
+         fluidRow(column(width = 12,
+                         h3("BINARY EVENT PREDICTION"))),
+         br(),
+         sidebarLayout(
+           sidebarPanel(
+             conditionalPanel(
+               condition = "input.typePredBEP == 'Construction of predictive model'",
+               numericInput(inputId = "predictorsToTest",
+                            label = "Number of potential predictors",
+                            value = NULL,
+                            step = 1),
+               numericInput(inputId = "shrinkageExpected",
+                            label = "Expected Shrinkage",
+                            value = NULL,
+                            step = 0.1),
+               numericInput(inputId = "R2",
+                            label = "anticipated R2 : expected predictive capacities",
+                            value = NULL,
+                            step = 0.01)
+             ),
+             conditionalPanel(
+               condition = "input.typePredBEP == 'External validation'",
+               numericInput(inputId = "P0",
+                            label = "Expected proportion of events in the validation study (%)",
+                            value = NULL,
+                            step = 1),
+               numericInput(inputId = "alphaExtVal",
+                            label = "Type I error rate (%)",
+                            value = 5,
+                            step = 0.5),
+               #The total length of the confidence of O/E
+               numericInput(inputId = "widthExtVal",
+                            label = "Confidence interval width",
+                            value = NULL,
+                            step = 0.1)
+             )
+           ),
+           mainPanel(
+             actionButton("Pred", "Results"),
+             br(),
+             htmlOutput("prediction"))
+         )
+), # BINARY EVENT PREDICTION
 # PAGE COMPARING TWO ROC CURVES -----------------------------------------------------------------------------------------
-            tabPanel(title = "COMPARING TWO ROC CURVES",
-                     fluidRow(column(width = 12,
-                                     h3("COMPARING TWO ROC CURVES"))),
-                     br(),
-                     sidebarLayout(
-                       sidebarPanel(
-                         numericInput(inputId = "AUC1",
-                                      label = "First diagnostic test AUC",
-                                      value = NULL,
-                                      step = 0.001),
-                         numericInput(inputId = "AUC2",
-                                      label = "Second diagnostic test AUC",
-                                      value = NULL,
-                                      step = 0.001),
-                         numericInput(inputId = "alphaAUC",
-                                      label = "Type I error rate, alpha (%)",
-                                      value = 5,
-                                      step = 0.5),
-                         numericInput(inputId = "powerAUC",
-                                      label = "Power (%)",
-                                      value = 80,
-                                      min = 0,
-                                      max = 100)
-                       ),
-                       mainPanel(
-                         actionButton("AUC", "Results"),
-                         br(),
-                         htmlOutput("AUC"))
-                       )
-                     )
+tabItem(tabName = "CTRC",
+         fluidRow(column(width = 12,
+                         h3("COMPARING TWO ROC CURVES"))),
+         br(),
+         sidebarLayout(
+           sidebarPanel(
+             numericInput(inputId = "AUC1",
+                          label = "First diagnostic test AUC",
+                          value = NULL,
+                          min = 0.5,
+                          step = 0.001),
+             numericInput(inputId = "AUC2",
+                          label = "Second diagnostic test AUC",
+                          value = NULL,
+                          min = 0.5,
+                          step = 0.001),
+             numericInput(inputId = "alphaAUC",
+                          label = "Type I error rate (%)",
+                          value = 5,
+                          step = 0.5),
+             numericInput(inputId = "powerAUC",
+                          label = "Power (%)",
+                          value = 80,
+                          min = 0,
+                          max = 100)
+           ),
+           mainPanel(
+             actionButton("AUC", "Results"),
+             br(),
+             htmlOutput("AUC"))
+         )
+)
     )
   )
 )
 
-
-
-
-
-##################################################################################################################################
-##########################################################   SERVER   ############################################################
-##################################################################################################################################
-
-server <- function(input, output) {
+server <- function(input, output, session) {
+  
+  # for the sidbar --------------------------------------------------------
+  observeEvent(input$sidebarItemExpanded, {
+    if(input$sidebarItemExpanded == "DP"){
+      updateTabItems(session, "sidebarID", selected = "hiddenChartsDP")
+    }
+    if(input$sidebarItemExpanded == "COMPARINGMEAN"){
+      updateTabItems(session, "sidebarID", selected = "hiddenChartsMean")
+    }
+    if(input$sidebarItemExpanded == "COMPARINGPROP"){
+      updateTabItems(session, "sidebarID", selected = "hiddenChartsProp")
+    }
+    if(input$sidebarItemExpanded == "BEP"){
+      updateTabItems(session, "sidebarID", selected = "hiddenChartsBEP")
+    }
+  })
+  #------------------------------------------------------------------------
+  
+  sampleSizeDesc <- function(p,alpha,width){
+    Z <- qnorm(1-alpha/2)
+    (((2*Z)**2)*(p*(1-p)))/(width**2)
+  }
   
   # convert to numeric value -----------------------------------------------------------------------------------------------------
   # "one-sided" <- 1
   # "tow-sided" <- 2
-  stMean <- reactive( if (reactive(input$sidetestMean)()=="one-sided") 1 else 2 )
+  stMean <- reactive( if (reactive(input$sidetestMean)()=="No") 1 else 2 )
+  printStMean <- reactive( if (reactive(input$sidetestMean)()=="No") "one-sided" else "two-sided" )
   
-  stProp <- reactive( if (reactive(input$sidetestProp)()=="one-sided") 1 else 2 )
-
+  stProp <- reactive( if (reactive(input$sidetestProp)()=="No") 1 else 2 )
+  printStProp <- reactive( if (reactive(input$sidetestProp)()=="No") "one-sided" else "two-sided" )
+  
   
   # sample size result of the computation ----------------------------------------------------------------------------------------
   
   #DESCRITPION -------------------------------------------------------------------------------------------------------------------
-  resDesc <- eventReactive(input$Desc,{
-    sampleSizeDesc <- function(p=input$descExpProp/100, alpha=input$descAlpha/100, width=input$widthDesc/100){
-      Z <- qnorm(1-alpha/2)
-      (((2*Z)**2)*(p*(1-p)))/(width**2)
-    }
-    
-    ceiling(sampleSizeDesc())
-  })
+  resDesc <- reactive(
+    ceiling(sampleSizeDesc(p=input$descExpProp/100, alpha=input$descAlpha/100, width=input$widthDesc/100))
+  )
   
   # MEAN -------------------------------------------------------------------------------------------------------------------------
-  resMean <- eventReactive(input$Mean,{
+  resMean <- reactive(
     if(reactive(input$hypMean)()=='superiority'){ # MEAN SUPERIORITY -------------------------------------------------------------
-      if(reactive(input$meanDesign)()=='No intermediate analysis') # MEAN SUPERIORITY NO INTERMEDIATE DESIGN ----------------------
+      if(reactive(input$meanDesign)()=='No intermediate analysis'){ # MEAN SUPERIORITY NO INTERMEDIATE DESIGN --------------------
         epi.sscompc(N = NA, treat = input$prevMean, control = input$obsMean, 
                     sigma = input$sigmaMean, n = NA, power = input$powerMean/100, 
                     r = 1, design = 1, sided.test = stMean(), conf.level = 1-(input$alphaMean/100))$n.treat
-      else # MEAN SUPERIORITY SEQUENTIAL DESIGN ----------------------------------------------------------------------------------
-        design <- getDesignGroupSequential(typeOfDesign = "OF", informationRates = c(1/3, 2/3, 1),
-                                           alpha = input$alpharMean/100, beta = 1-input$powerMean/100, sided = stMean())
+      }
+      else{# MEAN SUPERIORITY SEQUENTIAL DESIGN --------------------------------------------------------------------------------
+        design <- getDesignGroupSequential(typeOfDesign = "OF", informationRates = seq(from=1/(input$meanSlice+1), to=1, by=1/(input$meanSlice+1)),
+                                         alpha = input$alphaMean/100, beta = 1-input$powerMean/100, sided = stMean())
         designPlan <- getSampleSizeMeans(design, alternative = abs(input$prevMean-input$obsMean), stDev = input$sigmaMean,
-                                       allocationRatioPlanned = 1)
-        designPlan
+                                         allocationRatioPlanned = 1)
+        ceiling(designPlan$numberOfSubjects[input$meanSlice+1])
+      } 
+
     }else{ # MEAN NON-INFERIORITY -----------------------------------------------------------------------------------------------
-      if(reactive(input$meanDesign)()=='No intermediate analysis') # MEAN NON-INFERIORITY NO INTERMEDIATE DESIGN -----------------
-        epi.ssninfc(treat = input$obsMean, control = input$obsMean, sigma = input$sigmaMean, 
+      if(reactive(input$meanDesign)()=='No intermediate analysis'){# MEAN NON-INFERIORITY NO INTERMEDIATE DESIGN ----------------
+        epi.ssninfc(treat = input$obsMean, control = input$obsMean, sigma = input$sigmaMean,
                     delta = input$deltaMean, n = NA, power = input$powerMean/100, alpha = input$alphaMean/100, r = 1)$n.treat
-      else # MEAN NON-INFERIORITY SEQUENTIAL DESIGN -----------------------------------------------------------------------------
-        design <- getDesignGroupSequential(typeOfDesign = "OF", informationRates = c(1/3, 2/3, 1),
+      } 
+      else{# MEAN NON-INFERIORITY SEQUENTIAL DESIGN -----------------------------------------------------------------------------
+        design <- getDesignGroupSequential(typeOfDesign = "OF", informationRates = seq(from=1/(input$meanSlice+1), to=1, by=1/(input$meanSlice+1)),
                                            alpha = input$alphaMean/100, beta = 1-input$powerMean/100, sided = 1)
         designPlan <- getSampleSizeMeans(design, alternative = 0, stDev = input$sigmaMean,
-                                       allocationRatioPlanned = 1)
-        designPlan
-      }
-    })
-    
+                                         allocationRatioPlanned = 1, thetaH0 = -input$deltaMean)
+        ceiling(designPlan$numberOfSubjects[input$meanSlice+1]/2)
+      } 
       
+    })
+  
+  
   # PROPORTION ------------------------------------------------------------------------------------------------------------------
-  resProp <- eventReactive(input$Prop,{
-    if(reactive(input$hypProp)()=='superiority')
-      epi.sscohortc(N = NA, irexp1 = input$prevProp/100, irexp0 = input$obsProp/100, pexp = NA, n = NA, 
-                    power = input$powerProp/100, r = 1, design = 1, sided.test = stProp(), 
-                    finite.correction = FALSE, nfractional = FALSE, conf.level = 1-(input$alphaProp/100))$n.exp1
-    else
-      epi.ssninfb(treat = input$obsProp/100, control = input$obsProp/100, delta = input$deltaProp/100, 
-                  n = NA, r = 1, power = input$powerProp/100, alpha = input$alphaProp/100)$n.treat
+  resProp <- reactive(
+    if(reactive(input$hypProp)()=='superiority'){ # PROPORTION SUPERIORITY ------------------------------------------------------
+      if(reactive(input$propDesign)()=='No intermediate analysis'){# PROPORTION SUPERIORITY NO INTERMEDIATE DESIGN -------------
+        epi.sscohortc(N = NA, irexp1 = input$prevProp/100, irexp0 = input$obsProp/100, pexp = NA, n = NA, 
+                      power = input$powerProp/100, r = 1, design = 1, sided.test = stProp(), 
+                      finite.correction = FALSE, nfractional = FALSE, conf.level = 1-(input$alphaProp/100))$n.exp1
+      } 
+      else{# PROPORTION SUPERIORITY SEQUENTIAL DESIGN -------------------------------------------------------------------------
+        design <- getDesignGroupSequential(typeOfDesign = "OF", informationRates = seq(from=1/(input$propSlice+1), to=1, by=1/(input$propSlice+1)),
+                                           alpha = input$alphaProp/100, beta = 1-input$powerProp/100, sided = stProp())
+        designPlan <- getSampleSizeRates(design,  pi1 = input$prevProp/100, pi2 = input$obsProp/100,
+                                         allocationRatioPlanned = 1)
+        ceiling(designPlan$numberOfSubjects[input$propSlice+1]/2)
+      }
+      
+    }else{ # PROPORTION NON-INFERIORITY -----------------------------------------------------------------------------------------
+      if(reactive(input$propDesign)()=='No intermediate analysis'){# PROPORTION NON-INFERIORITY NO INTERMEDIATE DESIGN ---------
+        epi.ssninfb(treat = input$obsProp/100, control = input$obsProp/100, delta = input$deltaProp/100, 
+                    n = NA, r = 1, power = input$powerProp/100, alpha = input$alphaProp/100)$n.treat
+      } 
+      else{# PROPORTION NON-INFERIORITY SEQUENTIAL DESIGN ---------------------------------------------------------------------
+        design <- getDesignGroupSequential(typeOfDesign = "OF", informationRates = seq(from=1/(input$propSlice+1), to=1, by=1/(input$propSlice+1)),
+                                           alpha = input$alphaProp/100, beta = 1-input$powerProp/100, sided = 1)
+        designPlan <- getSampleSizeRates(design, pi1 = input$obsProp/100, pi2 = input$obsProp/100, thetaH0 = input$deltaProp/100)
+        ceiling(designPlan$numberOfSubjects[input$propSlice+1]/2)
+      } 
+          
+        
     })
   
   # PREDICTIVE ------------------------------------------------------------------------------------------------------------------
   resPred <- eventReactive(input$Pred,{
-    if(reactive(input$typePred)()=='Construction of predictive model')
+    if(reactive(input$typePredBEP)()=='Construction of predictive model')
       ceiling(input$predictorsToTest/((input$shrinkageExpected-1)*log(1-input$R2/input$shrinkageExpected)))
     else
       ceiling(size.calib(p0=input$P0/100, width = input$widthExtVal/100, alpha = input$alphaExtVal/100))
@@ -353,70 +396,105 @@ server <- function(input, output) {
   })
   
   # reactive example sentence ---------------------------------------------------------------------------------------------------
-  z <- eventReactive(input$Desc,{
+  z <- reactive(
     paste0("This sample size is for a binary endpoint descriptive study. In order to demonstrate the expected proportion
-           of event of 35% with a precision define by a 10% width confidence interval and a 5% two-sided type I error
-           rate, the minimum sample size needed is ",resDesc()," patients")
-  })
+           of event of ",input$descExpProp,"% with a precision define by a ",input$widthDesc,"% width confidence interval 
+           and a ",input$descAlpha,"% two-sided type I error rate, the minimum sample size needed is ",resDesc()," patients")
+  )
   
-  a <- eventReactive(input$Mean,{
-    if(reactive(input$hypMean)()=='superiority')
-      if(reactive(input$meanDesign)()=='')
-      paste0("This sample size is for a randomised controlled superiority trial in two parallel groups 
-           experimental treatment versus control treatment with balanced randomisation (ratio 1 :1) for a continuous 
-           endpoint. The mean of the criteria is ",input$prevMean," with experimental treatment compared to
-           ",input$obsMean," with control treatment. In order to highlight this absolute difference of 
-           ",abs(input$prevMean-input$obsMean),", with a standard deviation of ",input$sigmaMean,", with a "
-           ,input$sidetestMean," alpha risk of ",input$alphaMean,"% and a power of ",input$powerMean,"%,
-           the needed sample size is ",resMean(), " patients in each group.")
+  
+  
+  a <- reactive(
+    if(reactive(input$hypMean)()=='superiority'){
+      if(reactive(input$meanDesign)()=='No intermediate analysis')
+        paste0("This sample size is for a randomised controlled superiority trial in two parallel groups 
+               experimental treatment versus control treatment with balanced randomisation (ratio 1 :1) for a continuous 
+               endpoint. The mean of the criteria is ",input$prevMean," with experimental treatment compared to
+               ",input$obsMean," with control treatment. In order to highlight this absolute difference of 
+               ",abs(input$prevMean-input$obsMean),", with a standard deviation of ",input$sigmaMean,", with a "
+               ,printStMean()," alpha risk of ",input$alphaMean,"% and a power of ",input$powerMean,"%,
+               the needed sample size is ",resMean(), " patients in each group (i.e., a total of ",resMean()*2," patients).")
       else
         paste0("This sample size is for a RCT with an expected mean of ",input$prevMean," units in patients in the 
                experimental arm versus ",input$obsMean," units in the control arm. In order to demonstrate such a 
                difference of ",abs(input$prevMean-input$obsMean)," units, with a standard deviation of ",input$sigmaMean,"
-               , a ",input$alphaMean,"% ",input$sidetestMean," type I error rate and a power of ",input$powerMean,"%, 
-               the final analysis should be carried out on ",ceiling(resMean$numberOfSubjects[3])," patients 
-               (",ceiling(resMean$numberOfSubjects[3]/2)," patients per group). The first and second intermediate 
-               analyses would be performed on ",ceiling(resMean$numberOfSubjects[1])," and 316 patients respectively, i.e. 33% and 66% of the maximum number of included 
-               patients if their is no decision of stopping the study")
-    else
-      if(reactive(input$meanDesign)()=='')
-      paste0("This sample size for a randomised controlled non-inferiority trial in two parallel groups experimental 
-             treatment versus control treatment with balanced randomisation (ratio 1 :1) for a continuous endpoint. 
-             The mean of the criteria is ",input$obsMean," with treatment A. Assuming an absolute non-inferiority margin 
-             of ",input$deltaMean,", with a standard deviation of ",input$sigmaMean,", with a one-sided alpha risk of "
-             ,input$alphaMean,"% and a power of ",input$powerMean,"%, the needed sample size is ",resMean(), "
-              patients in each group.")
-    else
-      paste0("")
+               , a ",input$alphaMean,"% ",printStMean()," type I error rate and a power of ",input$powerMean,"%, 
+               the final analysis should be carried out on ",resMean()*2," patients (",resMean()," patients per group). 
+               Intermediates analyses would be performed on ",for(i in input$meanSlice+1){ceiling(resMean()*i/(input$meanSlice+1))}," 
+               and patients respectively, i.e. ",list(round(seq(from=1/(input$meanSlice+1), to =1, by=1/(input$meanSlice+1)),digits=2)),"% 
+               of the maximum number of included patients if their is no decision of stopping the study")
+    }else{
+      if(reactive(input$meanDesign)()=='No intermediate analysis')
+        paste0("This sample size for a randomised controlled non-inferiority trial in two parallel groups experimental 
+               treatment versus control treatment with balanced randomisation (ratio 1 :1) for a continuous endpoint. 
+               The mean of the criteria is ",input$obsMean," with treatment A. Assuming an absolute non-inferiority margin 
+               of ",input$deltaMean,", with a standard deviation of ",input$sigmaMean,", with a one-sided alpha risk of "
+               ,input$alphaMean,"% and a power of ",input$powerMean,"%, the needed sample size is ",resMean(), "
+               patients in each group (i.e., a total of ",resMean()*2," patients).")
+      else
+        paste0("This sample size is for a randomised controlled non-inferiority trial in two parallel groups experimental 
+               treatment versus control treatment with balanced randomisation (ratio 1 :1) for a continuous endpoint. Assuming 
+               an absolute non-inferiority margin of ",input$deltaMean,", with a standard deviation of ",input$sigmaMean,", 
+               with a one-sided alpha risk of ",input$alphaMean,"% and a power of ",input$powerMean,"%, the final analysis 
+               should be carried out on ",resMean()," patients (",ceiling(resMean()/2)," patients per group).The first and 
+               second intermediate analyses would be performed on ",ceiling(resMean()/(input$meanSlice+1))," and 316 patients 
+               respectively, i.e. ",list(round(seq(from=1/(input$meanSlice+1), to =1, by=1/(input$meanSlice+1)),digits=2)),"% 
+               of the maximum number of included patients if their is no decision of stopping the study")
       
-      })
+    })
   
-  b <- eventReactive(input$Prop,{
-    if(reactive(input$hypProp)()=='superiority')
-    paste0("This sample size is for a randomised controlled superiority trial in two parallel groups experimental 
+  
+  
+  b <- reactive(
+    if(reactive(input$hypProp)()=='superiority'){
+      if(reactive(input$propDesign)()=='No intermediate analysis')
+        paste0("This sample size is for a randomised controlled superiority trial in two parallel groups experimental 
            treatment versus control treatment with balanced randomisation (ratio 1 :1) for a binary endpoint. The 
            proportion of patient with the criteria is ",input$prevProp,"% with experimental treatment compared to 
            ",input$obsProp,"% with control treatment. In order to highlight this absolute difference of 
-           ",abs(input$prevProp-input$obsProp),"%, with a ",input$sidedtestProp," alpha risk of ",input$alphaProp,"% and 
+           ",abs(input$prevProp-input$obsProp),"%, with a ",printStProp()," alpha risk of ",input$alphaProp,"% and 
            a power of ",input$powerProp,"%, the needed sample size is ",resProp(), " patients in each group.")
-    else
+      else
+        paste0("This sample size is for a RCT with an expected proportion of ",input$prevProp," units in patients in the 
+               experimental arm versus ",input$obsProp," units in the control arm. In order to demonstrate such a 
+               difference of ",abs(input$prevProp-input$obsProp)," units, with a standard deviation of ",input$sigmaProp,"
+               , a ",input$alphaProp,"% ",printStProp()," type I error rate and a power of ",input$powerProp,"%, 
+               the final analysis should be carried out on ",resProp()*2," patients 
+               (",resProp()," patients per group). The first and second intermediate 
+               analyses would be performed on ",ceiling(resProp()/(input$propSlice+1))," and 316 patients respectively, 
+               i.e. ",list(round(seq(from=1/(input$propSlice+1), to =1, by=1/(input$propSlice+1)),digits=2)),"% of the 
+               maximum number of included patients if their is no decision of stopping the study")
+    }else{
+      if(reactive(input$propDesign)()=='No intermediate analysis')
       paste0("This sample size is for a randomised controlled non-inferiority trial in two parallel groups experimental 
              treatment versus control treatment with balanced randomisation (ratio 1 :1) for a binary endpoint. 
-             The proportion of patients with the criteria is ",input$prevProp,"% with the control treatment. Assuming an 
-             absolute non-inferiority margin of ",input$deltaProp,"%, with a one-sided alpha risk of 5% and a power 
-             of ",input$powerProp,"%, the needed sample size is ",resProp(), " patients in each group.")
-      })
+             The expected percentage of events is ",input$obsProp,"% in patients in the control arm and no difference compared to the 
+             experimental arm. Assuming an absolute non-inferiority margin of ",input$deltaProp,"%, the minimum sample 
+             size per arm equals ",resProp()," (i.e., a total of ",resProp()*2," patients) to achieve a ",input$alphaProp,"% 
+             one-sided type I error rate and a power of ",input$powerProp,"%.")
+      else{
+        paste0("This sample size is for a randomised controlled non-inferiority trial in two parallel groups experimental 
+               treatment versus control treatment with balanced randomisation (ratio 1 :1) for a binary endpoint. 
+               The expected percentage of events is ",input$obsProp,"% in patients in the control arm and no difference 
+               compared to the experimental arm. Assuming an absolute non-inferiority margin of ",input$deltaProp,"%, 
+               with a one-sided alpha risk of ",input$alphaProp,"% and a power of ",input$powerProp,"%, the final analysis 
+               should be carried out on ",resProp()*2," patients(",resProp()," patients per group).The two intermediate 
+               analyses would be performed on 242 and 484 patients respectively, i.e. 
+               ",list(round(seq(from=1/(input$propSlice+1), to =1, by=1/(input$propSlice+1)),digits=2)),"% of the maximum 
+               number of included patients if their is no decision of stopping the study")
+      }
+  })
   
   c <- eventReactive(input$Pred,{
-    if(reactive(input$typePred)()=='Construction of predictive model')
-    paste0("This sample size is for developing a logistic regression model based on up to ",input$predictorsToTest," candidate 
+    if(reactive(input$typePredBEP)()=='Construction of predictive model')
+      paste0("This sample size is for developing a logistic regression model based on up to ",input$predictorsToTest," candidate 
            predictors, with an anticipated R2 of at least ",input$R2,", and to target an expected 
            shrinkage of ",input$shrinkageExpected," (equation 11 in Riley et al. Statistics in Medicine. 2019;38:1276–1296).")
     else
       paste0("This sample size is for external validation of a logistic regression model based with an expected outcome 
              event proportions of ",input$P0,"%, with a alpha risk at ",input$alphaExtVal,"% and with a target confidence 
              interval width of ",input$widthExtVal,"% (Riley et al.  Statistics in Medicine. 2021;19:4230-4251).")
-    })
+  })
   
   d <- eventReactive(input$AUC,{
     paste0("This sample size is for comparing accuracy of two diagnostic tests assuming a detection of ",(input$AUC2-input$AUC1)*100,"
