@@ -15,7 +15,7 @@ This page is devoted to the calculation of the number of patients required for s
 ## DESCRIBING A CHARACTERISTIC
 <ul>
 	<details>
-	<summary>Mean</summary>
+	<summary><li>Mean</li></summary>
 	<br>
 	
 	*In order to describe an mean for an outcome with an expected standard deviation of 25 units with a total length of the 95% confidence interval equals to 10 units (5 units around the mean), the minimum sample size is 97 patients.*
@@ -120,6 +120,7 @@ This page is devoted to the calculation of the number of patients required for s
 		
 		</details>
 	</ul>
+	
 	<ul>
 		<details>
 		<summary>Stepped wedge randomization</summary>
