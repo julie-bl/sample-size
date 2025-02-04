@@ -178,7 +178,7 @@ SampleSize_SW(ni = SampSize_I$n.total, center = 30, sequence = 30, icc = 0.05)
 </ul>
 
 <ul>
-	<details>
+  <details>
 	<summary>Sequential design</summary>
 	<br>
 
@@ -227,7 +227,7 @@ summary(designPlan)
 
 ### &nbsp;&nbsp;&nbsp;&nbsp;NON-INFERIORITY TRIALS
 
-</ul>
+<ul>
 <details>
 <summary>No intermediate analysis</summary>
 <br>
@@ -271,7 +271,7 @@ epi.ssninfc(treat = 66, control = 66, sigma = 23, delta = 7,
 * r: randomization ratio (experimental:control)
 * n: number of subjects to include (experimental + control) define as NA
 
-</details>
+  </details>
 </ul>
 
 <ul>
@@ -626,7 +626,7 @@ SampleSize_SW(ni = SampSize_I$n.total, center = 15, sequence = 5, icc = 0.01)
 * sequence: number of sequences
 * icc: expected intraclass correlation coefficient
 
-</details>
+  </details>
 </ul>
 
 </details>
