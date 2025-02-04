@@ -79,7 +79,7 @@ sampleSize(p=0.35, alpha=0.05, length=0.1)
 
 <ul>
   <details>
-    <summary>Individual randomization</summary>
+  <summary>Individual randomization</summary>
   <br>
 
 
@@ -121,9 +121,9 @@ epi.sscompc(treat = 66, control = 72,	sigma = 23, n = NA, power = 0.8,
 </ul>
 
 <ul>
-<details>
+  <details>
   <summary>Stepped wedge randomization</summary>
-<br>
+  <br>
 
 *Consider the following stepped wedge RCT with 30 centers randomized in 30 sequences. The expected mean is 38 units in patients in the experimental arm versus 48 units in the control arm. In order to demonstrate such a difference of 10 units, with a standard deviation of 17 units, a 5% two-sided type I error rate and a power of 90%, the minimum sample size per arm equals 61 (i.e., a total of 122 patients) in case of individual randomization with a 1:1 ratio. According to our stepped wedge design and assuming an intraclass correlation coefficient of 0.05, we need to recruit 208 patients (104 in each arm).*
 
@@ -171,16 +171,16 @@ SampleSize_SW(ni = SampSize_I$n.total, center = 30, sequence = 30, icc = 0.05)
 * sequence: number of sequences
 * icc: expected intraclass correlation coefficient
 
-</details>
+	</details>
 </ul>
 
 </details>
 </ul>
 
 <ul>
-<details>
-<summary>Sequential design</summary>
-<br>
+	<details>
+	<summary>Sequential design</summary>
+	<br>
 
 
 
@@ -234,7 +234,7 @@ summary(designPlan)
 
 <ul>
   <details>
-    <summary>Individual randomization</summary>
+  <summary>Individual randomization</summary>
   <br>
 
 *Consider the following RCT with two parallel groups with a 1:1 randomization ratio. The expected mean is 66 units in patients in the control arm and no difference compared to the experimental arm. Assuming an absolute non-inferiority margin of 7 points, a standard deviation of 23, the minimum sample size per arm equals 134 (i.e., a total of 268 patients) to achieve a 5% one-sided type I error rate and a power of 80%*
