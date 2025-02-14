@@ -1,9 +1,3 @@
----
-output:
-  html_document: default
-  pdf_document: default
-  word_document: default
----
 # RECQUIRED SAMPLE SIZES
 
 <div style="text-align: justify">
