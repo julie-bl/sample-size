@@ -80,14 +80,7 @@ sampleSize(p=0.35, alpha=0.05, length=0.1)
 
 <ul>
 <details>
-<summary>No intermediate analysis</summary>
-
-
-<ul>
-  <details>
-  <summary>Individual randomization</summary>
-  
-
+<summary>No intermediate analysis : Individual randomization</summary>
 
 *Consider the following RCT with two parallel groups with a 1:1 randomization ratio. The expected mean is 66 units in patients in the experimental arm versus 72 units in the control arm. In order to demonstrate such a difference of 6 units, with a standard deviation of 23, a 5% two-sided type I error rate and a power of 80%, the minimum sample size per arm equals 231 (i.e., a total of 462 patients).*
 
@@ -123,12 +116,12 @@ epi.sscompc(treat = 66, control = 72,	sigma = 23, n = NA, power = 0.8,
 * sided.test: one-sided test (1) or two-sided test (2) 
 * conf.level: required confidence level (1 minus type I error rate)
 
-  </details>
+</details>
 </ul>
 
 <ul>
-  <details>
-  <summary>Stepped wedge randomization</summary>
+<details>
+<summary>No intermediate analysis : Stepped wedge randomization</summary>
   
 
 *Consider the following stepped wedge RCT with 30 centers randomized in 30 sequences. The expected mean is 38 units in patients in the experimental arm versus 48 units in the control arm. In order to demonstrate such a difference of 10 units, with a standard deviation of 17 units, a 5% two-sided type I error rate and a power of 90%, the minimum sample size per arm equals 61 (i.e., a total of 122 patients) in case of individual randomization with a 1:1 ratio. According to our stepped wedge design and assuming an intraclass correlation coefficient of 0.05, we need to recruit 208 patients (104 in each arm).*
@@ -178,9 +171,6 @@ SampleSize_SW(ni = SampSize_I$n.total, center = 30, sequence = 30, icc = 0.05)
 * icc: expected intraclass correlation coefficient
 
 	</details>
-</ul>
-
-</details>
 </ul>
 
 <ul>
@@ -234,14 +224,8 @@ summary(designPlan)
 ### &nbsp;&nbsp;&nbsp;&nbsp;NON-INFERIORITY TRIALS
 
 <ul>
-<details>
-<summary>No intermediate analysis</summary>
-
-
-<ul>
   <details>
-  <summary>Individual randomization</summary>
-  
+  <summary>No intermediate analysis : Individual randomization</summary>
 
 *Consider the following RCT with two parallel groups with a 1:1 randomization ratio. The expected mean is 66 units in patients in the control arm and no difference compared to the experimental arm. Assuming an absolute non-inferiority margin of 7 points, a standard deviation of 23, the minimum sample size per arm equals 134 (i.e., a total of 268 patients) to achieve a 5% one-sided type I error rate and a power of 80%*
 
@@ -282,7 +266,7 @@ epi.ssninfc(treat = 66, control = 66, sigma = 23, delta = 7,
 
 <ul>
   <details>
-  <summary>Stepped wedge randomization</summary>
+  <summary>No intermediate analysis : Stepped wedge randomization</summary>
   
 
 *Consider the following stepped wedge RCT with 30 centers randomized in 30 sequences. The expected mean is 48 units in patients in the control arm and no difference compared to the experimental arm. Assuming an absolute non-inferiority margin of 7 points, a standard deviation of 17, the minimum sample size per arm equals 102 (i.e., a total of 204 patients) to achieve a 5% one-sided type I error rate and a power of 90% in case of individual randomization with a 1:1 ratio. According to our stepped wedge design and assuming an intraclass correlation coefficient of 0.05, we need to recruit 372 patients (186 in each arm).*
@@ -328,12 +312,9 @@ SampleSize_SW(ni = SampSize_I$n.total, center = 30, sequence = 30, icc = 0.05)
 * ni: sample size in case of individual randomization
 * center: number of centers
 * sequence: number of sequences
-* icc: expected ntraclass correlation coefficient 
+* icc: expected ntraclass correlation coefficient
 
   </details>
-</ul>
-
-</details>
 </ul>
 
 <ul>
@@ -386,13 +367,8 @@ summary(designPlan)
 ### &nbsp;&nbsp;&nbsp;&nbsp;SUPERIORITY
 
 <ul>
-<details>
-<summary>No intermediate analysis</summary>
-
-
-<ul>
   <details>
-    <summary>Individual randomization</summary>
+    <summary>No intermediate analysis : Individual randomization</summary>
     
 
 *Consider the following RCT with two parallel groups with a 1:1 randomization ratio. The expected proportion of events is 35% in the experimental arm compared to 28% in the control arm. In order to demonstrate such a difference of 7%, with a two-sided type I error rate of 5% and a power of 80%, the minimum sample size per arm equals 691 (i.e., a total of 1,382 patients).*
@@ -438,7 +414,7 @@ epi.sscohortc(irexp1 = 0.35, irexp0 = 0.28, n = NA, power = 0.80,
 
 <ul>
   <details>
-    <summary>Stepped wedge randomization</summary>
+    <summary>No intermediate analysis : Stepped wedge randomization</summary>
     
 
 *Consider the following stepped wedge RCT with 15 centers randomized in 5 sequences. The expected proportion of events is 72% in the experimental arm compared to 62% in the control arm. In order to demonstrate such a difference of 10%, with a two-sided type I error rate of 5% and a power of 80%, the minimum sample size per arm equals 346 (i.e., a total of 692 patients) in case of individual randomization with a 1:1 ratio. According to our stepped wedge design and assuming an intraclass correlation coefficient of 0.01, we need to recruit 1,646 patients (823 in each arm).*
@@ -488,11 +464,8 @@ SampleSize_SW(ni = SampSize_I$n.total, center = 15, sequence = 5, icc = 0.01)
   </details>
 </ul>
 
-</details>
-</ul>
-
 <ul>
-<details>
+  <details>
   <summary>Sequential design</summary>
   
 
@@ -534,19 +507,14 @@ summary(designPlan)
 * pi2: expected probability in the control group
 * allocationRatioPlanned: randomization ratio (experimental/control)
 
-</details>
+  </details>
 </ul>
 
 ### &nbsp;&nbsp;&nbsp;&nbsp;NON-INFERIORITY
 
 <ul>
-<details>
-<summary>No intermediate analysis</summary>
-	
-
-<ul>
   <details>
-    <summary>Individual randomization</summary>
+    <summary>No intermediate analysis : Individual randomization</summary>
     
 
 *Consider the following RCT with two parallel groups with a 1:1 randomization ratio. The expected percentage of events is 35% in patients in the control arm and no difference compared to the experimental arm. Assuming an absolute non-inferiority margin of 5%,  the minimum sample size per arm equals 1,126 (i.e., a total of 2,252 patients) to achieve a 5% one-sided type I error rate and a power of 80%.*
@@ -584,8 +552,8 @@ epi.ssninfb(treat = 0.35, control = 0.35, delta = 0.05,
 </ul>
 
 <ul>
-<details>
-<summary>Stepped wedge randomization</summary>
+  <details>
+  <summary>No intermediate analysis : Stepped wedge randomization</summary>
 
 
 *Consider the following stepped wedge RCT with 15 centers randomized in 5 sequences. The expected proportion of events is 72% in patients in the control arm and no difference compared to the experimental arm. Assuming an absolute non-inferiority margin of 8%, the minimum sample size per arm equals 390 (i.e., a total of 780 patients) to achieve a one-sided type I error rate of 5% and a power of 80%, in case of individual randomization with a 1 :1 ratio. According to our stepped wedge design and assuming an intraclass correlation coefficient of 0.01, we need to recruit 1,890 patients (945 in each arm).*
@@ -635,9 +603,6 @@ SampleSize_SW(ni = SampSize_I$n.total, center = 15, sequence = 5, icc = 0.01)
   </details>
 </ul>
 
-</details>
-</ul>
-
 <ul>
 <details>
 <summary>Sequential Design</summary>
@@ -677,14 +642,14 @@ summary(designPlan)
 * thetaH0 : equivalence limit
 * allocationRatioPlanned: randomization ratio
 
-</details>
+  </details>
 </ul>
 
 ## PREDICTING A PROPORTION
 
 <ul>
-<details>
-<summary>Construction of predictive model</summary>
+  <details>
+  <summary>Construction of predictive model</summary>
 	
 
 *For developing a model/alghorithm based on 34 predictors as candidates with an expected R2 of at least 0.25 and an expected shrinkage of 0.9 (equation 11 in Riley et al. Statistics in Medicine. 2019;38:1276–1296), the minimal sample size is 1045.*
@@ -703,13 +668,12 @@ sampleSize()
 * R2 : expected R2
 * shrink : expected shrinkage
 
-</summary>
-</details>
+  </details>
 </ul>
 
 <ul>
-<details>
-<summary>External validation</summary>
+  <details>
+  <summary>External validation</summary>
 	
 
 *Consider O/E the ratio between the number of observed events versus expected ones. To achieve a precision defined as a length of the (1-α)% confidence interval of this ratio equals to 0.2, if the expected proportions is 50%, the required sample size is 386 (Riley et al. Minimum sample size for external validation of a clinical prediction model with a binary outcome. Statistics in Medicine. 2021;19:4230-4251).*
@@ -735,5 +699,5 @@ size.calib(p=0.5, width=0.2, alpha=0.05)
 * width: size of the (1-α)% confidence interval
 * alpha: type I error rate (α)
 
-</details>
+  </details>
 </ul>
