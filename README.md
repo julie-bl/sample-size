@@ -331,7 +331,7 @@ SampleSize_SW(ni = SampSize_I$n.total, center = 30, sequence = 30, icc = 0.05)
   
 <br>
 <em>
-This sample size is for a randomised controlled non-inferiority trial in two parallel groups experimental treatment versus control treatment with balanced randomisation (ratio 1 :1) for a continuous endpoint. Assuming an absolute non-inferiority margin of 7, with a standard deviation of 23, with a one-sided alpha risk of 5% and a power of 80%, the final analysis should be carried out on 276 patients(138 patients per group).Intermediate analyses would be performed on 92 and 184 patients respectively, i.e. 33%, 66% of the maximum number of included patients if their is no decision of stopping the study
+This sample size is for a randomised controlled non-inferiority trial in two parallel groups experimental treatment versus control treatment with balanced randomisation (ratio 1 :1) for a continuous endpoint. Assuming an absolute non-inferiority margin of 7, with a standard deviation of 23, with a one-sided alpha risk of 5% and a power of 80%, the final analysis should be carried out on 276 patients(138 patients per group).Intermediate analyses would be performed on 92 and 184 patients respectively, i.e. 33%, 66% of the maximum number of included patients if their is no decision of stopping the study.
 </em>
 
 ```r
@@ -629,7 +629,7 @@ SampleSize_SW(ni = SampSize_I$n.total, center = 15, sequence = 5, icc = 0.01)
 
 <br>
 <em>
-This sample size is for a randomised controlled non-inferiority trial in two parallel groups experimental treatment versus control treatment with balanced randomisation (ratio 1 :1) for a binary endpoint. The expected percentage of events is 35% in patients in the control arm and no difference compared to the experimental arm. Assuming an absolute non-inferiority margin of 10%, with a one-sided alpha risk of 5% and a power of 80%, the final analysis should be carried out on 576 patients(288 patients per group).The two intermediate analyses would be performed on 192 and 384 patients respectively, i.e. 33%, 66% of the maximum number of included patients if their is no decision of stopping the study
+This sample size is for a randomised controlled non-inferiority trial in two parallel groups experimental treatment versus control treatment with balanced randomisation (ratio 1 :1) for a binary endpoint. The expected percentage of events is 35% in patients in the control arm and no difference compared to the experimental arm. Assuming an absolute non-inferiority margin of 10%, with a one-sided alpha risk of 5% and a power of 80%, the final analysis should be carried out on 576 patients(288 patients per group).The two intermediate analyses would be performed on 192 and 384 patients respectively, i.e. 33%, 66% of the maximum number of included patients if their is no decision of stopping the study.
 </em>
 
 ```r

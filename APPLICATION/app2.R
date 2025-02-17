@@ -279,7 +279,7 @@ tabItem(tabName = "CTRC",
            mainPanel(
              htmlOutput("AUC"))
          )
-)
+) #ROC CURVES
     )
   )
 )
@@ -303,6 +303,13 @@ server <- function(input, output, session) {
   })
   #------------------------------------------------------------------------
   
+  
+  
+  
+  
+  
+  
+  
   sampleSizeDesc <- function(p,alpha,width){
     Z <- qnorm(1-alpha/2)
     (((2*Z)**2)*(p*(1-p)))/(width**2)
@@ -316,6 +323,23 @@ server <- function(input, output, session) {
   
   stProp <- reactive( if (reactive(input$sidetestProp)()=="No") 1 else 2 )
   printStProp <- reactive( if (reactive(input$sidetestProp)()=="No") "one-sided" else "two-sided" )
+  
+  
+  varAUC <- function(auc){
+    a <- norminv(auc)*1.414
+    (0.0099*exp(-(a**2)/2))*(6*(a**2)+16)
+  }
+  
+  compAUC <- function(auc1=input$AUC1, auc2=input$AUC2, alpha=input$alphaAUC/100, power=input$powerAUC/100){
+    ((qnorm(1-alpha/2)*sqrt(2*varAUC((auc1+auc2)/2))+qnorm(power)*sqrt(varAUC(auc1)+varAUC(auc2)))**2)/((auc2-auc1)**2)
+  }
+  
+  
+  
+  
+  
+  
+  
   
   
   # sample size result of the computation ----------------------------------------------------------------------------------------
@@ -421,18 +445,9 @@ server <- function(input, output, session) {
   )
   
   # AUC -------------------------------------------------------------------------------------------------------------------------
-  resAUC <- eventReactive(input$AUC,{
-    varAUC <- function(auc){
-      a <- norminv(auc)*1.414
-      (0.0099*exp(-(a**2)/2))*(6*(a**2)+16)
-    }
-    
-    compAUC <- function(auc1=input$AUC1, auc2=input$AUC2, alpha=input$alphaAUC/100, power=input$powerAUC/100){
-      ((qnorm(1-alpha/2)*sqrt(2*varAUC((auc1+auc2)/2))+qnorm(power)*sqrt(varAUC(auc1)+varAUC(auc2)))**2)/((auc2-auc1)**2)
-    }
-    
+  resAUC <- reactive(
     ceiling(compAUC())
-  })
+  )
   
   # reactive example sentence ---------------------------------------------------------------------------------------------------
   z <- reactive(
