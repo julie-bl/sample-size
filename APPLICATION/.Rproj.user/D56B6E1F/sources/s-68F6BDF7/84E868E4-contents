@@ -135,9 +135,7 @@ tabItem(tabName = "hiddenChartsDP",
               htmlOutput("description")))
         ),
         fluidRow(column(width = 12,
-                          h5("Chow, S.-C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). 
-                                 Sample Size Calculations in Clinical Research (3rd ed.). 
-                                 Chapman and Hall/CRC. ")))),
+                          h5("Chow, S.-C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). Chapman and Hall/CRC.")))),
       
 # PAGE COMPARING MEANS --------------------------------------------------------------------------------------------------
       tabItem(tabName = "hiddenChartsMean",
