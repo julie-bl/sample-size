@@ -36,9 +36,9 @@ sampleSize(stDev=25, alpha=0.05, length=10)
 ```
 
 **Input parameters:**
-* p : expected proportion of event
+* stDev : expected standard deviation
 * alpha : recquired type I error rate
-* width : size of the (1-α)% confidence interval
+* length : size of the (1-α)% confidence interval
 
   </details>	
 </ul>
@@ -259,7 +259,7 @@ epi.ssninfc(treat = 66, control = 66, sigma = 23, delta = 7,
 * treat: expected mean in the experimental arm
 * control: expected mean in the control arm
 * sigma: expected standard deviation in the two arms
-* delta: equivalence limit
+* delta: absolute non-inferiority margin
 * alpha: required type I error rate
 * power: required power (1 minus type II error rate)
 * r: randomization ratio (experimental:control)
@@ -309,7 +309,7 @@ SampleSize_SW(ni = SampSize_I$n.total, center = 30, sequence = 30, icc = 0.05)
 * treat: expected mean in the experimental arm
 * control: expected mean in the control arm
 * sigma: expected standard deviation in the two arms
-* delta: equivalence limit
+* delta: absolute non-inferiority margin
 * n: number of subjects to include (experimental + control) define as NA
 * r: randomization ratio (experimental:control)
 * power: required power (1 minus type II error rate)
@@ -556,7 +556,7 @@ epi.ssninfb(treat = 0.35, control = 0.35, delta = 0.05,
 **Parameters :**
 * treat: expected proportion in the experimental arm
 * control: expected proportion in the control arm
-* delta: equivalence limit
+* delta: absolute non-inferiority margin
 * alpha: required type I error rate
 * power: required power (1 minus type II error rate)
 * r: randomization ratio (experimental:control)
@@ -605,7 +605,7 @@ SampleSize_SW(ni = SampSize_I$n.total, center = 15, sequence = 5, icc = 0.01)
 **Input parameters:**
 * treat: expected proportion in the experimental arm
 * control: expected proportion in the control arm
-* delta: equivalence limit
+* delta: absolute non-inferiority margin
 * n: number of subjects to include (experimental + control) define as NA
 * r: randomization ratio (experimental:control)
 * power: required power (1 minus type II error rate)
