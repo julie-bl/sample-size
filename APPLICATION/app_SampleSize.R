@@ -7,7 +7,6 @@ library(drcarlate)
 library(rpact)
 library(shinycssloaders)
 library(shinyjs)
-library(rclipboard)
 
 
 se <- function(width, alpha) # The standard error associated with the 1-alpha confidence interval
@@ -131,7 +130,7 @@ tabItem(tabName = "hiddenChartsDP",
               });"),
               div(style = "position:absolute;right:1em;",
               actionButton("copy_link_description", "Copy",icon = icon("copy"))),
-              br(),
+              br(),br(),
               htmlOutput("description")))
         ),
         fluidRow(column(width = 12,
@@ -202,7 +201,7 @@ tabItem(tabName = "hiddenChartsDP",
                     });"),
                     div(style = "position:absolute;right:1em;",
                         actionButton("copy_link_mean", "Copy",icon = icon("copy"))),
-                    br(),
+                    br(),br(),
                     htmlOutput("mean"))
                   )
               ),
@@ -293,7 +292,7 @@ tabItem(tabName = "hiddenChartsDP",
                      });"),
                      div(style = "position:absolute;right:1em;",
                          actionButton("copy_link_proportion", "Copy",icon = icon("copy"))),
-                     br(),
+                     br(),br(),
                      htmlOutput("proportion"))
                    )
                ), # sidebarLayout
@@ -366,7 +365,7 @@ tabItem(tabName = "hiddenChartsBEP",
                });"),
                div(style = "position:absolute;right:1em;",
                    actionButton("copy_link_prediction", "Copy",icon = icon("copy"))),
-               br(),
+               br(),br(),
                htmlOutput("prediction"))
              )
          ),
@@ -421,7 +420,7 @@ tabItem(tabName = "CTRC",
                  });"),
                  div(style = "position:absolute;right:1em;",
                      actionButton("copy_link_AUC", "Copy",icon = icon("copy"))),
-                 br(),
+                 br(),br(),
                htmlOutput("AUC")) 
              )
          )
