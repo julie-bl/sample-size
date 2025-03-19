@@ -94,7 +94,8 @@ sample_mean <- function(mean1, mean0, sigma, power, r, sided.test, conf.level) {
   		      	          r = r, sided.test = sided.test, conf.level = conf.level)
   		      	          
   if (result$n.treat<30 | result$n.control<30) {
-  warning("--> At least one group size is < 30, normality assumption is questionnable and sample size calculation may not be valid.")
+    warning("--> At least one group size is < 30, normality assumption is questionnable and sample 
+    size calculation may not be valid.")
   }
 
   return(result)
@@ -143,13 +144,15 @@ Consider the following stepped wedge RCT with 30 centers randomized in 30 sequen
 ```r
 library(epiR)
 
-SampleSize_SW <- function(mean1, mean0, sigma, r, power, sided.test, conf.level, center, sequence, icc) {
+SampleSize_SW <- function(mean1, mean0, sigma, r, power, sided.test, conf.level,
+center, sequence, icc) {
   
   SampSize_I <- epi.sscompc(treat = mean1, control = mean0, sigma = sigma, n = NA, 
                           r = r, power = power, sided.test = sided.test, conf.level = conf.level)
   
   if (SampSize_I$n.treat<30 | SampSize_I$n.control<30) {
-    warning("--> At least one group size is < 30, in case of individual randomisation. Normality assumption is questionnable and sample size calculation may not be valid.")
+    warning("--> At least one group size is < 30, in case of individual randomisation. Normality 
+    assumption is questionnable and sample size calculation may not be valid.")
   }
   
   ni <- SampSize_I$n.total
@@ -262,7 +265,8 @@ sample_mean <- function(mean0, sigma, delta, r, power, alpha) {
                         r = r, power = power, alpha = alpha)
   		      	          
   if (result$n.treat<30 | result$n.control<30) {
-  warning("--> At least one group size is < 30, normality assumption is questionnable and sample size calculation may not be valid.")
+  warning("--> At least one group size is < 30, normality assumption is questionnable and sample 
+  size calculation may not be valid.")
   }
 
   return(result)
@@ -316,7 +320,8 @@ SampleSize_SW <- function(mean0, sigma, delta, r, power, alpha, center, sequence
                             n = NA, r = r, power = power, alpha = alpha)
   
   if (SampSize_I$n.treat<30 | SampSize_I$n.control<30) {
-    warning("--> At least one group size is < 30, in case of individual randomisation. Normality assumption is questionnable and sample size calculation may not be valid.")
+    warning("--> At least one group size is < 30, in case of individual randomisation. Normality 
+    assumption is questionnable and sample size calculation may not be valid.")
   }
   
   ni <- SampSize_I$n.total
@@ -429,11 +434,14 @@ sample_proportion <- function(p1, p0, power, r, sided.test, conf.level) {
                           r = r, sided.test = sided.test, conf.level = conf.level)
   
   if (result$n.exp1<30 | result$n.exp0<30) {
-  warning("--> At least one group size is < 30, normality assumption is questionnable and sample size calculation may not be valid.")
+  warning("--> At least one group size is < 30, normality assumption is questionnable and sample 
+  size calculation may not be valid.")
   }
   pmean <- (p1+p0)/2
-  if (pmean*result$n.exp1 <5 | pmean*result$n.exp0 <5 | (1-pmean)*result$n.exp1 < 5 | (1-pmean)*result$n.exp0 <5) {
-  warning("--> At least one theoretical effective is < 5, normality assumption is questionnable and sample size calculation may not be valid.")
+  if (pmean*result$n.exp1 <5 | pmean*result$n.exp0 <5 
+  | (1-pmean)*result$n.exp1 < 5 | (1-pmean)*result$n.exp0 <5) {
+  warning("--> At least one theoretical effective is < 5, normality assumption is questionnable 
+  and sample size calculation may not be valid.")
   }
   
   return(result)
@@ -494,11 +502,14 @@ SampleSize_SW <- function(p1, p0, r, power, sided.test, conf.level, center, sequ
                               
   
   if (SampSize_I$n.exp1<30 | SampSize_I$n.exp0<30) {
-  warning("--> At least one group size is < 30, normality assumption is questionnable and sample size calculation may not be valid.")
+  warning("--> At least one group size is < 30, normality assumption is questionnable and sample 
+  size calculation may not be valid.")
   }
   pmean <- (p1+p0)/2
-  if (pmean*SampSize_I$n.exp1 <5 | pmean*SampSize_I$n.exp0 <5 | (1-pmean)*SampSize_I$n.exp1 < 5 | (1-pmean)*SampSize_I$n.exp0 <5) {
-  warning("--> At least one theoretical effective is < 5, normality assumption is questionnable and sample size calculation may not be valid.")
+  if (pmean*SampSize_I$n.exp1 <5 | pmean*SampSize_I$n.exp0 <5 
+  | (1-pmean)*SampSize_I$n.exp1 < 5 | (1-pmean)*SampSize_I$n.exp0 <5) {
+  warning("--> At least one theoretical effective is < 5, normality assumption is questionnable 
+  and sample size calculation may not be valid.")
   }
 
   ni <- SampSize_I$n.total
@@ -612,7 +623,8 @@ sample_proportion <- function(p0, delta, r, power, alpha) {
   }
   pmean <- p0
   if (pmean*result$n.treat <5 | pmean*result$n.control <5 | (1-pmean)*result$n.treat < 5 | (1-pmean)*result$n.control <5) {
-  warning("--> At least one theoretical effective is < 5, normality assumption is questionnable and sample size calculation may not be valid.")
+  warning("--> At least one theoretical effective is < 5, normality assumption is questionnable and sample 
+  size calculation may not be valid.")
   }
   
   return(result)
@@ -667,11 +679,14 @@ SampleSize_SW <- function(p0, delta, r, power, alpha, center, sequence, icc) {
                               
   
   if (SampSize_I$n.treat<30 | SampSize_I$n.control<30) {
-    warning("--> At least one group size is < 30, normality assumption is questionnable and sample size calculation may not be valid.")
+    warning("--> At least one group size is < 30, normality assumption is questionnable and sample 
+    size calculation may not be valid.")
   }
   pmean <- p0
-  if (pmean*SampSize_I$n.treat <5 | pmean*SampSize_I$n.control <5 | (1-pmean)*SampSize_I$n.treat < 5 | (1-pmean)*SampSize_I$n.control <5) {
-    warning("--> At least one theoretical effective is < 5, normality assumption is questionnable and sample size calculation may not be valid.")
+  if (pmean*SampSize_I$n.treat <5 | pmean*SampSize_I$n.control <5 
+  | (1-pmean)*SampSize_I$n.treat < 5 | (1-pmean)*SampSize_I$n.control <5) {
+    warning("--> At least one theoretical effective is < 5, normality assumption is questionnable 
+    and sample size calculation may not be valid.")
   }
 
   ni <- SampSize_I$n.total
@@ -689,24 +704,21 @@ SampleSize_SW <- function(p0, delta, r, power, alpha, center, sequence, icc) {
   return(res)
 }
 
-SampleSize_SW(p0 = 0.72, delta = 0.08, r = 1, power = 0.8, alpha = 0.05, center = 15, sequence = 5, icc = 0.01)
+SampleSize_SW(p0=0.72, delta=0.08, r=1, power=0.8, alpha=0.05, center=15, sequence=5, icc=0.01)
 
-$n.indiv
-[1] 780
-
-$n.SW
-[1] 1890
+# $n.indiv
+# [1] 780
+# 
+# $n.SW
+# [1] 1890
 ```
 
 **Input parameters:**
-* treat: expected proportion in the experimental arm
-* control: expected proportion in the control arm
+* p0: expected proportion in both control and experimental arms
 * delta: absolute non-inferiority margin
-* n: number of subjects to include (experimental + control) define as NA
-* r: randomization ratio (experimental:control)
+* r: individual randomization ratio (experimental:control)
 * power: required power (1 minus type II error rate)
 * alpha: required type I error rate
-* ni: sample size in case of individual randomization
 * center: number of centers
 * sequence: number of sequences
 * icc: expected intraclass correlation coefficient
