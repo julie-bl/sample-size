@@ -541,7 +541,7 @@ SampleSize_SW(p1 = 0.72, p0 = 0.62, r = 1, power = 0.80, sided.test = 2,
 **Input parameters:**
 *	p1: expected proportion in the experimental group
 *	p0: expected proportion in the control group
-* r: randomization ratio (experimental:control)
+* r: individual randomization ratio (experimental:control)
 *	power: required power (1 minus type II error rate)
 * sided.test: one-sided test (1), two-sided test (2)
 * conf.level: required confidence level (1 minus type I error rate)
