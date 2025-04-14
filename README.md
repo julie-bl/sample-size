@@ -20,17 +20,17 @@ This page is devoted to the calculation of the number of patients required for s
   
 <br>
 <em>
-In order to describe an mean for an outcome with an expected standard deviation of 25 units with a total length of the 95% confidence interval equals to 10 units (5 units around the mean), the minimum sample size is 97 patients. (Chow, S.-C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). Chapman and Hall/CRC.)
+In order to describe an mean for an outcome with an expected standard deviation of 25 units with a total width of the 95% confidence interval equals to 10 units (5 units around the mean), the minimum sample size is 97 patients. (Chow, S.-C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). Chapman and Hall/CRC.)
 </em>
 
 ```r
-sampleSize <- function(stDev, alpha, length)
+sampleSize <- function(stDev, alpha, width)
 {
 Z <- qnorm(1-alpha/2)
-return( (2 * Z * stDev / length)**2 )
+return( (2 * Z * stDev / width)**2 )
 }
 
-sampleSize(stDev=25, alpha=0.05, length=10)
+sampleSize(stDev=25, alpha=0.05, width=10)
 
 #> [1] 96.03647
 ```
@@ -38,7 +38,7 @@ sampleSize(stDev=25, alpha=0.05, length=10)
 **Input parameters:**
 * stDev : expected standard deviation
 * alpha : recquired type I error rate
-* length : size of the (1-α)% confidence interval
+* width : size of the (1-α)% confidence interval
 
   </details>	
 </ul>
@@ -49,17 +49,17 @@ sampleSize(stDev=25, alpha=0.05, length=10)
   
 <br>
 <em>
-In order to describe an expected proportion of 35% with a total length of the 95% confidence interval equals to 10%, the minimum sample size is 350 patients. (Chow, S.-C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). Chapman and Hall/CRC.)
+In order to describe an expected proportion of 35% with a total width of the 95% confidence interval equals to 10%, the minimum sample size is 350 patients. (Chow, S.-C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). Chapman and Hall/CRC.)
 </em>
 
 ```r
-sampleSize <- function(p, alpha, length)
+sampleSize <- function(p, alpha, width)
   {
   Z <- qnorm(1-alpha/2)
-  return((((2*Z)**2)*(p*(1-p)))/(length**2))
+  return((((2*Z)**2)*(p*(1-p)))/(width**2))
   }
 
-sampleSize(p=0.35, alpha=0.05, length=0.1)
+sampleSize(p=0.35, alpha=0.05, width=0.1)
 
 #> [1] 349.5728
 ```
@@ -67,7 +67,7 @@ sampleSize(p=0.35, alpha=0.05, length=0.1)
 **Input parameters:**
 * p : expected proportion of event
 * alpha : recquired type I error rate
-* length : total size of the (1-α)% confidence interval
+* width : total size of the (1-α)% confidence interval
 
   </details>
 </ul>
@@ -804,7 +804,7 @@ sampleSize()
 	
 <br>
 <em>
-Consider O/E the ratio between the number of observed events versus expected ones. To achieve a precision defined as a length of the (1-α)% confidence interval of this ratio equals to 0.2, if the expected proportions is 50%, the required sample size is 386 (Riley et al. Minimum sample size for external validation of a clinical prediction model with a binary outcome. Statistics in Medicine. 2021;19:4230-4251).
+Consider O/E the ratio between the number of observed events versus expected ones. To achieve a precision defined as a width of the (1-α)% confidence interval of this ratio equals to 0.2, if the expected proportions is 50%, the required sample size is 386 (Riley et al. Minimum sample size for external validation of a clinical prediction model with a binary outcome. Statistics in Medicine. 2021;19:4230-4251).
 </em>
 
 ```r

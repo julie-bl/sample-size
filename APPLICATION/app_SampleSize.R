@@ -7,6 +7,7 @@ library(drcarlate)
 library(rpact)
 library(shinycssloaders)
 library(shinyjs)
+library(bsplus)
 
 
 se <- function(width, alpha) # The standard error associated with the 1-alpha confidence interval
@@ -50,8 +51,8 @@ ui <- dashboardPage(
       id = "sidebarID",
       menuItem("DESCRIBE A POPULATION", tabName = "dp", id = "DPid", expandedName = "DP",
                radioButtons(inputId = "typeDP",
-                            label = "Design",
-                            choices = c("Mean endpoint","Proportion endpoint"))),
+                            label = "Endpoint",
+                            choices = c("Mean","Proportion"))),
       hidden(menuItem("hiddenChartsDP", tabName = "hiddenChartsDP")),
       menuItem("COMPARING MEANS",tabName = "comparingmean",id = "CMid",expandedName = "COMPARINGMEAN",
                radioButtons(inputId = "hypMean",
@@ -59,9 +60,9 @@ ui <- dashboardPage(
                             choices = c("Superiority", "Non-inferiority")), 
                radioButtons(inputId = "meanDesign",
                             label = "Design",
-                            choices = c("No intermediate analysis : Individual randomization",
-                                        "No intermediate analysis : Stepped wedge randomization",
-                                        "Sequential design"))),
+                            choices = c("No intermediate analysis with individual randomization",
+                                        "No intermediate analysis with stepped wedge randomization",
+                                        "Intermediate analysis with individual randomization"))),
       hidden(menuItem("hiddenChartsMean", tabName = "hiddenChartsMean")),
       menuItem("COMPARING PROPORTION",tabName = "comparingprop",id = "CPid",expandedName = "COMPARINGPROP",
                radioButtons(inputId = "hypProp",
@@ -69,14 +70,14 @@ ui <- dashboardPage(
                             choices = c("Superiority", "Non-inferiority")), 
                radioButtons(inputId = "propDesign",
                             label = "Design",
-                            choices = c("No intermediate analysis : Individual randomization", 
-                                        "No intermediate analysis : Stepped wedge randomization",
-                                        "Sequential design"))),
+                            choices = c("No intermediate analysis with individual randomization", 
+                                        "No intermediate analysis with stepped wedge randomization",
+                                        "Intermediate analysis with individual randomization"))),
       hidden(menuItem("hiddenChartsProp", tabName = "hiddenChartsProp")),
-      menuItem("PREDICTING A PROPORTION", tabName = "bep", id = "BEPid", expandedName = "BEP",
+      menuItem("BINARY EVENT PREDICTION", tabName = "bep", id = "BEPid", expandedName = "BEP",
                radioButtons(inputId = "typePredBEP",
                             label = "Design",
-                            choices = c("Construction of predictive model", "External validation"))),
+                            choices = c("Construction of predictive model of binary event", "External validation of binary event"))),
       hidden(menuItem("hiddenChartsBEP", tabName = "hiddenChartsBEP"))
       # menuItem("COMPARING TWO ROC CURVES", tabName = "CTRC")
     )
@@ -93,27 +94,35 @@ tabItem(tabName = "hiddenChartsDP",
         sidebarLayout(
           sidebarPanel(
             conditionalPanel(
-              condition = "input.typeDP == 'Mean endpoint'",
+              condition = "input.typeDP == 'Mean'",
+              h4("Describe mean with related IC :"),
+              br(),
               numericInput(inputId = "descExpMean",
-                           label = "Standard deviation of the expected mean",
+                           label = "Expected standard deviation of the random variable",
                            value = NULL,
                            max = 100,
-                           min = 0),
+                           min = 0)%>%
+                shinyInput_label_embed(
+                  shiny_iconlink() %>%
+                    bs_embed_tooltip("WARNING : Not the standard deviation of the mean",
+                                     placement = "right")),
               numericInput(inputId = "widthDescMean",
-                           label = "Expected width of the confidence interval",
+                           label = "Desired width of the confidence interval",
                            value = NULL,
                            max = 100,
                            min = 0)
             ),
             conditionalPanel(
-              condition = "input.typeDP == 'Proportion endpoint'",
+              condition = "input.typeDP == 'Proportion'",
+              h4("Describe proportion with related IC :"),
+              br(),
               numericInput(inputId = "descExpProp",
                            label = "Expected proportion (%)",
                            value = NULL,
                            max = 100,
                            min = 0),
               numericInput(inputId = "widthDescProp",
-                           label = "Expected width of the confidence interval (%)",
+                           label = "Desired width of the confidence interval (%)",
                            value = NULL,
                            max = 100,
                            min = 0)
@@ -134,7 +143,8 @@ tabItem(tabName = "hiddenChartsDP",
               htmlOutput("description")))
         ),
         fluidRow(column(width = 12,
-                          h5("Chow, S.-C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). Chapman and Hall/CRC.")))),
+                          tags$a("Chow, S.-C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). Sample Size Calculations in Clinical Research (3rd ed.). Chapman and Hall/CRC.", 
+                                 href = "https://ndl.ethernet.edu.et/bitstream/123456789/15304/1/9103.pdf")))),
       
 # PAGE COMPARING MEANS --------------------------------------------------------------------------------------------------
       tabItem(tabName = "hiddenChartsMean",
@@ -143,6 +153,13 @@ tabItem(tabName = "hiddenChartsDP",
               br(),
               sidebarLayout(
                 sidebarPanel(
+                  textOutput("titleMean"),
+                  tags$head(tags$style(HTML("
+                            #titleMean {
+                              font-size: 18px;
+                            }
+                            "))),
+                  br(),
                     conditionalPanel(
                       condition = "input.hypMean == 'Superiority'",
                       radioButtons(inputId = "sidetestMean",
@@ -158,7 +175,11 @@ tabItem(tabName = "hiddenChartsDP",
                                  step = 0.005),
                   numericInput(inputId = "powerMean",
                                label = "Power (%)",
-                               value = 80),
+                               value = 80)%>%
+                    shinyInput_label_embed(
+                      shiny_iconlink() %>%
+                        bs_embed_tooltip("1 - type II error",
+                                         placement = "right")),
                   numericInput(inputId = "alphaMean",
                                label = "Type I error rate (%)",
                                value = 5,
@@ -174,7 +195,7 @@ tabItem(tabName = "hiddenChartsDP",
                                  value = NULL,
                                  step = 0,005)),
                   conditionalPanel(
-                    condition = "input.meanDesign == 'No intermediate analysis : Stepped wedge randomization'",
+                    condition = "input.meanDesign == 'No intermediate analysis with stepped wedge randomization'",
                     numericInput(inputId = "centersMean",
                                  label = "Number of centers",
                                  value = NULL,
@@ -182,13 +203,17 @@ tabItem(tabName = "hiddenChartsDP",
                     numericInput(inputId = "sequencesMean",
                                  label = "Number of sequences",
                                  value = NULL,
-                                 step = 1),
+                                 step = 1)%>%
+                      shinyInput_label_embed(
+                        shiny_iconlink() %>%
+                          bs_embed_tooltip("a sequence dictate the order (or timing) at which each cluster will switch to the intervention condition, number of period of trtA and trtB",
+                                           placement = "right")),
                     numericInput(inputId = "iccMean",
                                  label = "Intraclass correlation coefficient",
                                  value = 0.05,
                                  step = 0.05)),
                   conditionalPanel(
-                    condition = "input.meanDesign == 'Sequential design'",
+                    condition = "input.meanDesign == 'Intermediate analysis with individual randomization'",
                     numericInput(inputId = "meanSlice",
                                  label = "Number of planned intermediate analysis",
                                  value = 2))
@@ -206,24 +231,27 @@ tabItem(tabName = "hiddenChartsDP",
                   )
               ),
               conditionalPanel(
-                condition = "input.meanDesign == 'No intermediate analysis : Individual randomization'",
+                condition = "input.meanDesign == 'No intermediate analysis with individual randomization'",
                 fluidRow(column(width = 12,
-                                h5("Chow, S.-C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). 
-                                 Sample Size Calculations in Clinical Research (3rd ed.). 
-                                 Chapman and Hall/CRC. ")))
+                                tags$a("Chow, S.-C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). 
+                                       Sample Size Calculations in Clinical Research (3rd ed.). 
+                                       Chapman and Hall/CRC. "),
+                                       href = "https://ndl.ethernet.edu.et/bitstream/123456789/15304/1/9103.pdf"))
                 ),
               conditionalPanel(
-                condition = "input.meanDesign == 'No intermediate analysis : Stepped wedge randomization'",
+                condition = "input.meanDesign == 'No intermediate analysis with stepped wedge randomization'",
                 fluidRow(column(width = 12,
-                                h5("Hemming K, Taljaard M. Sample size calculations for 
-                                   stepped wedge and cluster randomised trials: a unified 
-                                   approach. J Clin Epidemiol. 2016 Jan;69:137-46")))
+                                tags$a("Hemming K and Taljaard M. Sample size calculations for 
+                                       stepped wedge and cluster randomised trials: a unified 
+                                       approach. J Clin Epidemiol. 2016 Jan;69:137-46",
+                                       href = "https://www.sciencedirect.com/science/article/pii/S089543561500414X")))
               ),
               conditionalPanel(
-                condition = "input.meanDesign == 'Sequential design'",
+                condition = "input.meanDesign == 'Intermediate analysis with individual randomization'",
                 fluidRow(column(width = 12,
-                                h5("Demets DL, Lan KG. Interim analysis: The alpha spending 
-                                function approach. Stat Med. 1994;13(13-14):1341–1352")))
+                                tags$a("Demets DL and Lan KG. Interim analysis: The alpha spending 
+                                       function approach. Stat Med. 1994;13(13-14):1341–1352",
+                                       href = "https://pubmed.ncbi.nlm.nih.gov/7973215/")))
               )
       ),
 
@@ -234,6 +262,13 @@ tabItem(tabName = "hiddenChartsDP",
                br(),
                sidebarLayout(
                  sidebarPanel(
+                   textOutput("titleProp"),
+                   tags$head(tags$style(HTML("
+                            #titleProp {
+                              font-size: 18px;
+                            }
+                            "))),
+                   br(),
                    conditionalPanel(
                      condition = "input.hypProp == 'Superiority'",
                      radioButtons(inputId = "sidetestProp",
@@ -247,19 +282,23 @@ tabItem(tabName = "hiddenChartsDP",
                                   label = "Expected proportion of the control arm (%)",
                                   value = NULL,
                                   step = 0.005),
-                   numericInput(inputId = "powerProp",
-                                label = "Power (%)",
-                                value = 80,
-                                max = 100,
-                                min = 0),
                    numericInput(inputId = "alphaProp",
                                 label = "Type I error rate (%)",
                                 value = 5,
                                 max = 20,
                                 min = 0,
                                 step = 0.5),
+                   numericInput(inputId = "powerProp",
+                                label = "Power (%)",
+                                value = 80,
+                                max = 100,
+                                min = 0)%>%
+                     shinyInput_label_embed(
+                       shiny_iconlink() %>%
+                         bs_embed_tooltip("1 - type II error",
+                                          placement = "right")),
                    conditionalPanel(
-                     condition = "input.propDesign == 'No intermediate analysis : Stepped wedge randomization'",
+                     condition = "input.propDesign == 'No intermediate analysis with stepped wedge randomization'",
                      numericInput(inputId = "centersProp",
                                   label = "Number of centers",
                                   value = NULL,
@@ -279,7 +318,7 @@ tabItem(tabName = "hiddenChartsDP",
                                   value = NULL,
                                   step = 0.005)),
                    conditionalPanel(
-                     condition = "input.propDesign == 'Sequential design'",
+                     condition = "input.propDesign == 'Intermediate analysis with individual randomization'",
                      numericInput(inputId = "propSlice",
                                   label = "Number of planned intermediate analysis",
                                   value = 2))
@@ -297,24 +336,27 @@ tabItem(tabName = "hiddenChartsDP",
                    )
                ), # sidebarLayout
               conditionalPanel(
-                condition = "input.propDesign == 'No intermediate analysis : Individual randomization'",
+                condition = "input.propDesign == 'No intermediate analysis with individual randomization'",
                 fluidRow(column(width = 12,
-                                h5("Chow, S.-C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). 
-                                 Sample Size Calculations in Clinical Research (3rd ed.). 
-                                 Chapman and Hall/CRC. ")))
+                                tags$a("Chow, S.-C., Shao, J., Wang, H., & Lokhnygina, Y. (2017). 
+                                       Sample Size Calculations in Clinical Research (3rd ed.). 
+                                       Chapman and Hall/CRC. ",
+                                       href = "https://ndl.ethernet.edu.et/bitstream/123456789/15304/1/9103.pdf")))
               ),
               conditionalPanel(
-                condition = "input.propDesign == 'No intermediate analysis : Stepped wedge randomization'",
+                condition = "input.propDesign == 'No intermediate analysis with stepped wedge randomization'",
                 fluidRow(column(width = 12,
-                                h5("Hemming K, Taljaard M. Sample size calculations for 
-                                   stepped wedge and cluster randomised trials: a unified 
-                                   approach. J Clin Epidemiol. 2016 Jan;69:137-46")))
+                                tags$a("Hemming K, Taljaard M. Sample size calculations for 
+                                       stepped wedge and cluster randomised trials: a unified 
+                                       approach. J Clin Epidemiol. 2016 Jan;69:137-46",
+                                       href = "https://www.sciencedirect.com/science/article/pii/S089543561500414X")))
               ),
               conditionalPanel(
-                condition = "input.propDesign == 'Sequential design'",
+                condition = "input.propDesign == 'Intermediate analysis with individual randomization'",
                 fluidRow(column(width = 12,
-                                h5("Demets DL, Lan KG. Interim analysis: The alpha spending 
-                                function approach. Stat Med. 1994;13(13-14):1341–1352")))
+                                tags$a("Demets DL and Lan KG. Interim analysis: The alpha spending 
+                                       function approach. Stat Med. 1994;13(13-14):1341–1352",
+                                       href = "https://pubmed.ncbi.nlm.nih.gov/7973215/")))
               )
       ),# Comparing proportion
 
@@ -326,7 +368,9 @@ tabItem(tabName = "hiddenChartsBEP",
          sidebarLayout(
            sidebarPanel(
              conditionalPanel(
-               condition = "input.typePredBEP == 'Construction of predictive model'",
+               condition = "input.typePredBEP == 'Construction of predictive model of binary event'",
+               h4("Construction of predictive model :"),
+               br(),
                numericInput(inputId = "predictorsToTest",
                             label = "Number of potential predictors",
                             value = NULL,
@@ -334,14 +378,20 @@ tabItem(tabName = "hiddenChartsBEP",
                numericInput(inputId = "shrinkageExpected",
                             label = "Expected shrinkage",
                             value = NULL,
-                            step = 0.1),
+                            step = 0.1)%>%
+                 shinyInput_label_embed(
+                   shiny_iconlink() %>%
+                     bs_embed_tooltip("i.e. reduction in the effects of sampling variation",
+                                      placement = "right")),
                numericInput(inputId = "R2",
-                            label = "Expected predictive capacities (R2)",
+                            label = "Expected predictive capacities in term of R2",
                             value = NULL,
                             step = 0.01)
              ),
              conditionalPanel(
-               condition = "input.typePredBEP == 'External validation'",
+               condition = "input.typePredBEP == 'External validation of binary event'",
+               h4("External validation :"),
+               br(),
                numericInput(inputId = "P0",
                             label = "Expected proportion of events (%)",
                             value = NULL,
@@ -370,17 +420,19 @@ tabItem(tabName = "hiddenChartsBEP",
              )
          ),
         conditionalPanel(
-          condition = "input.typePredBEP == 'Construction of predictive model'",
+          condition = "input.typePredBEP == 'Construction of predictive model of binary event'",
           fluidRow(column(width = 12,
-                          h5("equation 11 in Riley et al. Statistics in Medicine. 
-                             2019;38:1276–1296")))
+                          tags$a("Riley et al. Statistics in Medicine. equation 11,  
+                                 2019;38:1276–1296",
+                                 href = "https://onlinelibrary.wiley.com/doi/full/10.1002/sim.7992")))
         ),
         conditionalPanel(
-          condition = "input.typePredBEP == 'External validation'",
+          condition = "input.typePredBEP == 'External validation of binary event'",
           fluidRow(column(width = 12,
-                          h5("Riley et al. Minimum sample size for external validation 
-                             of a clinical prediction model with a binary outcome. 
-                             Statistics in Medicine. 2021;19:4230-4251")))
+                          tags$a("Riley et al. Minimum sample size for external validation 
+                                 of a clinical prediction model with a binary outcome. 
+                                 Statistics in Medicine. 2021;19:4230-4251",
+                                 href = "https://onlinelibrary.wiley.com/doi/full/10.1002/sim.9025")))
         )
 ), # BINARY EVENT PREDICTION
 
@@ -431,7 +483,7 @@ tabItem(tabName = "CTRC",
 
 
 ################################################################################################################################
-################################################### SERVER #########################################################################
+################################################### SERVER #####################################################################
 ################################################################################################################################
 
 
@@ -453,6 +505,10 @@ server <- function(input, output, session) {
     }
   })
   #------------------------------------------------------------------------
+  
+  # Title of the page
+  output$titleMean <- renderText({paste0(input$hypMean, " trial. ",input$meanDesign, " :")})
+  output$titleProp <- renderText({paste0(input$hypProp, " trial. ",input$propDesign, " :")})
   
   
   
@@ -492,7 +548,7 @@ server <- function(input, output, session) {
   
   #DESCRITPION -------------------------------------------------------------------------------------------------------------------
   resDesc <- reactive(
-    if(reactive(input$typeDP)()=='Mean endpoint'){
+    if(reactive(input$typeDP)()=='Mean'){
       ceiling((2*qnorm(1-(input$descAlpha/100)/2)*input$descExpMean/input$widthDescMean)**2)
     }else{
       ceiling(sampleSizeDesc(p=input$descExpProp/100, alpha=input$descAlpha/100, width=input$widthDescProp/100))
@@ -501,14 +557,14 @@ server <- function(input, output, session) {
   
   # MEAN -------------------------------------------------------------------------------------------------------------------------
   resMeanSeq <- reactive(
-      if(reactive(input$meanDesign)()=='Sequential design' & reactive(input$hypMean)()=='Superiority'){
+      if(reactive(input$meanDesign)()=='Intermediate analysis with individual randomization' & reactive(input$hypMean)()=='Superiority'){
         design <- getDesignGroupSequential(typeOfDesign = "OF", informationRates = seq(from=1/(input$meanSlice+1), to=1, by=1/(input$meanSlice+1)),
                                            alpha = input$alphaMean/100, beta = 1-input$powerMean/100, sided = stMean())
         designPlan <- getSampleSizeMeans(design, alternative = abs(input$prevMean-input$obsMean), stDev = input$sigmaMean,
                                          allocationRatioPlanned = 1)
         designPlan$numberOfSubjects
         
-      }else if(reactive(input$meanDesign)()=='Sequential design' & reactive(input$hypMean)()=='Non-inferiority'){
+      }else if(reactive(input$meanDesign)()=='Intermediate analysis with individual randomization' & reactive(input$hypMean)()=='Non-inferiority'){
         design <- getDesignGroupSequential(typeOfDesign = "OF", informationRates = seq(from=1/(input$meanSlice+1), to=1, by=1/(input$meanSlice+1)),
                                            alpha = input$alphaMean/100, beta = 1-input$powerMean/100, sided = 1)
         designPlan <- getSampleSizeMeans(design, alternative = 0, stDev = input$sigmaMean,
@@ -522,44 +578,44 @@ server <- function(input, output, session) {
   
   resMean <- reactive(
     # MEAN SUPERIORITY NO INTERMEDIATE ANALYSIS AND INDIVIDUAL RANDOMIZATION  --------------------
-    if(reactive(input$hypMean)()=='Superiority' & reactive(input$meanDesign)()=='No intermediate analysis : Individual randomization'){ 
+    if(reactive(input$hypMean)()=='Superiority' & reactive(input$meanDesign)()=='No intermediate analysis with individual randomization'){ 
         epi.sscompc(N = NA, treat = input$prevMean, control = input$obsMean, 
                     sigma = input$sigmaMean, n = NA, power = input$powerMean/100, 
                     r = 1, design = 1, sided.test = stMean(), conf.level = 1-(input$alphaMean/100))$n.treat
       # MEAN SUPERIORITY NO INTERMEDIATE ANALYSIS AND STEP WEDGE RANDOMIZATION
-      }else if(reactive(input$hypMean)()=='Superiority' & reactive(input$meanDesign)()=='No intermediate analysis : Stepped wedge randomization'){
+      }else if(reactive(input$hypMean)()=='Superiority' & reactive(input$meanDesign)()=='No intermediate analysis with stepped wedge randomization'){
         SampSize_I <- epi.sscompc(N = NA, treat = input$prevMean, control = input$obsMean, 
                                   sigma = input$sigmaMean, n = NA, power = input$powerMean/100, 
                                   r = 1, design = 1, sided.test = stMean(), conf.level = 1-(input$alphaMean/100))
         SW(ni=SampSize_I$n.total, center=input$centersMean, sequence=input$sequencesMean, icc=input$iccMean)
-      # MEAN SUPERIORITY SEQUENTIAL DESIGN ------------------------------------------------------
-      }else if(reactive(input$hypMean)()=='Superiority' & reactive(input$meanDesign)()=='Sequential design'){
+      # MEAN SUPERIORITY INTERMEDIATE ANALYSIS AND INDIVIDUAL RANDOMIZATION ------------------------------------------------------
+      }else if(reactive(input$hypMean)()=='Superiority' & reactive(input$meanDesign)()=='Intermediate analysis with individual randomization'){
         ceiling(resMeanSeq()[input$meanSlice+1]/2) 
       
       # MEAN NON-INFERIORITY NO INTERMEDIATE ANALYSIS AND INDIVIDUAL RANDOMIZATION ----------------
-      }else if(reactive(input$hypMean)()=='Non-inferiority' & reactive(input$meanDesign)()=='No intermediate analysis : Individual randomization'){
+      }else if(reactive(input$hypMean)()=='Non-inferiority' & reactive(input$meanDesign)()=='No intermediate analysis with individual randomization'){
         epi.ssninfc(treat = input$obsMean, control = input$obsMean, sigma = input$sigmaMean,
                     delta = input$deltaMean, n = NA, power = input$powerMean/100, alpha = input$alphaMean/100, r = 1)$n.treat
       # MEAN NON-INFERIORITY NO INTERMEDIATE ANALYSIS AND STEP WEDGE RANDOMIZATION
-      }else if(reactive(input$hypMean)()=='Non-inferiority' & reactive(input$meanDesign)()=='No intermediate analysis : Stepped wedge randomization'){ 
+      }else if(reactive(input$hypMean)()=='Non-inferiority' & reactive(input$meanDesign)()=='No intermediate analysis with stepped wedge randomization'){ 
         SampSize_I <- epi.ssninfc(treat = input$obsMean, control = input$obsMean, sigma = input$sigmaMean,
                                   delta = input$deltaMean, n = NA, power = input$powerMean/100, alpha = input$alphaMean/100, r = 1)
         SW(ni=SampSize_I$n.total, center=input$centersMean, sequence=input$sequencesMean, icc=input$iccMean)
-      # MEAN NON-INFERIORITY SEQUENTIAL DESIGN -----------------------------------------------------------------------------
-      }else if(reactive(input$hypMean)()=='Non-inferiority' & reactive(input$meanDesign)()=='Sequential design'){
+      # MEAN NON-INFERIORITY Intermediate analysis with individual randomization -----------------------------------------------------------------------------
+      }else if(reactive(input$hypMean)()=='Non-inferiority' & reactive(input$meanDesign)()=='Intermediate analysis with individual randomization'){
         ceiling(resMeanSeq()[input$meanSlice+1]/2)
       })
   
   
   # PROPORTION ------------------------------------------------------------------------------------------------------------------
   resPropSeq <- reactive(
-    if(reactive(input$propDesign)()=='Sequential design' & reactive(input$hypProp)()=='Superiority'){
+    if(reactive(input$propDesign)()=='Intermediate analysis with individual randomization' & reactive(input$hypProp)()=='Superiority'){
         design <- getDesignGroupSequential(typeOfDesign = "OF", informationRates = seq(from=1/(input$propSlice+1), to=1, by=1/(input$propSlice+1)),
                                            alpha = input$alphaProp/100, beta = 1-input$powerProp/100, sided = stProp())
         designPlan <- getSampleSizeRates(design,  pi1 = input$prevProp/100, pi2 = input$obsProp/100,
                                          allocationRatioPlanned = 1)
         designPlan$numberOfSubjects
-      }else if(reactive(input$propDesign)()=='Sequential design' & reactive(input$hypProp)()=='Non-inferiority'){
+      }else if(reactive(input$propDesign)()=='Intermediate analysis with individual randomization' & reactive(input$hypProp)()=='Non-inferiority'){
         design <- getDesignGroupSequential(typeOfDesign = "OF", informationRates = seq(from=1/(input$propSlice+1), to=1, by=1/(input$propSlice+1)),
                                            alpha = input$alphaProp/100, beta = 1-input$powerProp/100, sided = 1)
         designPlan <- getSampleSizeRates(design, pi1 = input$obsProp/100, pi2 = input$obsProp/100, thetaH0 = input$deltaProp/100)
@@ -568,34 +624,34 @@ server <- function(input, output, session) {
   
   
   resProp <- reactive(
-    # PROPORTION SUPERIORITY NO INTERMEDIATE DESIGN : INDIVIDUAL RANDOMIZATION -------------
-    if(reactive(input$hypProp)()=='Superiority' & reactive(input$propDesign)()=='No intermediate analysis : Individual randomization'){
+    # PROPORTION SUPERIORITY NO INTERMEDIATE ANALYSIS : INDIVIDUAL RANDOMIZATION -------------
+    if(reactive(input$hypProp)()=='Superiority' & reactive(input$propDesign)()=='No intermediate analysis with individual randomization'){
         epi.sscohortc(N = NA, irexp1 = input$prevProp/100, irexp0 = input$obsProp/100, pexp = NA, n = NA, 
                       power = input$powerProp/100, r = 1, design = 1, sided.test = stProp(), 
                       finite.correction = FALSE, nfractional = FALSE, conf.level = 1-(input$alphaProp/100))$n.exp1
-      # PROPORTION SUPERIORITY NO INTERMEDIATE DESIGN : STEP WEDGE RANDOMIZATION
-      }else if(reactive(input$hypProp)()=='Superiority' & reactive(input$propDesign)()=='No intermediate analysis : Stepped wedge randomization'){
+      # PROPORTION SUPERIORITY NO INTERMEDIATE ANALYSIS : STEP WEDGE RANDOMIZATION
+      }else if(reactive(input$hypProp)()=='Superiority' & reactive(input$propDesign)()=='No intermediate analysis with stepped wedge randomization'){
         SampSize_I <- epi.sscohortc(irexp1 = input$prevProp/100, irexp0 = input$obsProp/100, n = NA, r = 1,
                                     power = input$powerProp/100, sided.test = stProp(), 
                                     conf.level = 1-(input$alphaProp/100))
         
         SW(ni=SampSize_I$n.total, center=input$centersProp, sequence=input$sequencesProp, icc=input$iccProp)
-      # PROPORTION SUPERIORITY SEQUENTIAL DESIGN -------------------------------------------------------------------------
-      }else if(reactive(input$hypProp)()=='Superiority' & reactive(input$propDesign)()=='Sequential design'){
+      # PROPORTION SUPERIORITY INTERMEDIATE ANALYSIS AND INDIVIDUAL RANDOMIZATION -------------------------------------------------------------------------
+      }else if(reactive(input$hypProp)()=='Superiority' & reactive(input$propDesign)()=='Intermediate analysis with individual randomization'){
         ceiling(resPropSeq()[input$propSlice+1]/2)
         
-      # PROPORTION NON-INFERIORITY NO INTERMEDIATE DESIGN : INDIVIDUAL RANDOMIZATION ---------
-      }else if(reactive(input$hypProp)()=='Non-inferiority' & reactive(input$propDesign)()=='No intermediate analysis : Individual randomization'){
+      # PROPORTION NON-INFERIORITY NO INTERMEDIATE ANALYSIS : INDIVIDUAL RANDOMIZATION ---------
+      }else if(reactive(input$hypProp)()=='Non-inferiority' & reactive(input$propDesign)()=='No intermediate analysis with individual randomization'){
         epi.ssninfb(treat = input$obsProp/100, control = input$obsProp/100, delta = input$deltaProp/100, 
                     n = NA, r = 1, power = input$powerProp/100, alpha = input$alphaProp/100)$n.treat
-      # PROPORTION NON-INFERIORITY NO INTERMEDIATE DESIGN : STEP WEDGE RANDOMIZATION
-      }else if(reactive(input$hypProp)()=='Non-inferiority' & reactive(input$propDesign)()=='No intermediate analysis : Stepped wedge randomization'){
+      # PROPORTION NON-INFERIORITY NO INTERMEDIATE ANALYSIS : STEP WEDGE RANDOMIZATION
+      }else if(reactive(input$hypProp)()=='Non-inferiority' & reactive(input$propDesign)()=='No intermediate analysis with stepped wedge randomization'){
         SampSize_I <- epi.ssninfb(treat = input$obsProp/100, control = input$obsProp/100, delta = input$deltaProp/100, 
                                   n = NA, r = 1, power = input$powerProp/100, alpha = input$alphaProp/100)
         
         SW(ni=SampSize_I$n.total, center=input$centersProp, sequence=input$sequencesProp, icc=input$iccProp)
-      # PROPORTION NON-INFERIORITY SEQUENTIAL DESIGN ---------------------------------------------------------------------  
-      }else if(reactive(input$hypProp)()=='Non-inferiority' & reactive(input$propDesign)()=='Sequential design'){
+      # PROPORTION NON-INFERIORITY INTERMEDIATE ANALYSIS AND INDIVIDUAL RANDOMIZATION ---------------------------------------------------------------------  
+      }else if(reactive(input$hypProp)()=='Non-inferiority' & reactive(input$propDesign)()=='Intermediate analysis with individual randomization'){
        ceiling(resPropSeq()[input$propSlice+1]/2)
     })
   
@@ -614,7 +670,7 @@ server <- function(input, output, session) {
   
   # reactive example sentence ---------------------------------------------------------------------------------------------------
   z <- reactive(
-    if(reactive(input$typeDP)()=='Mean endpoint'){
+    if(reactive(input$typeDP)()=='Mean'){
       paste0("This sample size is for a continuous endpoint descriptive study. In order to describe a mean for an outcome with an expected standard deviation of ",input$descExpMean," with a precision define by a ",input$widthDescMean," total width confidence interval and a ",input$descAlpha,"% two-sided type I error rate, the minimum sample size needed is ",resDesc()," patients")
     }else{
       paste0("This sample size is for a binary endpoint descriptive study. In order to demonstrate the expected proportion of event of ",input$descExpProp,"% with a precision define by a ",input$widthDescProp,"% width confidence interval and a ",input$descAlpha,"% two-sided type I error rate, the minimum sample size needed is ",resDesc()," patients")
@@ -623,46 +679,95 @@ server <- function(input, output, session) {
   
   a <- reactive(
       # MEAN SUPERIORITY NO INTERMEDIATE ANALYSIS AND INDIVIDUAL RANDOMIZATION  --------------------
-      if(reactive(input$hypMean)()=='Superiority' & reactive(input$meanDesign)()=='No intermediate analysis : Individual randomization'){
+      if(reactive(input$hypMean)()=='Superiority' & reactive(input$meanDesign)()=='No intermediate analysis with individual randomization'){
+        if (resMean()<30) {
+          warning("--> At least one group size is < 30, normality assumption is questionnable and sample 
+                size calculation may not be valid.")
+        }else
         paste0("This sample size is for a randomised controlled superiority trial in two parallel groups experimental treatment versus control treatment with balanced randomisation (ratio 1 :1) for a continuous endpoint. The expected mean of the criteria is ",input$prevMean," units with experimental treatment compared to ",input$obsMean," with control treatment. In order to highlight this absolute difference of ",abs(input$prevMean-input$obsMean),", with a standard deviation of ",input$sigmaMean,", with a ",printStMean()," alpha risk of ",input$alphaMean,"% and a power of ",input$powerMean,"%, the needed sample size is ",resMean(), " patients in each group (i.e., a total of ",resMean()*2," patients).")
       # MEAN SUPERIORITY NO INTERMEDIATE ANALYSIS AND STEP WEDGE RANDOMIZATION
-      }else if(reactive(input$hypMean)()=='Superiority' & reactive(input$meanDesign)()=='No intermediate analysis : Stepped wedge randomization'){
+      }else if(reactive(input$hypMean)()=='Superiority' & reactive(input$meanDesign)()=='No intermediate analysis with stepped wedge randomization'){
+        if (resMean()<30) {
+          warning("--> At least one group size is < 30, normality assumption is questionnable and sample 
+                size calculation may not be valid.")
+        }else
         paste0("This sample size is for a randomised controlled superiority trial in two parallel groups experimental treatment versus control treatment with balanced randomisation (ratio 1 :1) for a continuous endpoint. The expected mean of the criteria is ",input$prevMean," units with experimental treatment compared to ",input$obsMean," with control treatment. In order to highlight this absolute difference of ",abs(input$prevMean-input$obsMean),", with a standard deviation of ",input$sigmaMean,", with a ",printStMean()," alpha risk of ",input$alphaMean,"%, a power of ",input$powerMean,"% and According to our stepped wedge  RCT with ",input$centersMean," centers randomized in ",input$sequencesMean," sequences and assuming an intraclass correlation coefficient of ",input$iccMean,", we need to recruit ",resMean()*2," patients (",resMean()," in each arm)")
-      # MEAN SUPERIORITY SEQUENTIAL DESIGN ------------------------------------------------------
-      }else if(reactive(input$hypMean)()=='Superiority' & reactive(input$meanDesign)()=='Sequential design'){
+      # MEAN SUPERIORITY INTERMEDIATE ANALYSIS AND INDIVIDUAL RANDOMIZATION ------------------------------------------------------
+      }else if(reactive(input$hypMean)()=='Superiority' & reactive(input$meanDesign)()=='Intermediate analysis with individual randomization'){
         paste0("This sample size is for a RCT with an expected mean of ",input$prevMean," units in patients in the experimental arm versus ",input$obsMean," units in the control arm. In order to demonstrate such a difference of ",abs(input$prevMean-input$obsMean)," units, with a standard deviation of ",input$sigmaMean,", a ",input$alphaMean,"% ",printStMean()," type I error rate and a power of ",input$powerMean,"%, the final analysis should be carried out on ",resMean()*2," patients (",resMean()," patients per group). Intermediates analyses would be performed on ",paste(ceiling(head(resMeanSeq(),-2)), collapse = ", ")," and ",paste(tail(ceiling(head(resMeanSeq(),-1)),1), collapse = ", ")," patients respectively if their is nodecision of stopping the study.")
         
       # MEAN NON-INFERIORITY NO INTERMEDIATE ANALYSIS AND INDIVIDUAL RANDOMIZATION ----------------
-      }else if(reactive(input$hypMean)()=='Non-inferiority' & reactive(input$meanDesign)()=='No intermediate analysis : Individual randomization'){
+      }else if(reactive(input$hypMean)()=='Non-inferiority' & reactive(input$meanDesign)()=='No intermediate analysis with individual randomization'){
+        if (resMean()<30) {
+          warning("--> At least one group size is < 30, normality assumption is questionnable and sample 
+                size calculation may not be valid.")
+        }else
         paste0("This sample size for a randomised controlled non-inferiority trial in two parallel groups experimental treatment versus control treatment with balanced randomisation (ratio 1 :1) for a continuous endpoint. The mean of the criteria is ",input$obsMean," with treatment A. Assuming an absolute non-inferiority margin of ",input$deltaMean,", with a standard deviation of ",input$sigmaMean,", with a one-sided I error rate of ",input$alphaMean,"% and a power of ",input$powerMean,"%, the needed sample size is ",resMean(), "patients in each group (i.e., a total of ",resMean()*2," patients).")
       # MEAN NON-INFERIORITY NO INTERMEDIATE ANALYSIS AND STEP WEDGE RANDOMIZATION ---------------------
-      }else if(reactive(input$hypMean)()=='Non-inferiority' & reactive(input$meanDesign)()=='No intermediate analysis : Stepped wedge randomization'){
+      }else if(reactive(input$hypMean)()=='Non-inferiority' & reactive(input$meanDesign)()=='No intermediate analysis with stepped wedge randomization'){
+        if (input$prevMean<30 | input$obsMean<30) {
+          warning("--> At least one group size is < 30, normality assumption is questionnable and sample 
+                size calculation may not be valid.")
+        }else
         paste0("This sample size for a randomised controlled non-inferiority trial in two parallel groups experimental treatment versus control treatment with balanced randomisation (ratio 1 :1) for a continuous endpoint.The mean of the criteria is ",input$obsMean," with treatment A. Assuming an absolute non-inferiority margin of ",input$deltaMean,", with a standard deviation of ",input$sigmaMean,", with a one-sided I error rate of ",input$alphaMean,"% and a power of ",input$powerMean,"% and according to our stepped wedge  RCT with ",input$centersMean,"centers randomized in ",input$sequencesMean," sequences and assuming an intraclass correlation coefficient of ",input$iccMean,", we need to recruit ",resMean()*2," patients (",resMean()," in each arm)")
-      # MEAN NON-INFERIORITY SEQUENTIAL DESIGN -----------------------------------------------------------------------------
-      }else if(reactive(input$hypMean)()=='Non-inferiority' & reactive(input$meanDesign)()=='Sequential design'){
+      # MEAN NON-INFERIORITY INTERMEDIATE ANALYSIS AND INDIVIDUAL RANDOMIZATION -----------------------------------------------------------------------------
+      }else if(reactive(input$hypMean)()=='Non-inferiority' & reactive(input$meanDesign)()=='Intermediate analysis with individual randomization'){
         paste0("This sample size is for a randomised controlled non-inferiority trial in two parallel groups experimental treatment versus control treatment with balanced randomisation (ratio 1 :1) for a continuous endpoint. Assuming an absolute non-inferiority margin of ",input$deltaMean,", with a standard deviation of ",input$sigmaMean,", with a one-sided alpha risk of ",input$alphaMean,"% and a power of ",input$powerMean,"%, the final analysis should be carried out on ",resMean()*2," patients (",resMean()," patients per group). The intermediate analyses would be performed on ",paste(ceiling(head(resMeanSeq(),-2)), collapse = ", ")," and ",paste(tail(ceiling(head(resMeanSeq(),-1)),1), collapse = ", ")," patients respectively, if their is no decision of stopping the study.")
       })
 #----  
   
   b <- reactive(
     # PROPORTION SUPERIORITY NO INTERMEDIATE ANALYSIS AND INDIVIDUAL RANDOMIZATION  --------------------
-    if(reactive(input$hypProp)()=='Superiority' & reactive(input$propDesign)()=='No intermediate analysis : Individual randomization'){
+    if(reactive(input$hypProp)()=='Superiority' & reactive(input$propDesign)()=='No intermediate analysis with individual randomization'){
+      pmean <- (input$prevProp/100+input$obsProp/100)/2
+      if (resProp()<30) {
+        warning("--> At least one group size is < 30, normality assumption is questionnable and sample 
+                size calculation may not be valid.")
+      }else if (pmean*resProp() < 5 | (1-pmean)*resProp() < 5) {
+          paste0(pmean,
+          warning("--> At least one theoretical effective is < 5, normality assumption is questionnable 
+                  and sample size calculation may not be valid."))
+        }else
       paste0("This sample size is for a randomised controlled superiority trial in two parallel groups experimental treatment versus control treatment with balanced randomisation (ratio 1 :1) for a binary endpoint. The proportion of patient with the criteria is ",input$prevProp,"% with experimental treatment compared to ",input$obsProp,"% with control treatment. In order to highlight this absolute difference of ",abs(input$prevProp-input$obsProp),"%, with a ",printStProp()," I error rate of ",input$alphaProp,"% and a power of ",input$powerProp,"%, the needed sample size is ",resProp(), " patients in each group.")
     # PROPORTION SUPERIORITY NO INTERMEDIATE ANALYSIS AND STEP WEDGE RANDOMIZATION
-    }else if(reactive(input$hypProp)()=='Superiority' & reactive(input$propDesign)()=='No intermediate analysis : Stepped wedge randomization'){
+    }else if(reactive(input$hypProp)()=='Superiority' & reactive(input$propDesign)()=='No intermediate analysis with stepped wedge randomization'){
+      if (resProp()<30) {
+        warning("--> At least one group size is < 30, normality assumption is questionnable and sample 
+                size calculation may not be valid.")
+      }else if (pmean*resProp() < 5 | (1-pmean)*resProp() < 5) {
+        paste0(pmean,
+               warning("--> At least one theoretical effective is < 5, normality assumption is questionnable 
+                  and sample size calculation may not be valid."))
+      }else
       paste0("This sample size is for a randomised controlled superiority trial in two parallel groups experimental treatment versus control treatment with balanced randomisation (ratio 1 :1) for a binary endpoint. The expected propotion of event is ",input$prevProp,"% with experimental treatment compared to ",input$obsProp,"% with control treatment. In order to highlight this absolute difference of ",abs(input$prevMean-input$obsProp),"%, with a ",printStProp()," I error rate of ",input$alphaProp,"%, a power of ",input$powerProp,"% and According to our stepped wedge  RCT with ",input$centersProp," centers randomized in ",input$sequencesProp," sequences and assuming an intraclass correlation coefficient of ",input$iccProp,", we need to recruit ",resProp()*2," patients (",resProp()," in each arm)")
-    # PROPORTION SUPERIORITY SEQUENTIAL DESIGN ------------------------------------------------------
-    }else if(reactive(input$hypProp)()=='Superiority' & reactive(input$propDesign)()=='Sequential design'){
+    # PROPORTION SUPERIORITY INTERMEDIATE ANALYSIS AND INDIVIDUAL RANDOMIZATION ------------------------------------------------------
+    }else if(reactive(input$hypProp)()=='Superiority' & reactive(input$propDesign)()=='Intermediate analysis with individual randomization'){
       paste0("This sample size is for a RCT with an expected proportion of ",input$prevProp," units in patients in the experimental arm versus ",input$obsProp," units in the control arm. In order to demonstrate such adifference of ",abs(input$prevProp-input$obsProp)," units, with a standard deviation of ",input$sigmaProp,", a ",input$alphaProp,"% ",printStProp()," type I error rate and a power of ",input$powerProp,"%, the final analysis should be carried out on ",resProp()*2," patients (",resProp()," patients per group). The intermediate analyses would be performed on ",paste(ceiling(head(resPropSeq(),-2)), collapse = ", ")," and ",paste(tail(ceiling(head(resPropSeq(),-1)),1), collapse = ", ")," patients respectively if their is no decision of stopping the study.")
       
     # PROPORTION NON-INFERIORITY NO INTERMEDIATE ANALYSIS AND INDIVIDUAL RANDOMIZATION ----------------
-    }else if(reactive(input$hypProp)()=='Non-inferiority' & reactive(input$propDesign)()=='No intermediate analysis : Individual randomization'){
+    }else if(reactive(input$hypProp)()=='Non-inferiority' & reactive(input$propDesign)()=='No intermediate analysis with individual randomization'){
+      if (resProp()<30) {
+        warning("--> At least one group size is < 30, normality assumption is questionnable and sample 
+                size calculation may not be valid.")
+      }else if (pmean*resProp() < 5 | (1-pmean)*resProp() < 5) {
+        paste0(pmean,
+               warning("--> At least one theoretical effective is < 5, normality assumption is questionnable 
+                  and sample size calculation may not be valid."))
+      }else
       paste0("This sample size is for a randomised controlled non-inferiority trial in two parallel groups experimental treatment versus control treatment with balanced randomisation (ratio 1 :1) for a binary endpoint. The expected percentage of events is ",input$obsProp,"% in patients in the control arm and no difference compared to the experimental arm. Assuming an absolute non-inferiority margin of ",input$deltaProp,"%, the minimum sample size per arm equals ",resProp()," (i.e., a total of ",resProp()*2," patients) to achieve a ",input$alphaProp,"% one-sided type I error rate and a power of ",input$powerProp,"%.")
       # PROPORTION SUPERIORITY NO INTERMEDIATE ANALYSIS AND STEP WEDGE RANDOMIZATION
-    }else if(reactive(input$hypProp)()=='Non-inferiority' & reactive(input$propDesign)()=='No intermediate analysis : Stepped wedge randomization'){
+    }else if(reactive(input$hypProp)()=='Non-inferiority' & reactive(input$propDesign)()=='No intermediate analysis with stepped wedge randomization'){
+      if (resProp()<30) {
+        warning("--> At least one group size is < 30, normality assumption is questionnable and sample 
+                size calculation may not be valid.")
+      }else if (pmean*resProp() < 5 | (1-pmean)*resProp() < 5) {
+        paste0(pmean,
+               warning("--> At least one theoretical effective is < 5, normality assumption is questionnable 
+                  and sample size calculation may not be valid."))
+      }else
       paste0("This sample size is for a randomised controlled superiority trial in two parallel groups experimental treatment versus control treatment with balanced randomisation (ratio 1 :1) for a binary endpoint. The expected propotion of event is ",input$prevProp," % in patients in the control arm and  no difference compared to the experimental arm. Assuming an absolute non-inferiority margin of ",input$deltaProp,"%, a power of ",input$powerProp,"% and according to our stepped wedge  RCT with ",input$centersProp," centers randomized in ",input$sequencesProp," sequences and assuming an intraclass correlation coefficient of ",input$iccProp,", we need to recruit ",resProp()*2," patients (",resProp()," in each arm)")
-    # MEAN NON-INFERIORITY SEQUENTIAL DESIGN -----------------------------------------------------------------------------  
-    }else if(reactive(input$hypProp)()=='Non-inferiority' & reactive(input$propDesign)()=='Sequential design'){
+    # MEAN NON-INFERIORITY INTERMEDIATE ANALYSIS AND INDIVIDUAL RANDOMIZATION -----------------------------------------------------------------------------  
+    }else if(reactive(input$hypProp)()=='Non-inferiority' & reactive(input$propDesign)()=='Intermediate analysis with individual randomization'){
       paste0("This sample size is for a randomised controlled non-inferiority trial in two parallel groups experimental treatment versus control treatment with balanced randomisation (ratio 1 :1) for a binary endpoint. The expected percentage of events is ",input$obsProp,"% in patients in the control arm and no difference compared to the experimental arm. Assuming an absolute non-inferiority margin of ",input$deltaProp,"%, with a one-sided alpha risk of ",input$alphaProp,"% and a power of ",input$powerProp,"%, the final analysis should be carried out on ",resProp()*2," patients (",resProp()," patients per group). The intermediate analyses would be performed on ",paste(ceiling(head(resPropSeq(),-2)), collapse = ", ")," and ",paste(tail(ceiling(head(resPropSeq(),-1)),1), collapse = ", ")," patients respectively if their is no decision of stopping the study.")
     })
 #---- 
