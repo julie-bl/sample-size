@@ -719,25 +719,16 @@ server <- function(input, output, session) {
   b <- reactive(
     # PROPORTION SUPERIORITY NO INTERMEDIATE ANALYSIS AND INDIVIDUAL RANDOMIZATION  --------------------
     if(reactive(input$hypProp)()=='Superiority' & reactive(input$propDesign)()=='No intermediate analysis with individual randomization'){
-      pmean <- (input$prevProp/100+input$obsProp/100)/2
       if (resProp()<30) {
         warning("--> At least one group size is < 30, normality assumption is questionnable and sample 
                 size calculation may not be valid.")
-      }else if (pmean*resProp() < 5 | (1-pmean)*resProp() < 5) {
-          paste0(pmean,
-          warning("--> At least one theoretical effective is < 5, normality assumption is questionnable 
-                  and sample size calculation may not be valid."))
-        }else
+      }else
       paste0("This sample size is for a randomised controlled superiority trial in two parallel groups experimental treatment versus control treatment with balanced randomisation (ratio 1 :1) for a binary endpoint. The proportion of patient with the criteria is ",input$prevProp,"% with experimental treatment compared to ",input$obsProp,"% with control treatment. In order to highlight this absolute difference of ",abs(input$prevProp-input$obsProp),"%, with a ",printStProp()," I error rate of ",input$alphaProp,"% and a power of ",input$powerProp,"%, the needed sample size is ",resProp(), " patients in each group.")
     # PROPORTION SUPERIORITY NO INTERMEDIATE ANALYSIS AND STEP WEDGE RANDOMIZATION
     }else if(reactive(input$hypProp)()=='Superiority' & reactive(input$propDesign)()=='No intermediate analysis with stepped wedge randomization'){
       if (resProp()<30) {
         warning("--> At least one group size is < 30, normality assumption is questionnable and sample 
                 size calculation may not be valid.")
-      }else if (pmean*resProp() < 5 | (1-pmean)*resProp() < 5) {
-        paste0(pmean,
-               warning("--> At least one theoretical effective is < 5, normality assumption is questionnable 
-                  and sample size calculation may not be valid."))
       }else
       paste0("This sample size is for a randomised controlled superiority trial in two parallel groups experimental treatment versus control treatment with balanced randomisation (ratio 1 :1) for a binary endpoint. The expected propotion of event is ",input$prevProp,"% with experimental treatment compared to ",input$obsProp,"% with control treatment. In order to highlight this absolute difference of ",abs(input$prevMean-input$obsProp),"%, with a ",printStProp()," I error rate of ",input$alphaProp,"%, a power of ",input$powerProp,"% and According to our stepped wedge  RCT with ",input$centersProp," centers randomized in ",input$sequencesProp," sequences and assuming an intraclass correlation coefficient of ",input$iccProp,", we need to recruit ",resProp()*2," patients (",resProp()," in each arm)")
     # PROPORTION SUPERIORITY INTERMEDIATE ANALYSIS AND INDIVIDUAL RANDOMIZATION ------------------------------------------------------
@@ -749,10 +740,6 @@ server <- function(input, output, session) {
       if (resProp()<30) {
         warning("--> At least one group size is < 30, normality assumption is questionnable and sample 
                 size calculation may not be valid.")
-      }else if (pmean*resProp() < 5 | (1-pmean)*resProp() < 5) {
-        paste0(pmean,
-               warning("--> At least one theoretical effective is < 5, normality assumption is questionnable 
-                  and sample size calculation may not be valid."))
       }else
       paste0("This sample size is for a randomised controlled non-inferiority trial in two parallel groups experimental treatment versus control treatment with balanced randomisation (ratio 1 :1) for a binary endpoint. The expected percentage of events is ",input$obsProp,"% in patients in the control arm and no difference compared to the experimental arm. Assuming an absolute non-inferiority margin of ",input$deltaProp,"%, the minimum sample size per arm equals ",resProp()," (i.e., a total of ",resProp()*2," patients) to achieve a ",input$alphaProp,"% one-sided type I error rate and a power of ",input$powerProp,"%.")
       # PROPORTION SUPERIORITY NO INTERMEDIATE ANALYSIS AND STEP WEDGE RANDOMIZATION
@@ -760,10 +747,6 @@ server <- function(input, output, session) {
       if (resProp()<30) {
         warning("--> At least one group size is < 30, normality assumption is questionnable and sample 
                 size calculation may not be valid.")
-      }else if (pmean*resProp() < 5 | (1-pmean)*resProp() < 5) {
-        paste0(pmean,
-               warning("--> At least one theoretical effective is < 5, normality assumption is questionnable 
-                  and sample size calculation may not be valid."))
       }else
       paste0("This sample size is for a randomised controlled superiority trial in two parallel groups experimental treatment versus control treatment with balanced randomisation (ratio 1 :1) for a binary endpoint. The expected propotion of event is ",input$prevProp," % in patients in the control arm and  no difference compared to the experimental arm. Assuming an absolute non-inferiority margin of ",input$deltaProp,"%, a power of ",input$powerProp,"% and according to our stepped wedge  RCT with ",input$centersProp," centers randomized in ",input$sequencesProp," sequences and assuming an intraclass correlation coefficient of ",input$iccProp,", we need to recruit ",resProp()*2," patients (",resProp()," in each arm)")
     # MEAN NON-INFERIORITY INTERMEDIATE ANALYSIS AND INDIVIDUAL RANDOMIZATION -----------------------------------------------------------------------------  
