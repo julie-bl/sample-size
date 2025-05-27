@@ -756,7 +756,7 @@ server <- function(input, output, session) {
 #---- 
 
   c <- reactive(
-    if(reactive(input$typePredBEP)()=='Construction of predictive model'){
+    if(reactive(input$typePredBEP)()=='Construction of predictive model of binary event'){
       paste0("This sample size is for developing a logistic regression model based on up to ",input$predictorsToTest," candidate predictors, with an anticipated R2 of at least ",input$R2,", and to target an expected shrinkage of ",input$shrinkageExpected," (equation 11 in Riley et al. Statistics in Medicine. 2019;38:1276–1296).")
     }else{
       paste0("This sample size is for external validation of a logistic regression model based with an expected outcome event proportions of ",input$P0,"%, with a alpha risk at ",input$alphaExtVal,"% and with a target confidence interval width of ",input$widthExtVal,"% (Riley et al.  Statistics in Medicine. 2021;19:4230-4251).")
