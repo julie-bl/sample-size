@@ -657,9 +657,9 @@ server <- function(input, output, session) {
   
   # PREDICTIVE ------------------------------------------------------------------------------------------------------------------
   resPred <- reactive(
-    if(reactive(input$typePredBEP)()=='Construction of predictive model')
+    if(reactive(input$typePredBEP)()=='Construction of predictive model of binary event')
       ceiling(input$predictorsToTest/((input$shrinkageExpected-1)*log(1-input$R2/input$shrinkageExpected)))
-    else
+    else if (reactive(input$typePredBEP)()=='External validation of binary event')
       ceiling(size.calib(p0=input$P0/100, width = input$widthExtVal/100, alpha = input$alphaExtVal/100))
   )
   
