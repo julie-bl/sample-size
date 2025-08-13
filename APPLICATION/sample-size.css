@@ -68,13 +68,13 @@
 /* Configuration principale du header */
 .main-header {
   margin-left: 230px !important;
-  min-height: 80px !important;
+  min-height: 110px !important;
   background: var(--accent-blue) !important;
 }
 
 .main-header .navbar {
   background: var(--accent-blue) !important;
-  min-height: 80px !important;
+  min-height: 110px !important;
 }
 
 /* Titre du header */
@@ -85,7 +85,7 @@
   font-weight: 550 !important;
   text-transform: uppercase !important;
   letter-spacing: 2px !important;
-  padding: 20px !important;
+  padding: 48px 0px 32px 0px!important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
