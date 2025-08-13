@@ -84,6 +84,8 @@ ui <- dashboardPage(
   ),
   dashboardBody(
     useShinyjs(),
+    includeCSS("sample-size.css"),  # Inclure le fichier CSS
+    includeScript("sample-size.js"),  # Inclure le fichier JavaScript
     tabItems(
       
 # DESCRIBE A POPULATION ---------------------------------------------------------------------------------------------------
@@ -799,3 +801,4 @@ server <- function(input, output, session) {
 
 # Run the application
 shinyApp(ui = ui, server = server)
+
